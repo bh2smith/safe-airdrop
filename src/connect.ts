@@ -1,7 +1,4 @@
-import * as dotenv from "dotenv";
 import Web3 from "web3";
-
-dotenv.config();
 
 const NetworkMap = {
   mainnet: 1,
@@ -14,6 +11,7 @@ const NetworkMap = {
 
 type NetworkName = keyof typeof NetworkMap;
 
+// TODO - access infura key without publish (yarn add dotenv)
 const INFURA_API_KEY = process.env.INFURA_API_KEY;
 
 const SAFE_ENDPOINT_URLS = {

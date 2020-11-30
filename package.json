@@ -17,7 +17,6 @@
     "@types/react-dom": "^16.9.0",
     "@types/styled-components": "^5.1.2",
     "bignumber.js": "^9.0.1",
-    "dotenv": "^8.2.0",
     "fast-csv": "^4.3.5",
     "react": "^16.13.1",
     "react-app-rewired": "^2.1.6",
