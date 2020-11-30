@@ -1,4 +1,6 @@
-# My Safe App
+# Gnosis Safe Airdrop
+
+Send arbitrarily many distinct tokens, to arbitrarily many distinct accounts with various different values from a CSV file in a single Safe transaciton!
 
 ## Getting Started
 
