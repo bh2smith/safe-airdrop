@@ -1,11 +1,13 @@
-/** @format */
-import { Transaction } from "@gnosis.pm/safe-apps-sdk";
+import { SafeInfo, Transaction } from "@gnosis.pm/safe-apps-sdk";
 import BigNumber from "bignumber.js";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
 import { useSafe } from "@rmeissner/safe-apps-react-sdk";
 import { parseString } from "@fast-csv/parse";
+import { initWeb3 } from "./connect";
+import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
+import { AbiItem } from "web3-utils";
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -22,11 +24,36 @@ interface SnakePayment {
   receiver: string;
   amount: string;
   token_address: string;
+  decimals: number;
 }
 interface Payment {
   receiver: string;
   amount: BigNumber;
   tokenAddress: string;
+  decimals: number;
+}
+
+function buildTransfers(
+  safeInfo: SafeInfo,
+  transferData: Payment[]
+): Transaction[] {
+  const web3 = initWeb3(safeInfo.network);
+  const erc20 = new web3.eth.Contract(IERC20.abi as AbiItem[]);
+  const txList: Transaction[] = transferData.map((transfer) => {
+    return {
+      to: transfer.tokenAddress,
+      value: "0",
+      data: erc20.methods
+        .transfer(
+          transfer.receiver,
+          transfer.amount.multipliedBy(
+            new BigNumber(10 ** transfer.decimals).toString()
+          )
+        )
+        .encodeABI(),
+    };
+  });
+  return txList;
 }
 
 const App: React.FC = () => {
@@ -56,10 +83,11 @@ const App: React.FC = () => {
     const parsedFile = await filePromise;
 
     const results: Payment[] = parsedFile
-      .map(({ amount, receiver, token_address }) => ({
+      .map(({ amount, receiver, token_address, decimals }) => ({
         amount: new BigNumber(amount),
         receiver,
         tokenAddress: token_address,
+        decimals,
       }))
       .filter((payment) => !payment.amount.isZero());
     setTransferContent(results);
@@ -67,26 +95,10 @@ const App: React.FC = () => {
 
   const submitTx = useCallback(async () => {
     setSubmitting(true);
+
     try {
-      // const safeTxHash = await safe.sendTransactions([
-      //   {
-      //     to: safe.info.safeAddress,
-      //     value: "0",
-      //     data: "0x",
-      //   },
-      //   {
-      //     to: safe.info.safeAddress,
-      //     value: "0",
-      //     data: "0x",
-      //   },
-      // ]);
-      const txList: Transaction[] = transferContent.map((transfer) => {
-        return {
-          to: transfer.tokenAddress,
-          value: "0",
-          data: "0x",
-        };
-      });
+      const txList = buildTransfers(safe.info, transferContent);
+      console.log(`Encoded ${txList.length} ERC20 transfers.`);
       const safeTxHash = await safe.sendTransactions(txList);
       console.log({ safeTxHash });
       const safeTx = await safe.loadSafeTransaction(safeTxHash);
@@ -95,7 +107,7 @@ const App: React.FC = () => {
       console.error(e);
     }
     setSubmitting(false);
-  }, [safe]);
+  }, [safe, transferContent]);
 
   return (
     <Container>
