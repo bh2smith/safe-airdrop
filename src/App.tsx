@@ -8,6 +8,7 @@ import { parseString } from "@fast-csv/parse";
 import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 import { AbiItem } from "web3-utils";
 
+import  defaultTokenIcon from "./static/default-token-icon.svg"
 import { initWeb3 } from "./connect";
 import { fetchTokenList, TokenMap } from "./tokenList"
 
@@ -119,8 +120,7 @@ const App: React.FC = () => {
     <Container>
       <Title size="md">CSV Airdrop</Title>
 
-      <input type="file" name="file" onChange={onChangeHandler} />
-
+      <input type="file" name="file" onChange={onChangeHandler}/>
       <table>
         <thead>
           <tr>
@@ -133,10 +133,18 @@ const App: React.FC = () => {
           {transferContent.map((row, index) => {
             return (
               <tr key={index}>
-                {/* <td>
-                  <img alt={tokenList[row.tokenAddress].symbol} src={tokenList[row.tokenAddress].logoURI}/>
-                </td> */}
-                <td>{tokenList.get(row.tokenAddress)?.symbol || row.tokenAddress}</td>
+                <td>                  
+                  <img 
+                    alt={defaultTokenIcon}
+                    src={tokenList.get(row.tokenAddress)?.logoURI || defaultTokenIcon}
+                    style={{
+                      maxWidth: 20,
+                      marginRight: 5
+                    }}
+                    />
+                    {tokenList.get(row.tokenAddress)?.symbol || row.tokenAddress}
+                </td>
+                {/* TODO - get account names from safe Address Book */}
                 <td>{row.receiver}</td>
                 <td>{row.amount.toString(10)}</td>
               </tr>

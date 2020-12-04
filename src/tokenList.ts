@@ -16,7 +16,7 @@ function tokenMap(tokenList: TokenInfo[]): TokenMap {
 export const fetchTokenList = async (networkName: string) => {
   let tokens: TokenInfo[];
   if (networkName === "mainnet") {
-    // TODO - may not be fetchin this token list correctly by hardcoded URL
+    // TODO - we may not be fetching this token list correctly by hardcoded URL.
     // Espesially given that we import @uniswap/token-lists
     // Note there is also a repo uniswap/default-token-lists
     const mainnetTokenURL = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
@@ -24,14 +24,11 @@ export const fetchTokenList = async (networkName: string) => {
   } else if (networkName === "rinkeby") {
     // Hardcoded this because the list provided at 
     // https://github.com/Uniswap/default-token-list/blob/master/src/tokens/rinkeby.json
-    // Doesn't have GNO or OWL.
+    // Doesn't have GNO or OWL and/or many others.
     tokens = rinkeby;
   } else {
     console.error(`Unimplemented token list for ${networkName} network`)
   }
   console.log(`Fetched ${tokens.length} for ${networkName} network`);
-  console.log("These are indexed by address as", tokenMap(tokens));
-
-  console.log(tokenMap(tokens)["0xd0dab4e640d95e9e8a47545598c33e31bdb53c7c"])
   return tokenMap(tokens)
 }
