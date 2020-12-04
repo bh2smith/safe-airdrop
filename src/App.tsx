@@ -5,9 +5,11 @@ import styled from "styled-components";
 import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
 import { useSafe } from "@rmeissner/safe-apps-react-sdk";
 import { parseString } from "@fast-csv/parse";
-import { initWeb3 } from "./connect";
 import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 import { AbiItem } from "web3-utils";
+
+import { initWeb3 } from "./connect";
+import { fetchTokenList, TokenMap } from "./tokenList"
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -40,6 +42,7 @@ function buildTransfers(
   const web3 = initWeb3(safeInfo.network);
   const erc20 = new web3.eth.Contract(IERC20.abi as AbiItem[]);
   const txList: Transaction[] = transferData.map((transfer) => {
+    console.log(new BigNumber(10 ** transfer.decimals).toString())
     return {
       to: transfer.tokenAddress,
       value: "0",
@@ -60,6 +63,7 @@ const App: React.FC = () => {
   const safe = useSafe();
   const [submitting, setSubmitting] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
+  const [tokenList, setTokenList] = useState<TokenMap>();
 
   const onChangeHandler = async (event: any) => {
     console.log("Received Filename", event.target.files[0].name);
@@ -90,6 +94,8 @@ const App: React.FC = () => {
         decimals,
       }))
       .filter((payment) => !payment.amount.isZero());
+    const tokens = await fetchTokenList(safe.info.network);
+    setTokenList(tokens);
     setTransferContent(results);
   };
 
@@ -111,7 +117,7 @@ const App: React.FC = () => {
 
   return (
     <Container>
-      <Title size="md">{safe.info.safeAddress}</Title>
+      <Title size="md">CSV Airdrop</Title>
 
       <input type="file" name="file" onChange={onChangeHandler} />
 
@@ -127,7 +133,10 @@ const App: React.FC = () => {
           {transferContent.map((row, index) => {
             return (
               <tr key={index}>
-                <td>{row.tokenAddress}</td>
+                {/* <td>
+                  <img alt={tokenList[row.tokenAddress].symbol} src={tokenList[row.tokenAddress].logoURI}/>
+                </td> */}
+                <td>{tokenList.get(row.tokenAddress)?.symbol || row.tokenAddress}</td>
                 <td>{row.receiver}</td>
                 <td>{row.amount.toString(10)}</td>
               </tr>

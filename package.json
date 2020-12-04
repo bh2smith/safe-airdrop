@@ -16,6 +16,7 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "@types/styled-components": "^5.1.2",
+    "@uniswap/token-lists": "^1.0.0-beta.18",
     "bignumber.js": "^9.0.1",
     "fast-csv": "^4.3.5",
     "react": "^16.13.1",

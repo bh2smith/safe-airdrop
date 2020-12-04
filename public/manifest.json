@@ -1,7 +1,7 @@
 {
   "short_name": "Safe Airdrop",
-  "name": "Gnosis Safe CSV Airdrop",
-  "description": "A simple Gnosis Safe app used to upload CSV transfer files to send aribitrarily many distinct tokens to arbitrarily many recipients",
+  "name": "CSV Airdrop",
+  "description": "A simple Safe app used to upload CSV transfer files to send aribitrarily many distinct tokens to arbitrarily many recipients",
   "iconPath": "logo.svg",
   "icons": [
     {
