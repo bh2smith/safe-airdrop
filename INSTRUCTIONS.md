@@ -35,7 +35,7 @@ Here we have 5 transfers, each for a different token, going to a different recei
 
 2. Open up the CSV Airdrop App, which looks like this:
 
-<!-- [Include ScreenShot] -->
+![alt text](./public/tutorial/App-screen.png)
 
 3. Upload your _Transfer File_
 
