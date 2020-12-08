@@ -5,9 +5,12 @@ import styled from "styled-components";
 import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
 import { useSafe } from "@rmeissner/safe-apps-react-sdk";
 import { parseString } from "@fast-csv/parse";
-import { initWeb3 } from "./connect";
 import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 import { AbiItem } from "web3-utils";
+
+import defaultTokenIcon from "./static/default-token-icon.svg";
+import { initWeb3 } from "./connect";
+import { fetchTokenList, TokenMap } from "./tokenList";
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -35,20 +38,22 @@ interface Payment {
 
 function buildTransfers(
   safeInfo: SafeInfo,
-  transferData: Payment[]
+  transferData: Payment[],
+  tokenList: TokenMap
 ): Transaction[] {
   const web3 = initWeb3(safeInfo.network);
   const erc20 = new web3.eth.Contract(IERC20.abi as AbiItem[]);
   const txList: Transaction[] = transferData.map((transfer) => {
+    const exponent = new BigNumber(
+      10 ** tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals
+    );
     return {
       to: transfer.tokenAddress,
       value: "0",
       data: erc20.methods
         .transfer(
           transfer.receiver,
-          transfer.amount.multipliedBy(
-            new BigNumber(10 ** transfer.decimals).toString()
-          )
+          transfer.amount.multipliedBy(exponent).toString()
         )
         .encodeABI(),
     };
@@ -60,6 +65,7 @@ const App: React.FC = () => {
   const safe = useSafe();
   const [submitting, setSubmitting] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
+  const [tokenList, setTokenList] = useState<TokenMap>();
 
   const onChangeHandler = async (event: any) => {
     console.log("Received Filename", event.target.files[0].name);
@@ -90,6 +96,8 @@ const App: React.FC = () => {
         decimals,
       }))
       .filter((payment) => !payment.amount.isZero());
+    const tokens = await fetchTokenList(safe.info.network);
+    setTokenList(tokens);
     setTransferContent(results);
   };
 
@@ -97,7 +105,7 @@ const App: React.FC = () => {
     setSubmitting(true);
 
     try {
-      const txList = buildTransfers(safe.info, transferContent);
+      const txList = buildTransfers(safe.info, transferContent, tokenList);
       console.log(`Encoded ${txList.length} ERC20 transfers.`);
       const safeTxHash = await safe.sendTransactions(txList);
       console.log({ safeTxHash });
@@ -107,14 +115,13 @@ const App: React.FC = () => {
       console.error(e);
     }
     setSubmitting(false);
-  }, [safe, transferContent]);
+  }, [safe, transferContent, tokenList]);
 
   return (
     <Container>
-      <Title size="md">{safe.info.safeAddress}</Title>
+      <Title size="md">CSV Airdrop</Title>
 
       <input type="file" name="file" onChange={onChangeHandler} />
-
       <table>
         <thead>
           <tr>
@@ -127,7 +134,18 @@ const App: React.FC = () => {
           {transferContent.map((row, index) => {
             return (
               <tr key={index}>
-                <td>{row.tokenAddress}</td>
+                <td>
+                  <img
+                    alt={defaultTokenIcon}
+                    src={tokenList.get(row.tokenAddress).logoURI}
+                    style={{
+                      maxWidth: 20,
+                      marginRight: 5,
+                    }}
+                  />
+                  {tokenList.get(row.tokenAddress)?.symbol || row.tokenAddress}
+                </td>
+                {/* TODO - get account names from safe Address Book */}
                 <td>{row.receiver}</td>
                 <td>{row.amount.toString(10)}</td>
               </tr>
