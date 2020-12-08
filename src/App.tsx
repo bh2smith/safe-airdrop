@@ -8,9 +8,9 @@ import { parseString } from "@fast-csv/parse";
 import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 import { AbiItem } from "web3-utils";
 
-import  defaultTokenIcon from "./static/default-token-icon.svg"
+import defaultTokenIcon from "./static/default-token-icon.svg";
 import { initWeb3 } from "./connect";
-import { fetchTokenList, TokenMap } from "./tokenList"
+import { fetchTokenList, TokenMap } from "./tokenList";
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -38,12 +38,13 @@ interface Payment {
 
 function buildTransfers(
   safeInfo: SafeInfo,
-  transferData: Payment[]
+  transferData: Payment[],
+  tokenList: TokenMap
 ): Transaction[] {
   const web3 = initWeb3(safeInfo.network);
   const erc20 = new web3.eth.Contract(IERC20.abi as AbiItem[]);
   const txList: Transaction[] = transferData.map((transfer) => {
-    console.log(new BigNumber(10 ** transfer.decimals).toString())
+    console.log(new BigNumber(10 ** transfer.decimals).toString());
     return {
       to: transfer.tokenAddress,
       value: "0",
@@ -51,7 +52,9 @@ function buildTransfers(
         .transfer(
           transfer.receiver,
           transfer.amount.multipliedBy(
-            new BigNumber(10 ** transfer.decimals).toString()
+            new BigNumber(
+              10 ** tokenList.get(transfer.tokenAddress).decimals
+            ).toString()
           )
         )
         .encodeABI(),
@@ -104,7 +107,7 @@ const App: React.FC = () => {
     setSubmitting(true);
 
     try {
-      const txList = buildTransfers(safe.info, transferContent);
+      const txList = buildTransfers(safe.info, transferContent, tokenList);
       console.log(`Encoded ${txList.length} ERC20 transfers.`);
       const safeTxHash = await safe.sendTransactions(txList);
       console.log({ safeTxHash });
@@ -114,13 +117,13 @@ const App: React.FC = () => {
       console.error(e);
     }
     setSubmitting(false);
-  }, [safe, transferContent]);
+  }, [safe, transferContent, tokenList]);
 
   return (
     <Container>
       <Title size="md">CSV Airdrop</Title>
 
-      <input type="file" name="file" onChange={onChangeHandler}/>
+      <input type="file" name="file" onChange={onChangeHandler} />
       <table>
         <thead>
           <tr>
@@ -133,16 +136,16 @@ const App: React.FC = () => {
           {transferContent.map((row, index) => {
             return (
               <tr key={index}>
-                <td>                  
-                  <img 
+                <td>
+                  <img
                     alt={defaultTokenIcon}
-                    src={tokenList.get(row.tokenAddress)?.logoURI || defaultTokenIcon}
+                    src={tokenList.get(row.tokenAddress).logoURI}
                     style={{
                       maxWidth: 20,
-                      marginRight: 5
+                      marginRight: 5,
                     }}
-                    />
-                    {tokenList.get(row.tokenAddress)?.symbol || row.tokenAddress}
+                  />
+                  {tokenList.get(row.tokenAddress)?.symbol || row.tokenAddress}
                 </td>
                 {/* TODO - get account names from safe Address Book */}
                 <td>{row.receiver}</td>
