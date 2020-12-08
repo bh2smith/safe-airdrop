@@ -35,14 +35,16 @@ Here we have 5 transfers, each for a different token, going to a different recei
 
 2. Open up the CSV Airdrop App, which looks like this:
 
-[Include Image]
+<!-- [Include ScreenShot] -->
 
 3. Upload your _Transfer File_
 
 4. Verify that the tokens, recipients and amounts are displayed as expected.
 
-[Include Image]
+<!-- [Include ScreenShot] -->
 
 5. Click Submit, execute and wait for your transaction to be mined.
 
 A successful transaction will look like the following [example on etherscan](https://rinkeby.etherscan.io/tx/0x25c1a799957161a18a20056ffde5edf53dc426adc231d5fa456111e3eb641e59):
+
+<!-- [Include ScreenShot] -->
