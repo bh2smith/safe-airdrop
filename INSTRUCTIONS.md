@@ -41,13 +41,13 @@ Here we have 5 transfers, each for a different token, going to a different recei
 
 4. Verify that the tokens, recipients and amounts are displayed as expected.
 
-<img src="./public/tutorial/File-uploaded.png" width="250">
+<img src="./public/tutorial/File-uploaded.png" width="400">
 
 5. Click Submit, execute and wait for your transaction to be mined.
 
-<img src="./public/tutorial/Transaction-submission.png" width="200">
+<img src="./public/tutorial/Transaction-submission.png" width="250">
 
 
 A successful transaction will look like the following [example on etherscan](https://rinkeby.etherscan.io/tx/0x25c1a799957161a18a20056ffde5edf53dc426adc231d5fa456111e3eb641e59):
 
-<img src="./public/tutorial/tx-success.png" width="300">
+<img src="./public/tutorial/tx-success.png" width="500">
