@@ -45,7 +45,7 @@ Here we have 5 transfers, each for a different token, going to a different recei
 
 5. Click Submit, execute and wait for your transaction to be mined.
 
-![alt text](./public/tutorial/Transaction-submit.png)
+![alt text](./public/tutorial/Transaction-submission.png)
 
 A successful transaction will look like the following [example on etherscan](https://rinkeby.etherscan.io/tx/0x25c1a799957161a18a20056ffde5edf53dc426adc231d5fa456111e3eb641e59):
 
