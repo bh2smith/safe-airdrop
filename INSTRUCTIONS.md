@@ -31,22 +31,19 @@ Here we have 5 transfers, each for a different token, going to a different recei
 
 ## Initializing your Transaction
 
-1. Navigate to the APPS page from within your [Gnosis Safe MultiSig](http://gnosis-safe.io/app). If you don't already have a Safe, you can create one for free!
+Navigate to the APPS page from within your [Gnosis Safe MultiSig](http://gnosis-safe.io/app). If you don't already have a Safe, you can create one for free!
 
-2. Open up the CSV Airdrop App, which looks like this:
+1. Open up the CSV Airdrop App, which looks like this:
 
 <img src="./public/tutorial/App-screen.png" width="200">
 
-3. Upload your _Transfer File_
-
-4. Verify that the tokens, recipients and amounts are displayed as expected.
+2. Upload your _Transfer File_ and verify that the tokens, recipients and amounts are displayed as expected.
 
 <img src="./public/tutorial/File-uploaded.png" width="250">
 
-5. Click Submit, execute and wait for your transaction to be mined.
+3. Click Submit, execute and wait for your transaction to be mined.
 
 <img src="./public/tutorial/Transaction-submission.png" width="200">
-
 
 A successful transaction will look like the following [example on etherscan](https://rinkeby.etherscan.io/tx/0x25c1a799957161a18a20056ffde5edf53dc426adc231d5fa456111e3eb641e59):
 
