@@ -1,8 +1,7 @@
-import { TokenInfo } from '@uniswap/token-lists';
-import rinkeby from './static/rinkebyTokens.json';
+import { TokenInfo } from "@uniswap/token-lists";
+import rinkeby from "./static/rinkebyTokens.json";
 
 export type TokenMap = Map<string, TokenInfo>;
-
 
 // TODO - shouldn't there be a more convienient way of converting a list into a map?
 function tokenMap(tokenList: TokenInfo[]): TokenMap {
@@ -10,8 +9,8 @@ function tokenMap(tokenList: TokenInfo[]): TokenMap {
   for (const token of tokenList) {
     res.set(token.address, token);
   }
-  return res
-} 
+  return res;
+}
 
 export const fetchTokenList = async (networkName: string) => {
   let tokens: TokenInfo[];
@@ -20,15 +19,15 @@ export const fetchTokenList = async (networkName: string) => {
     // Espesially given that we import @uniswap/token-lists
     // Note there is also a repo uniswap/default-token-lists
     const mainnetTokenURL = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
-    tokens = (await (await fetch(mainnetTokenURL)).json()).tokens
+    tokens = (await (await fetch(mainnetTokenURL)).json()).tokens;
   } else if (networkName === "rinkeby") {
-    // Hardcoded this because the list provided at 
+    // Hardcoded this because the list provided at
     // https://github.com/Uniswap/default-token-list/blob/master/src/tokens/rinkeby.json
     // Doesn't have GNO or OWL and/or many others.
     tokens = rinkeby;
   } else {
-    console.error(`Unimplemented token list for ${networkName} network`)
+    console.error(`Unimplemented token list for ${networkName} network`);
   }
   console.log(`Fetched ${tokens.length} for ${networkName} network`);
-  return tokenMap(tokens)
-}
+  return tokenMap(tokens);
+};
