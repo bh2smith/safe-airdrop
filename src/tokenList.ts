@@ -1,13 +1,15 @@
 import { TokenInfo } from "@uniswap/token-lists";
 import rinkeby from "./static/rinkebyTokens.json";
+import { utils } from "ethers";
 
 export type TokenMap = Map<string, TokenInfo>;
 
 // TODO - shouldn't there be a more convienient way of converting a list into a map?
 function tokenMap(tokenList: TokenInfo[]): TokenMap {
   const res: TokenMap = new Map<string, TokenInfo>();
+  console.log("Sanitizing Token Addresses");
   for (const token of tokenList) {
-    res.set(token.address, token);
+    res.set(utils.getAddress(token.address), token);
   }
   return res;
 }
