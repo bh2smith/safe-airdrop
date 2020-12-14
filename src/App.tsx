@@ -7,8 +7,8 @@ import { useSafe } from "@rmeissner/safe-apps-react-sdk";
 import { parseString } from "@fast-csv/parse";
 import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 import { AbiItem } from "web3-utils";
+import { utils } from "ethers";
 
-import defaultTokenIcon from "./static/default-token-icon.svg";
 import { initWeb3 } from "./connect";
 import { fetchTokenList, TokenMap } from "./tokenList";
 
@@ -88,17 +88,19 @@ const App: React.FC = () => {
     reader.readAsText(event.target.files[0]);
     const parsedFile = await filePromise;
 
-    const results: Payment[] = parsedFile
+    const transfers: Payment[] = parsedFile
       .map(({ amount, receiver, token_address, decimals }) => ({
         amount: new BigNumber(amount),
         receiver,
-        tokenAddress: token_address,
+        tokenAddress: utils.getAddress(token_address),
         decimals,
       }))
       .filter((payment) => !payment.amount.isZero());
+
+    // TODO - could reduce token list by filtering on uniqe items from transfers
     const tokens = await fetchTokenList(safe.info.network);
     setTokenList(tokens);
-    setTransferContent(results);
+    setTransferContent(transfers);
   };
 
   const submitTx = useCallback(async () => {
@@ -120,7 +122,7 @@ const App: React.FC = () => {
   return (
     <Container>
       <Title size="md">CSV Airdrop</Title>
-
+      {/* TODO - add (working) link to instructions: https://github.com/bh2smith/safe-airdrop/issues/12 */}
       <input type="file" name="file" onChange={onChangeHandler} />
       <table>
         <thead>
@@ -135,9 +137,9 @@ const App: React.FC = () => {
             return (
               <tr key={index}>
                 <td>
-                  <img
-                    alt={defaultTokenIcon}
-                    src={tokenList.get(row.tokenAddress).logoURI}
+                  <img /* TODO - alt doesn't really work here */
+                    alt={"./static/default-token-icon.svg"}
+                    src={tokenList.get(row.tokenAddress)?.logoURI || null}
                     style={{
                       maxWidth: 20,
                       marginRight: 5,
@@ -145,7 +147,7 @@ const App: React.FC = () => {
                   />
                   {tokenList.get(row.tokenAddress)?.symbol || row.tokenAddress}
                 </td>
-                {/* TODO - get account names from safe Address Book */}
+                {/* TODO - get account names from Safe's Address Book */}
                 <td>{row.receiver}</td>
                 <td>{row.amount.toString(10)}</td>
               </tr>
