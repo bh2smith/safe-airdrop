@@ -122,7 +122,7 @@ const App: React.FC = () => {
   return (
     <Container>
       <Title size="md">CSV Airdrop</Title>
-
+      {/* TODO - add (working) link to instructions: https://github.com/bh2smith/safe-airdrop/issues/12 */}
       <input type="file" name="file" onChange={onChangeHandler} />
       <table>
         <thead>
