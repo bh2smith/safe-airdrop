@@ -2,7 +2,15 @@
 
 Send arbitrarily many distinct tokens, to arbitrarily many distinct accounts with various different values from a CSV file in a single Safe transaciton!
 
-## Getting Started
+## Using the App
+
+The current version is deployed on IPFS at https://bafybeigq4fta6nzpcgysib7qvravao5px636tbnwuyjbmxmwgy3i3vj55a.ipfs.infura-ipfs.io/
+
+On mainnet or rinkeby, you can navigate to the [Gnosis Safe](https://gnosis-safe.io/app/) Apps tab and load the app from "Add Custom App", then follow these [instructions](./INSTRUCTIONS.md) to perform your first airdrop.
+
+Note that, the mainnet version relies on the (Uniswap Default Token List)[https://tokenlists.org/token-list?url=https://gateway.ipfs.io/ipns/tokens.uniswap.org] for token icons and number of decimal places. If you plan to airdrop a token that is not a member of this list, you will have to provide the number of decimal places as the `decimals` column on each unlisted token transfer in your transfer file.
+
+## Developers Guide
 
 Install dependencies and start a local dev server.
 
