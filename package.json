@@ -20,6 +20,7 @@
     "bignumber.js": "^9.0.1",
     "ethers": "^5.0.24",
     "fast-csv": "^4.3.5",
+    "honeyswap-default-token-list": "^2.1.6",
     "react": "^16.13.1",
     "react-app-rewired": "^2.1.6",
     "react-csv-reader": "^3.1.1",

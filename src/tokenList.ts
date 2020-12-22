@@ -1,6 +1,7 @@
 import { TokenInfo } from "@uniswap/token-lists";
 import rinkeby from "./static/rinkebyTokens.json";
 import { utils } from "ethers";
+import xdaiTokens from "honeyswap-default-token-list";
 
 export type TokenMap = Map<string, TokenInfo>;
 
@@ -17,9 +18,6 @@ function tokenMap(tokenList: TokenInfo[]): TokenMap {
 export const fetchTokenList = async (networkName: string) => {
   let tokens: TokenInfo[];
   if (networkName === "mainnet") {
-    // TODO - we may not be fetching this token list correctly by hardcoded URL.
-    // Espesially given that we import @uniswap/token-lists
-    // Note there is also a repo uniswap/default-token-lists
     const mainnetTokenURL = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
     tokens = (await (await fetch(mainnetTokenURL)).json()).tokens;
   } else if (networkName === "rinkeby") {
@@ -27,6 +25,8 @@ export const fetchTokenList = async (networkName: string) => {
     // https://github.com/Uniswap/default-token-list/blob/master/src/tokens/rinkeby.json
     // Doesn't have GNO or OWL and/or many others.
     tokens = rinkeby;
+  } else if (networkName === "xdai") {
+    tokens = xdaiTokens.tokens;
   } else {
     console.error(`Unimplemented token list for ${networkName} network`);
   }

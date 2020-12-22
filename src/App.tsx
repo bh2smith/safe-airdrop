@@ -138,13 +138,13 @@ const App: React.FC = () => {
               <tr key={index}>
                 <td>
                   <img /* TODO - alt doesn't really work here */
-                    alt={"./static/default-token-icon.svg"}
-                    src={tokenList.get(row.tokenAddress)?.logoURI || null}
+                    alt={""}
+                    src={tokenList.get(row.tokenAddress)?.logoURI}
                     style={{
                       maxWidth: 20,
-                      marginRight: 5,
+                      marginRight: 3,
                     }}
-                  />
+                  />{" "}
                   {tokenList.get(row.tokenAddress)?.symbol || row.tokenAddress}
                 </td>
                 {/* TODO - get account names from Safe's Address Book */}
