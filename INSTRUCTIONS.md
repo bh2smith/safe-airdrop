@@ -29,6 +29,18 @@ token_address,receiver,amount
 
 Here we have 5 transfers, each for a different token, going to a different receiver and for different amounts. On the rinkeby network, these tokens are GNO, OWL, DAI, USDC and GUSD respectively.
 
+## Native Token Transfers
+
+Since native tokens do not have a token address, you must leave the `token_address` column blank for native transfers. An example transfer file containing only native transfers is [here](test_data/native-token.csv). Of course, these files can be mixed as follows;
+
+```
+token_address,receiver,amount
+0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d,0x206a9EAa7d0f9637c905F2Bf86aCaB363Abb418c,1
+,0x7f01D9b227593E033bf8d6FC86e634d27aa85568,0.0002
+```
+
+which (on xdai) represents a transfer for 1 wxDai and 0.0002 native xDai.
+
 ## Initializing your Transaction
 
 Navigate to the APPS page from within your [Gnosis Safe MultiSig](http://gnosis-safe.io/app). If you don't already have a Safe, you can create one for free!
