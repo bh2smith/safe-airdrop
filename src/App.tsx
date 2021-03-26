@@ -44,19 +44,28 @@ function buildTransfers(
   const web3 = initWeb3(safeInfo.network);
   const erc20 = new web3.eth.Contract(IERC20.abi as AbiItem[]);
   const txList: Transaction[] = transferData.map((transfer) => {
-    const exponent = new BigNumber(
-      10 ** tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals
-    );
-    return {
-      to: transfer.tokenAddress,
-      value: "0",
-      data: erc20.methods
-        .transfer(
-          transfer.receiver,
-          transfer.amount.multipliedBy(exponent).toString()
-        )
-        .encodeABI(),
-    };
+    if (transfer.tokenAddress === null) {
+      return {
+        to: transfer.receiver,
+        value: transfer.amount.multipliedBy(10 ** 18).toString(),
+        data: "0x",
+      };
+    } else {
+      const exponent = new BigNumber(
+        10 ** tokenList.get(transfer.tokenAddress)?.decimals ||
+          transfer.decimals
+      );
+      return {
+        to: transfer.tokenAddress,
+        value: "0",
+        data: erc20.methods
+          .transfer(
+            transfer.receiver,
+            transfer.amount.multipliedBy(exponent).toString()
+          )
+          .encodeABI(),
+      };
+    }
   });
   return txList;
 }
@@ -92,7 +101,8 @@ const App: React.FC = () => {
       .map(({ amount, receiver, token_address, decimals }) => ({
         amount: new BigNumber(amount),
         receiver,
-        tokenAddress: utils.getAddress(token_address),
+        tokenAddress:
+          token_address === "" ? null : utils.getAddress(token_address),
         decimals,
       }))
       .filter((payment) => !payment.amount.isZero());
