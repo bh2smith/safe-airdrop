@@ -133,7 +133,7 @@ const App: React.FC = () => {
     <Container>
       <Title size="md">CSV Airdrop</Title>
       <input type="file" name="file" onChange={onChangeHandler} />
-      <a href="/sample.csv" download>
+      <a href="%PUBLIC_URL%/sample.csv" download>
         Sample Transfer File
       </a>
       <table>
