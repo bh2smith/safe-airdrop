@@ -1,5 +1,4 @@
 import { SafeInfo, Transaction } from "@gnosis.pm/safe-apps-sdk";
-import BigNumber from "bignumber.js";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
@@ -7,10 +6,12 @@ import { useSafe } from "@rmeissner/safe-apps-react-sdk";
 import { parseString } from "@fast-csv/parse";
 import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 import { AbiItem } from "web3-utils";
-import { utils } from "ethers";
+import { utils, BigNumber } from "ethers";
 
 import { initWeb3 } from "./connect";
 import { fetchTokenList, TokenMap } from "./tokenList";
+
+const TEN = BigNumber.from(10);
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -47,22 +48,20 @@ function buildTransfers(
     if (transfer.tokenAddress === null) {
       return {
         to: transfer.receiver,
-        value: transfer.amount.multipliedBy(10 ** 18).toString(),
+        value: transfer.amount.mul(TEN.pow(18)).toString(),
         data: "0x",
       };
     } else {
-      const exponent = new BigNumber(
-        10 ** tokenList.get(transfer.tokenAddress)?.decimals ||
-          transfer.decimals
+      const exponent = BigNumber.from(
+        TEN.pow(
+          tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals
+        )
       );
       return {
         to: transfer.tokenAddress,
         value: "0",
         data: erc20.methods
-          .transfer(
-            transfer.receiver,
-            transfer.amount.multipliedBy(exponent).toString()
-          )
+          .transfer(transfer.receiver, transfer.amount.mul(exponent).toString())
           .encodeABI(),
       };
     }
@@ -99,7 +98,7 @@ const App: React.FC = () => {
 
     const transfers: Payment[] = parsedFile
       .map(({ amount, receiver, token_address, decimals }) => ({
-        amount: new BigNumber(amount),
+        amount: BigNumber.from(amount),
         receiver,
         tokenAddress:
           token_address === "" ? null : utils.getAddress(token_address),
@@ -161,7 +160,7 @@ const App: React.FC = () => {
                 </td>
                 {/* TODO - get account names from Safe's Address Book */}
                 <td>{row.receiver}</td>
-                <td>{row.amount.toString(10)}</td>
+                <td>{row.amount.toString()}</td>
               </tr>
             );
           })}
