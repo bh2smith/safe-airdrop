@@ -1,17 +1,18 @@
 import { SafeInfo, Transaction } from "@gnosis.pm/safe-apps-sdk";
 import React, { useCallback, useState } from "react";
+import BigNumber from "bignumber.js";
 import styled from "styled-components";
 import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
 import { useSafe } from "@rmeissner/safe-apps-react-sdk";
 import { parseString } from "@fast-csv/parse";
 import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 import { AbiItem } from "web3-utils";
-import { utils, BigNumber } from "ethers";
+import { utils } from "ethers";
 
 import { initWeb3 } from "./connect";
 import { fetchTokenList, TokenMap } from "./tokenList";
 
-const TEN = BigNumber.from(10);
+const TEN = new BigNumber(10);
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -48,11 +49,11 @@ function buildTransfers(
     if (transfer.tokenAddress === null) {
       return {
         to: transfer.receiver,
-        value: transfer.amount.mul(TEN.pow(18)).toString(),
+        value: transfer.amount.multipliedBy(TEN.pow(18)).toString(),
         data: "0x",
       };
     } else {
-      const exponent = BigNumber.from(
+      const exponent = new BigNumber(
         TEN.pow(
           tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals
         )
@@ -61,7 +62,7 @@ function buildTransfers(
         to: transfer.tokenAddress,
         value: "0",
         data: erc20.methods
-          .transfer(transfer.receiver, transfer.amount.mul(exponent).toString())
+          .transfer(transfer.receiver, transfer.amount.multipliedBy(exponent))
           .encodeABI(),
       };
     }
@@ -98,7 +99,7 @@ const App: React.FC = () => {
 
     const transfers: Payment[] = parsedFile
       .map(({ amount, receiver, token_address, decimals }) => ({
-        amount: BigNumber.from(amount),
+        amount: new BigNumber(amount),
         receiver,
         tokenAddress:
           token_address === "" ? null : utils.getAddress(token_address),
