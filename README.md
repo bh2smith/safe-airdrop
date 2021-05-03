@@ -4,7 +4,7 @@ Send arbitrarily many distinct tokens, to arbitrarily many distinct accounts wit
 
 ## Using the App
 
-The current version is deployed on IPFS at https://cloudflare-ipfs.com/ipfs/QmYb8oxCA7f5WbF4vQyJNdFp1Z2e6NPde2quS7XhswHmL9
+The current version is deployed on IPFS at https://cloudflare-ipfs.com/ipfs/QmQVAeigVDshXU9BGWnyxe5Ym9vCAvULCjYJVDTUA3D3Nu
 
 On mainnet or rinkeby, you can navigate to the [Gnosis Safe](https://gnosis-safe.io/app/) Apps tab and load the app from "Add Custom App", then follow these [instructions](./INSTRUCTIONS.md) to perform your first airdrop.
 
