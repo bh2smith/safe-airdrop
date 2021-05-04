@@ -1,6 +1,6 @@
 import { SafeInfo, Transaction } from "@gnosis.pm/safe-apps-sdk";
-import BigNumber from "bignumber.js";
 import React, { useCallback, useState } from "react";
+import BigNumber from "bignumber.js";
 import styled from "styled-components";
 import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
 import { useSafe } from "@rmeissner/safe-apps-react-sdk";
@@ -11,6 +11,8 @@ import { utils } from "ethers";
 
 import { initWeb3 } from "./connect";
 import { fetchTokenList, TokenMap } from "./tokenList";
+
+const TEN = new BigNumber(10);
 
 const Container = styled.form`
   margin-bottom: 2rem;
@@ -47,22 +49,20 @@ function buildTransfers(
     if (transfer.tokenAddress === null) {
       return {
         to: transfer.receiver,
-        value: transfer.amount.multipliedBy(10 ** 18).toString(),
+        value: transfer.amount.multipliedBy(TEN.pow(18)).toString(),
         data: "0x",
       };
     } else {
       const exponent = new BigNumber(
-        10 ** tokenList.get(transfer.tokenAddress)?.decimals ||
-          transfer.decimals
+        TEN.pow(
+          tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals
+        )
       );
       return {
         to: transfer.tokenAddress,
         value: "0",
         data: erc20.methods
-          .transfer(
-            transfer.receiver,
-            transfer.amount.multipliedBy(exponent).toString()
-          )
+          .transfer(transfer.receiver, transfer.amount.multipliedBy(exponent))
           .encodeABI(),
       };
     }
@@ -161,7 +161,7 @@ const App: React.FC = () => {
                 </td>
                 {/* TODO - get account names from Safe's Address Book */}
                 <td>{row.receiver}</td>
-                <td>{row.amount.toString(10)}</td>
+                <td>{row.amount.toString()}</td>
               </tr>
             );
           })}
