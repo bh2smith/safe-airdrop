@@ -8,22 +8,20 @@ import { AbiItem } from "web3-utils";
 import { utils } from "ethers";
 
 import { initWeb3 } from "./connect";
-import { fetchTokenList, TokenMap, useTokenList } from "./tokenList";
-import { createStyles } from '@material-ui/core';
-import { Header } from './components/Header';
-import { Payment, CSVForm } from './components/CSVForm';
-import { Loader, Text } from '@gnosis.pm/safe-react-components';
-import styled from 'styled-components';
+import { TokenMap, useTokenList } from "./tokenList";
+import { Header } from "./components/Header";
+import { Payment, CSVForm } from "./components/CSVForm";
+import { Loader, Text } from "@gnosis.pm/safe-react-components";
+import styled from "styled-components";
 
 const TEN = new BigNumber(10);
-
 
 type SnakePayment = {
   receiver: string;
   amount: string;
   token_address: string;
   decimals: number;
-}
+};
 
 function buildTransfers(
   safeInfo: SafeInfo,
@@ -59,10 +57,12 @@ function buildTransfers(
 
 const App: React.FC = () => {
   const safe = useSafe();
-  const {tokenList, isLoading} = useTokenList();
+  const { tokenList, isLoading } = useTokenList();
   const [submitting, setSubmitting] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
-  const [csvText, setCsvText] = useState<string>("token_address,receiver,amount");
+  const [csvText, setCsvText] = useState<string>(
+    "token_address,receiver,amount"
+  );
   const [lastError, setLastError] = useState<any>();
 
   const onChangeTextHandler = async (csvText: string) => {
@@ -71,25 +71,34 @@ const App: React.FC = () => {
     // Parse CSV
     const parsePromise = new Promise<SnakePayment[]>((resolve, reject) => {
       const results: any[] = [];
-          parseString(csvText, { headers: true })
-          .validate((data) => (data.token_address === "" || data.token_address === null || utils.isAddress(data.token_address)) && utils.isAddress(data.receiver) && (Math.sign(data.amount) >= 0))
-            .on("data", (data) => results.push(data))
-            .on("end", () => resolve(results))
-            .on("error", (error) => reject(error));
+      parseString(csvText, { headers: true })
+        .validate(
+          (data) =>
+            (data.token_address === "" ||
+              data.token_address === null ||
+              utils.isAddress(data.token_address)) &&
+            utils.isAddress(data.receiver) &&
+            Math.sign(data.amount) >= 0
+        )
+        .on("data", (data) => results.push(data))
+        .on("end", () => resolve(results))
+        .on("error", (error) => reject(error));
     });
 
-    parsePromise.then((rows) => {
-    const transfers: Payment[] = rows.map(({ amount, receiver, token_address, decimals }) => ({
-        amount: new BigNumber(amount),
-        receiver,
-        tokenAddress:
-          token_address === "" ? null : utils.getAddress(token_address),
-        decimals,
-      }))
-      .filter((payment) => !payment.amount.isZero());
-    setTransferContent(transfers);
-    })
-    .catch((reason: any) => setLastError(reason));
+    parsePromise
+      .then((rows) => {
+        const transfers: Payment[] = rows
+          .map(({ amount, receiver, token_address, decimals }) => ({
+            amount: new BigNumber(amount),
+            receiver,
+            tokenAddress:
+              token_address === "" ? null : utils.getAddress(token_address),
+            decimals,
+          }))
+          .filter((payment) => !payment.amount.isZero());
+        setTransferContent(transfers);
+      })
+      .catch((reason: any) => setLastError(reason));
   };
 
   const submitTx = useCallback(async () => {
@@ -110,22 +119,22 @@ const App: React.FC = () => {
   return (
     <Container>
       <Header lastError={lastError} onCloseError={() => setLastError(null)} />
-      {isLoading ?
+      {isLoading ? (
         <>
           <Loader size={"lg"} />
           <Text size={"lg"}>Loading Tokenlist...</Text>
         </>
-        :
-        <CSVForm 
-          csvText={csvText} 
+      ) : (
+        <CSVForm
+          csvText={csvText}
           onAbortSubmit={() => setSubmitting(false)}
           submitting={submitting}
           transferContent={transferContent}
           onSubmit={submitTx}
           onChange={onChangeTextHandler}
-          tokenList={tokenList} />
-      }
-
+          tokenList={tokenList}
+        />
+      )}
     </Container>
   );
 };
