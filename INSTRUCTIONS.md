@@ -1,6 +1,6 @@
 # CSV Airdrop; A Safe App for Easy Transfers
 
-Have you enounctered the painfull task of sending out multiple token transfers to several recipients with various different values?
+Have you encountered the painful task of sending out multiple token transfers to several recipients with various different values?
 Not only do you have to have to initiate multiple transactions, but then each transaction requires a signature threshold followed by the time it takes to have each transaction mined...
 Well these days are over!
 Finally a Safe App which allows you to transfer various ERC20 tokens to arbitrarily many recipients for varying amounts in a single Ethereum transaction.
@@ -10,11 +10,11 @@ In this article, we demonstrate how to use the Gnosis Safe - CSV Airdrop
 
 ## Preparing a Transfer File
 
-Transfer files are expected to be in CSV format with the following minially required columns:
+Transfer files are expected to be in CSV format with the following minimally required columns:
 
 - _receiver_: Ethereum address of transfer receiver.
-- _token_address_: Ethereum address of ERC20 token to be transfered.
-- _amount_: the amount of token to be transfered.
+- _token_address_: Ethereum address of ERC20 token to be transferred.
+- _amount_: the amount of token to be transferred.
 
 An example transfer file would look as follows:
 

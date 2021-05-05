@@ -1,10 +1,11 @@
 # Gnosis Safe: CSV Airdrop
 
-Send arbitrarily many distinct tokens, to arbitrarily many distinct accounts with various different values from a CSV file in a single Safe transaciton!
+Send arbitrarily many distinct tokens, to arbitrarily many distinct accounts with various different values from a CSV file in a single Safe transaction!
 
 ## Using the App
 
-The current version is deployed on IPFS at https://cloudflare-ipfs.com/ipfs/Qmbn7U6PjA2sBpU1yKhc6s6JxcXJd2Wuw8YAcDjeHBUK4F
+The current version is deployed on IPFS at
+https://cloudflare-ipfs.com/ipfs/QmPtu5uf84iypeKksqMwKagHWEgyUEE2JJc4wmhkQa1Aur
 
 On mainnet or rinkeby, you can navigate to the [Gnosis Safe](https://gnosis-safe.io/app/) Apps tab and load the app from "Add Custom App", then follow these [instructions](./INSTRUCTIONS.md) to perform your first airdrop.
 
