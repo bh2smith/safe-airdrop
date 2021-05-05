@@ -23,38 +23,6 @@ type SnakePayment = {
   decimals: number;
 };
 
-function buildTransfers(
-  safeInfo: SafeInfo,
-  transferData: Payment[],
-  tokenList: TokenMap
-): Transaction[] {
-  const web3 = initWeb3(safeInfo.network);
-  const erc20 = new web3.eth.Contract(IERC20.abi as AbiItem[]);
-  const txList: Transaction[] = transferData.map((transfer) => {
-    if (transfer.tokenAddress === null) {
-      return {
-        to: transfer.receiver,
-        value: transfer.amount.multipliedBy(TEN.pow(18)).toString(),
-        data: "0x",
-      };
-    } else {
-      const exponent = new BigNumber(
-        TEN.pow(
-          tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals
-        )
-      );
-      return {
-        to: transfer.tokenAddress,
-        value: "0",
-        data: erc20.methods
-          .transfer(transfer.receiver, transfer.amount.multipliedBy(exponent))
-          .encodeABI(),
-      };
-    }
-  });
-  return txList;
-}
-
 const App: React.FC = () => {
   const safe = useSafe();
   const { tokenList, isLoading } = useTokenList();
@@ -64,6 +32,47 @@ const App: React.FC = () => {
     "token_address,receiver,amount"
   );
   const [lastError, setLastError] = useState<any>();
+
+  const buildTransfers = (
+    safeInfo: SafeInfo,
+    transferData: Payment[],
+    tokenList: TokenMap
+  ): Transaction[] => {
+    const web3 = initWeb3(safeInfo.network);
+    const erc20 = new web3.eth.Contract(IERC20.abi as AbiItem[]);
+    const txList: Transaction[] = transferData.map((transfer, index) => {
+      if (transfer.tokenAddress === null) {
+        return {
+          to: transfer.receiver,
+          value: transfer.amount.multipliedBy(TEN.pow(18)).toFixed(),
+          data: "0x",
+        };
+      } else {
+        const exponent = new BigNumber(
+          TEN.pow(
+            tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals
+          )
+        );
+        let amountData = transfer.amount.multipliedBy(exponent);
+        if (amountData.decimalPlaces() > 0) {
+          setLastError({
+            message:
+              "Precision too high. Some digits are ignored for row " + index,
+          });
+          amountData = amountData.decimalPlaces(0, BigNumber.ROUND_DOWN);
+        }
+
+        return {
+          to: transfer.tokenAddress,
+          value: "0",
+          data: erc20.methods
+            .transfer(transfer.receiver, amountData.toFixed())
+            .encodeABI(),
+        };
+      }
+    });
+    return txList;
+  };
 
   const onChangeTextHandler = async (csvText: string) => {
     console.log("Changed CSV", csvText);
