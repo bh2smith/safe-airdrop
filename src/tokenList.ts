@@ -2,6 +2,8 @@ import { TokenInfo } from "@uniswap/token-lists";
 import rinkeby from "./static/rinkebyTokens.json";
 import { utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
+import { useSafe } from "@rmeissner/safe-apps-react-sdk";
+import { useState, useEffect } from "react";
 
 export type TokenMap = Map<string, TokenInfo>;
 
@@ -33,3 +35,23 @@ export const fetchTokenList = async (networkName: string) => {
   console.log(`Fetched ${tokens.length} for ${networkName} network`);
   return tokenMap(tokens);
 };
+
+/**
+ * Hook which fetches the tokenList for Components.
+ * Will Execute only once on initial load because useEffect gets passed an empty array.
+ */
+export function useTokenList() {
+  const safe = useSafe();
+  const [tokenList, setTokenList] = useState<TokenMap>();
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    const fetchToken = async () => {
+      setIsLoading(true);
+      const result = await fetchTokenList(safe.info.network);
+      setTokenList(result);
+      setIsLoading(false);
+    };
+    fetchToken();
+  }, [safe.info.network]);
+  return { tokenList, isLoading };
+}

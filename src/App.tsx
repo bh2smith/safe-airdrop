@@ -1,8 +1,6 @@
 import { SafeInfo, Transaction } from "@gnosis.pm/safe-apps-sdk";
 import React, { useCallback, useState } from "react";
 import BigNumber from "bignumber.js";
-import styled from "styled-components";
-import { Button, Loader, Title } from "@gnosis.pm/safe-react-components";
 import { useSafe } from "@rmeissner/safe-apps-react-sdk";
 import { parseString } from "@fast-csv/parse";
 import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
@@ -10,33 +8,20 @@ import { AbiItem } from "web3-utils";
 import { utils } from "ethers";
 
 import { initWeb3 } from "./connect";
-import { fetchTokenList, TokenMap } from "./tokenList";
+import { TokenMap, useTokenList } from "./tokenList";
+import { Header } from "./components/Header";
+import { Payment, CSVForm } from "./components/CSVForm";
+import { Loader, Text } from "@gnosis.pm/safe-react-components";
+import styled from "styled-components";
 
 const TEN = new BigNumber(10);
 
-const Container = styled.form`
-  margin-bottom: 2rem;
-  width: 100%;
-  max-width: 480px;
-
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-column-gap: 1rem;
-  grid-row-gap: 1rem;
-`;
-
-interface SnakePayment {
+type SnakePayment = {
   receiver: string;
   amount: string;
   token_address: string;
   decimals: number;
-}
-interface Payment {
-  receiver: string;
-  amount: BigNumber;
-  tokenAddress: string;
-  decimals: number;
-}
+};
 
 function buildTransfers(
   safeInfo: SafeInfo,
@@ -72,45 +57,48 @@ function buildTransfers(
 
 const App: React.FC = () => {
   const safe = useSafe();
+  const { tokenList, isLoading } = useTokenList();
   const [submitting, setSubmitting] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
-  const [tokenList, setTokenList] = useState<TokenMap>();
+  const [csvText, setCsvText] = useState<string>(
+    "token_address,receiver,amount"
+  );
+  const [lastError, setLastError] = useState<any>();
 
-  const onChangeHandler = async (event: any) => {
-    console.log("Received Filename", event.target.files[0].name);
-
-    const reader = new FileReader();
-    const filePromise = new Promise<SnakePayment[]>((resolve, reject) => {
-      reader.onload = function (evt) {
-        if (!evt.target) {
-          return;
-        }
-        // Parse CSV
-        const results: any[] = [];
-        parseString(evt.target.result as string, { headers: true })
-          .on("data", (data) => results.push(data))
-          .on("end", () => resolve(results))
-          .on("error", (error) => reject(error));
-      };
+  const onChangeTextHandler = async (csvText: string) => {
+    console.log("Changed CSV", csvText);
+    setCsvText(csvText);
+    // Parse CSV
+    const parsePromise = new Promise<SnakePayment[]>((resolve, reject) => {
+      const results: any[] = [];
+      parseString(csvText, { headers: true })
+        .validate(
+          (data) =>
+            (data.token_address === "" ||
+              data.token_address === null ||
+              utils.isAddress(data.token_address)) &&
+            utils.isAddress(data.receiver) &&
+            Math.sign(data.amount) >= 0
+        )
+        .on("data", (data) => results.push(data))
+        .on("end", () => resolve(results))
+        .on("error", (error) => reject(error));
     });
 
-    reader.readAsText(event.target.files[0]);
-    const parsedFile = await filePromise;
-
-    const transfers: Payment[] = parsedFile
-      .map(({ amount, receiver, token_address, decimals }) => ({
-        amount: new BigNumber(amount),
-        receiver,
-        tokenAddress:
-          token_address === "" ? null : utils.getAddress(token_address),
-        decimals,
-      }))
-      .filter((payment) => !payment.amount.isZero());
-
-    // TODO - could reduce token list by filtering on uniqe items from transfers
-    const tokens = await fetchTokenList(safe.info.network);
-    setTokenList(tokens);
-    setTransferContent(transfers);
+    parsePromise
+      .then((rows) => {
+        const transfers: Payment[] = rows
+          .map(({ amount, receiver, token_address, decimals }) => ({
+            amount: new BigNumber(amount),
+            receiver,
+            tokenAddress:
+              token_address === "" ? null : utils.getAddress(token_address),
+            decimals,
+          }))
+          .filter((payment) => !payment.amount.isZero());
+        setTransferContent(transfers);
+      })
+      .catch((reason: any) => setLastError(reason));
   };
 
   const submitTx = useCallback(async () => {
@@ -128,66 +116,36 @@ const App: React.FC = () => {
     }
     setSubmitting(false);
   }, [safe, transferContent, tokenList]);
-
   return (
     <Container>
-      <Title size="md">CSV Airdrop</Title>
-      <input type="file" name="file" onChange={onChangeHandler} />
-      <a href="./sample.csv" download>
-        Sample Transfer File
-      </a>
-      <table>
-        <thead>
-          <tr>
-            <td>Token</td>
-            <td>Receiver</td>
-            <td>Amount</td>
-          </tr>
-        </thead>
-        <tbody>
-          {transferContent.map((row, index) => {
-            return (
-              <tr key={index}>
-                <td>
-                  <img /* TODO - alt doesn't really work here */
-                    alt={""}
-                    src={tokenList.get(row.tokenAddress)?.logoURI}
-                    style={{
-                      maxWidth: 20,
-                      marginRight: 3,
-                    }}
-                  />{" "}
-                  {tokenList.get(row.tokenAddress)?.symbol || row.tokenAddress}
-                </td>
-                {/* TODO - get account names from Safe's Address Book */}
-                <td>{row.receiver}</td>
-                <td>{row.amount.toString()}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      {submitting ? (
+      <Header lastError={lastError} onCloseError={() => setLastError(null)} />
+      {isLoading ? (
         <>
-          <Loader size="md" />
-          <br />
-          <Button
-            size="lg"
-            color="secondary"
-            onClick={() => {
-              setSubmitting(false);
-            }}
-          >
-            Cancel
-          </Button>
+          <Loader size={"lg"} />
+          <Text size={"lg"}>Loading Tokenlist...</Text>
         </>
       ) : (
-        <Button size="lg" color="primary" onClick={submitTx}>
-          Submit
-        </Button>
+        <CSVForm
+          csvText={csvText}
+          onAbortSubmit={() => setSubmitting(false)}
+          submitting={submitting}
+          transferContent={transferContent}
+          onSubmit={submitTx}
+          onChange={onChangeTextHandler}
+          tokenList={tokenList}
+        />
       )}
     </Container>
   );
 };
+
+const Container = styled.div`
+  margin-left: 8px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: left;
+  width: 100%;
+`;
 
 export default App;
