@@ -1,5 +1,5 @@
 import { TokenInfo } from "@uniswap/token-lists";
-import rinkeby from "./static/rinkebyTokens.json";
+import rinkeby from "../static/rinkebyTokens.json";
 import { utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
 import { useSafe } from "@rmeissner/safe-apps-react-sdk";
