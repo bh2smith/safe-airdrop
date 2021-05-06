@@ -2,10 +2,7 @@ import Web3 from "web3";
 
 const NetworkMap = {
   mainnet: 1,
-  ropsten: 3,
   rinkeby: 4,
-  goerli: 5,
-  kovan: 42,
   xdai: 100,
 };
 

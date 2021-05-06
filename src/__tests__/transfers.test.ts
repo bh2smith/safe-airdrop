@@ -1,11 +1,10 @@
 import { expect } from "chai";
 import { buildTransfers, TEN } from "../transfers";
-import { SafeInfo, Transaction } from "@gnosis.pm/safe-apps-sdk";
+import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { TokenInfo } from "@uniswap/token-lists";
 import BigNumber from "bignumber.js";
 import { Payment } from "../components/CSVForm";
 import { fetchTokenList, TokenMap } from "src/tokenList";
-import { utils, Bytes } from "ethers";
 
 let dummySafeInfo: SafeInfo = {
   safeAddress: "0x123",
