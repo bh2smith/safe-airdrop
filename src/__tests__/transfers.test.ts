@@ -68,7 +68,6 @@ describe("Build Transfers:", () => {
       let max_amount = new BigNumber(2 ** 255 - 1).dividedBy(
         TEN.pow(listedToken.decimals)
       );
-      let fractional_amount = new BigNumber("0.0000001");
       let large_payments = listedUnlistedAndNativePayments(
         max_amount,
         receiverAddress
