@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 
 export type TokenMap = Map<string, TokenInfo>;
 
-// TODO - shouldn't there be a more convienient way of converting a list into a map?
+// TODO - shouldn't there be a more convenient way of converting a list into a map?
 function tokenMap(tokenList: TokenInfo[]): TokenMap {
   const res: TokenMap = new Map<string, TokenInfo>();
   console.log("Sanitizing Token Addresses");

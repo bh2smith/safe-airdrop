@@ -1,20 +1,16 @@
-import { SafeInfo, Transaction } from "@gnosis.pm/safe-apps-sdk";
 import React, { useCallback, useState } from "react";
 import BigNumber from "bignumber.js";
 import { useSafe } from "@rmeissner/safe-apps-react-sdk";
 import { parseString } from "@fast-csv/parse";
-import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
-import { AbiItem } from "web3-utils";
+
 import { utils } from "ethers";
 
-import { initWeb3 } from "./connect";
-import { TokenMap, useTokenList } from "./tokenList";
+import { buildTransfers } from "./transfers";
+import { useTokenList } from "./tokenList";
 import { Header } from "./components/Header";
 import { Payment, CSVForm } from "./components/CSVForm";
 import { Loader, Text } from "@gnosis.pm/safe-react-components";
 import styled from "styled-components";
-
-const TEN = new BigNumber(10);
 
 type SnakePayment = {
   receiver: string;
@@ -32,47 +28,6 @@ const App: React.FC = () => {
     "token_address,receiver,amount"
   );
   const [lastError, setLastError] = useState<any>();
-
-  const buildTransfers = (
-    safeInfo: SafeInfo,
-    transferData: Payment[],
-    tokenList: TokenMap
-  ): Transaction[] => {
-    const web3 = initWeb3(safeInfo.network);
-    const erc20 = new web3.eth.Contract(IERC20.abi as AbiItem[]);
-    const txList: Transaction[] = transferData.map((transfer, index) => {
-      if (transfer.tokenAddress === null) {
-        return {
-          to: transfer.receiver,
-          value: transfer.amount.multipliedBy(TEN.pow(18)).toFixed(),
-          data: "0x",
-        };
-      } else {
-        const exponent = new BigNumber(
-          TEN.pow(
-            tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals
-          )
-        );
-        let amountData = transfer.amount.multipliedBy(exponent);
-        if (amountData.decimalPlaces() > 0) {
-          setLastError({
-            message:
-              "Precision too high. Some digits are ignored for row " + index,
-          });
-          amountData = amountData.decimalPlaces(0, BigNumber.ROUND_DOWN);
-        }
-
-        return {
-          to: transfer.tokenAddress,
-          value: "0",
-          data: erc20.methods
-            .transfer(transfer.receiver, amountData.toFixed())
-            .encodeABI(),
-        };
-      }
-    });
-    return txList;
-  };
 
   const onChangeTextHandler = async (csvText: string) => {
     console.log("Changed CSV", csvText);
