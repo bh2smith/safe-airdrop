@@ -161,7 +161,7 @@ describe("Build Transfers:", () => {
   });
 
   describe("Truncation on too many decimals", () => {
-    it("works with arbitrary amount strings on listed, unlisted and native transfers", () => {
+    it("cuts fractional part of token with 0 decimals", () => {
       let amount = new BigNumber("1.000000789");
       const crappyToken: TokenInfo = {
         address: "0x6b175474e89094c44da98b954eedeac495271d0f",
