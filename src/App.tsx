@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useContext } from "react";
-import { useSafe } from "@rmeissner/safe-apps-react-sdk";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { buildTransfers } from "./transfers";
 import { useTokenList } from "./hooks/tokenList";
 import { Header } from "./components/Header";
@@ -10,7 +10,7 @@ import { parseCSV, Payment } from "./parser";
 import { MessageContext } from "./contexts/MessageContextProvider";
 
 const App: React.FC = () => {
-  const safe = useSafe();
+  const { sdk, safe } = useSafeAppsSDK();
   const { tokenList, isLoading } = useTokenList();
   const [submitting, setSubmitting] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
@@ -41,17 +41,16 @@ const App: React.FC = () => {
     setSubmitting(true);
 
     try {
-      const txList = buildTransfers(safe.info, transferContent, tokenList);
-      console.log(`Encoded ${txList.length} ERC20 transfers.`);
-      const safeTxHash = await safe.sendTransactions(txList);
-      console.log({ safeTxHash });
-      const safeTx = await safe.loadSafeTransaction(safeTxHash);
+      const txs = buildTransfers(safe, transferContent, tokenList);
+      console.log(`Encoded ${txs.length} ERC20 transfers.`);
+      const sendTxResponse = await sdk.txs.send({ txs });
+      const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
       console.log({ safeTx });
     } catch (e) {
       console.error(e);
     }
     setSubmitting(false);
-  }, [safe, transferContent, tokenList]);
+  }, [safe, transferContent, tokenList, sdk.txs]);
   return (
     <Container>
       <Header />
