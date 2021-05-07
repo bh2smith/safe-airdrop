@@ -17,7 +17,6 @@ const HeaderContainer = styled.div`
 export const Header = () => {
   const messageContext = useContext(MessageContext);
   const messages = messageContext.messages;
-  console.log("Rendering HEader with: ", messages);
   return (
     <HeaderContainer>
       <Title size="md">CSV Airdrop</Title>
@@ -29,9 +28,10 @@ export const Header = () => {
           autoHideDuration={6000}
         >
           <div>
-            {messages.map((message: Message) => (
+            {messages.map((message: Message, index: number) => (
               <Alert
                 severity={message.severity}
+                key={"message" + index}
                 onClose={() => messageContext.removeMessage(message)}
               >
                 {message.message}

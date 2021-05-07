@@ -14,12 +14,19 @@ const unlistedTokenAddress: string =
 
 let validReceiverAddress = "0x1000000000000000000000000000000000000000";
 
-const headerRow = "token_address,receiver,amount,decimals";
-
 let dummySafeInfo: SafeInfo = {
   safeAddress: "0x123",
   network: "rinkeby",
   ethBalance: "100",
+};
+
+/**
+ * concatenates csv row arrays into one string.
+ * @param rows array of row-arrays
+ */
+const csvStringFromRows = (...rows: string[][]): string => {
+  const headerRow = "token_address,receiver,amount,decimals";
+  return [headerRow, ...rows.map((row) => row.join(","))].join("\n");
 };
 
 describe("Parsing CSVs ", () => {
@@ -39,33 +46,38 @@ describe("Parsing CSVs ", () => {
     const rowWithoutTokenAddress = ["", validReceiverAddress, "1"];
 
     const [payment, warnings] = await parseCSV(
-      headerRow +
-        "\n" +
-        rowWithoutDecimal.join(",") +
-        "\n" +
-        rowWithDecimal.join(",") +
-        "\n" +
-        rowWithoutTokenAddress.join(","),
+      csvStringFromRows(
+        rowWithoutDecimal,
+        rowWithDecimal,
+        rowWithoutTokenAddress
+      ),
       tokenList
     );
     expect(warnings).to.be.empty;
     expect(payment).to.have.lengthOf(3);
-    expect(payment[0].decimals).to.be.undefined;
-    expect(payment[0].receiver).to.equal(validReceiverAddress);
-    expect(payment[0].tokenAddress).to.equal(listedToken.address);
-    expect(payment[0].amount.isEqualTo(new BigNumber(1))).to.be.true;
+    const [
+      paymentWithoutDecimal,
+      paymentWithDecimal,
+      paymentWithoutTokenAddress,
+    ] = payment;
+    expect(paymentWithoutDecimal.decimals).to.be.undefined;
+    expect(paymentWithoutDecimal.receiver).to.equal(validReceiverAddress);
+    expect(paymentWithoutDecimal.tokenAddress).to.equal(listedToken.address);
+    expect(paymentWithoutDecimal.amount.isEqualTo(new BigNumber(1))).to.be.true;
 
-    expect(payment[1].receiver).to.equal(validReceiverAddress);
-    expect(payment[1].tokenAddress.toLowerCase()).to.equal(
+    expect(paymentWithDecimal.receiver).to.equal(validReceiverAddress);
+    expect(paymentWithDecimal.tokenAddress.toLowerCase()).to.equal(
       unlistedTokenAddress.toLowerCase()
     );
-    expect(payment[1].decimals).to.equal(18);
-    expect(payment[1].amount.isEqualTo(new BigNumber(69.42))).to.be.true;
+    expect(paymentWithDecimal.decimals).to.equal(18);
+    expect(paymentWithDecimal.amount.isEqualTo(new BigNumber(69.42))).to.be
+      .true;
 
-    expect(payment[2].decimals).to.be.undefined;
-    expect(payment[2].receiver).to.equal(validReceiverAddress);
-    expect(payment[2].tokenAddress).to.equal("");
-    expect(payment[2].amount.isEqualTo(new BigNumber(1))).to.be.true;
+    expect(paymentWithoutTokenAddress.decimals).to.be.undefined;
+    expect(paymentWithoutTokenAddress.receiver).to.equal(validReceiverAddress);
+    expect(paymentWithoutTokenAddress.tokenAddress).to.equal("");
+    expect(paymentWithoutTokenAddress.amount.isEqualTo(new BigNumber(1))).to.be
+      .true;
   });
 
   it("should generate validation warnings", async () => {
@@ -99,27 +111,35 @@ describe("Parsing CSVs ", () => {
     ];
 
     const [payment, warnings] = await parseCSV(
-      headerRow +
-        "\n" +
-        rowWithNegativeAmount.join(",") +
-        "\n" +
-        rowWithInvalidDecimal.join(",") +
-        "\n" +
-        unlistedTokenWithoutDecimal.join(",") +
-        "\n" +
-        rowWithInvalidTokenAddress.join(",") +
-        "\n" +
-        rowWithInvalidReceiverAddress.join(","),
+      csvStringFromRows(
+        rowWithNegativeAmount,
+        rowWithInvalidDecimal,
+        unlistedTokenWithoutDecimal,
+        rowWithInvalidTokenAddress,
+        rowWithInvalidReceiverAddress
+      ),
       tokenList
     );
     expect(warnings).to.have.lengthOf(5);
+    const [
+      warningNegativeAmount,
+      warningTooHighDecimals,
+      warningUndefinedDecimals,
+      warningInvalidTokenAddress,
+      warningInvalidReceiverAddress,
+    ] = warnings.map((warning) => warning.message);
     expect(payment).to.be.empty;
-    expect(warnings[0].message).to.equal(
+
+    expect(warningNegativeAmount).to.equal(
       "1: Only positive amounts possible: -1"
     );
-    expect(warnings[1].message).to.equal("2: Invalid decimals: 19");
-    expect(warnings[2].message).to.equal("3: Invalid decimals: undefined");
-    expect(warnings[3].message).to.equal("4: Invalid Token Address: 0x420");
-    expect(warnings[4].message).to.equal("5: Invalid Receiver Address: 0x420");
+    expect(warningTooHighDecimals).to.equal("2: Invalid decimals: 19");
+    expect(warningUndefinedDecimals).to.equal("3: Invalid decimals: undefined");
+    expect(warningInvalidTokenAddress).to.equal(
+      "4: Invalid Token Address: 0x420"
+    );
+    expect(warningInvalidReceiverAddress).to.equal(
+      "5: Invalid Receiver Address: 0x420"
+    );
   });
 });
