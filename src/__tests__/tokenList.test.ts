@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { fetchTokenList, useTokenList } from "src/tokenList";
+import { fetchTokenList } from "src/hooks/tokenList";
 
-const configuredNetworks = ["mainnet", "rinkeby", "xdai"];
+const configuredNetworks = ["MAINNET", "RINKEBY", "XDAI"];
 
 describe("fetchTokenList()", () => {
   for (let network of configuredNetworks) {
