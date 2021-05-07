@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { initWeb3, getSafeEndpoint, getRpcEndpoint } from "src/connect";
 
-const configuredNetworks = ["mainnet", "rinkeby", "xdai"];
+const configuredNetworks = ["MAINNET", "RINKEBY", "XDAI"];
 
 describe("initWeb3()", () => {
   for (let networkName of configuredNetworks) {

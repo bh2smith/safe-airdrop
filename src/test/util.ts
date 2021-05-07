@@ -3,8 +3,7 @@ import { TokenInfo } from "@uniswap/token-lists";
 
 const dummySafeInfo: SafeInfo = {
   safeAddress: "0x123",
-  network: "rinkeby",
-  ethBalance: "100",
+  network: "RINKEBY",
 };
 
 const unlistedToken: TokenInfo = {

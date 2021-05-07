@@ -1,9 +1,9 @@
 import Web3 from "web3";
 
 const NetworkMap = {
-  mainnet: 1,
-  rinkeby: 4,
-  xdai: 100,
+  MAINNET: 1,
+  RINKEBY: 4,
+  XDAI: 100,
 };
 
 type NetworkName = keyof typeof NetworkMap;
@@ -12,9 +12,9 @@ type NetworkName = keyof typeof NetworkMap;
 const INFURA_API_KEY = process.env.INFURA_API_KEY;
 
 const SAFE_ENDPOINT_URLS = {
-  [NetworkMap.rinkeby]: `https://safe-transaction.rinkeby.gnosis.io`,
-  [NetworkMap.xdai]: `https://safe-transaction.xdai.gnosis.io`,
-  [NetworkMap.mainnet]: `https://safe-transaction.gnosis.io`,
+  [NetworkMap.RINKEBY]: `https://safe-transaction.rinkeby.gnosis.io`,
+  [NetworkMap.XDAI]: `https://safe-transaction.xdai.gnosis.io`,
+  [NetworkMap.MAINNET]: `https://safe-transaction.gnosis.io`,
 };
 
 const checkNetwork = (networkName: string): networkName is NetworkName => {
@@ -44,7 +44,7 @@ export function getRpcEndpoint(networkName: string): string {
   }
 
   // xDai not available on Infura, going with the default xDai endpoint instead
-  if (networkName === "xdai") {
+  if (networkName === "XDAI") {
     return "wss://rpc.xdaichain.com/wss";
   }
   return `wss://${networkName}.infura.io/ws/v3/${INFURA_API_KEY}`;

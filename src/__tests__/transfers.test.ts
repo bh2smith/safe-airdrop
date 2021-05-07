@@ -1,18 +1,12 @@
 import { buildTransfers, TEN } from "../transfers";
 import { expect } from "chai";
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { TokenInfo } from "@uniswap/token-lists";
 import BigNumber from "bignumber.js";
 import { fetchTokenList, TokenMap } from "src/hooks/tokenList";
 import { Payment } from "src/parser";
 import { testData } from "../test/util";
 
-let dummySafeInfo: SafeInfo = {
-  safeAddress: "0x123",
-  network: "rinkeby",
-  ethBalance: "100",
-};
-
+let dummySafeInfo = testData.dummySafeInfo;
 let tokenList: TokenMap;
 let listedTokens: string[];
 let listedToken: TokenInfo;
