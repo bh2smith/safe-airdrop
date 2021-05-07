@@ -1,19 +1,20 @@
-import React, { useCallback, useState, useMemo, useContext } from "react";
+import React, { useCallback, useState, useContext } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
-import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
+// TODO - Will need for web3Provider
+// import { useMemo } from "react";
+// import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
+// import { ethers } from "ethers";
 import { buildTransfers } from "./transfers";
 import { useTokenList } from "./hooks/tokenList";
 import { Header } from "./components/Header";
 import { CSVForm } from "./components/CSVForm";
 import { Loader, Text } from "@gnosis.pm/safe-react-components";
 import styled from "styled-components";
-import { ethers } from "ethers";
 import { parseCSV, Payment } from "./parser";
 import { MessageContext } from "./contexts/MessageContextProvider";
 
 const App: React.FC = () => {
-  const { sdk, safe } = useSafeAppsSDK();
+  const { sdk } = useSafeAppsSDK();
   const { tokenList, isLoading } = useTokenList();
   const [submitting, setSubmitting] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
@@ -21,10 +22,10 @@ const App: React.FC = () => {
     "token_address,receiver,amount,decimals"
   );
   const { addMessage, setMessages } = useContext(MessageContext);
-  const web3Provider = useMemo(
-    () => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)),
-    [sdk, safe]
-  );
+  // const web3Provider = useMemo(
+  //   () => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)),
+  //   [sdk, safe]
+  // );
 
   const onChangeTextHandler = useCallback(
     async (csvText: string) => {
@@ -46,8 +47,8 @@ const App: React.FC = () => {
   const submitTx = useCallback(async () => {
     setSubmitting(true);
     try {
-      const erc20Interface = new ethers.Contract("", IERC20.abi, web3Provider);
-      const txs = buildTransfers(transferContent, tokenList, erc20Interface);
+      // TODO - will need to pass web3Provider in here eventually
+      const txs = buildTransfers(transferContent, tokenList);
       console.log(`Encoded ${txs.length} ERC20 transfers.`);
       const sendTxResponse = await sdk.txs.send({ txs });
       const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
@@ -56,7 +57,7 @@ const App: React.FC = () => {
       console.error(e);
     }
     setSubmitting(false);
-  }, [web3Provider, transferContent, tokenList, sdk.txs]);
+  }, [transferContent, tokenList, sdk.txs]);
   return (
     <Container>
       <Header />

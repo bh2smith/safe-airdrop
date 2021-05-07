@@ -2,11 +2,9 @@ import { buildTransfers, TEN } from "../transfers";
 import { expect } from "chai";
 import { TokenInfo } from "@uniswap/token-lists";
 import BigNumber from "bignumber.js";
-import { ethers } from "ethers";
 import { fetchTokenList, TokenMap } from "src/hooks/tokenList";
 import { Payment } from "src/parser";
 import { testData } from "../test/util";
-import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 
 let dummySafeInfo = testData.dummySafeInfo;
 let tokenList: TokenMap;
@@ -14,7 +12,7 @@ let listedTokens: string[];
 let listedToken: TokenInfo;
 
 const receiverAddress = testData.addresses.receiver1;
-const erc20 = new ethers.Contract("", IERC20.abi, ethers.getDefaultProvider());
+
 // TODO - make method erc20TransferData and replace data checks with this instead of hardcoded strings.
 // function erc20TransferData(amount: BigNumber, receiver: string): Bytes {}
 
@@ -66,8 +64,7 @@ describe("Build Transfers:", () => {
 
       let [listedTransfer, unlistedTransfer, nativeTransfer] = buildTransfers(
         large_payments,
-        tokenList,
-        erc20
+        tokenList
       );
       expect(listedTransfer.value).to.be.equal("0");
       expect(listedTransfer.to).to.be.equal(listedToken.address);
@@ -98,8 +95,7 @@ describe("Build Transfers:", () => {
       );
       let [listed, unlisted, native] = buildTransfers(
         small_payments,
-        tokenList,
-        erc20
+        tokenList
       );
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
@@ -125,11 +121,7 @@ describe("Build Transfers:", () => {
     it("works with arbitrary amount strings on listed, unlisted and native transfers", () => {
       let amount = new BigNumber("123456.000000789");
       let payments = listedUnlistedAndNativePayments(amount, receiverAddress);
-      let [listed, unlisted, native] = buildTransfers(
-        payments,
-        tokenList,
-        erc20
-      );
+      let [listed, unlisted, native] = buildTransfers(payments, tokenList);
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
@@ -166,7 +158,7 @@ describe("Build Transfers:", () => {
         tokenAddress: crappyToken.address,
         decimals: crappyToken.decimals,
       };
-      let [transfer] = buildTransfers([payment], tokenList, erc20);
+      let [transfer] = buildTransfers([payment], tokenList);
       expect(transfer.value).to.be.equal("0");
       expect(transfer.to).to.be.equal(crappyToken.address);
       expect(transfer.data).to.be.equal(
