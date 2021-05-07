@@ -1,8 +1,8 @@
 import { TokenInfo } from "@uniswap/token-lists";
-import rinkeby from "./static/rinkebyTokens.json";
+import rinkeby from "../static/rinkebyTokens.json";
 import { utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
-import { useSafe } from "@rmeissner/safe-apps-react-sdk";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useState, useEffect } from "react";
 
 export type TokenMap = Map<string, TokenInfo>;
@@ -19,15 +19,15 @@ function tokenMap(tokenList: TokenInfo[]): TokenMap {
 
 export const fetchTokenList = async (networkName: string) => {
   let tokens: TokenInfo[];
-  if (networkName === "mainnet") {
+  if (networkName === "MAINNET") {
     const mainnetTokenURL = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
     tokens = (await (await fetch(mainnetTokenURL)).json()).tokens;
-  } else if (networkName === "rinkeby") {
+  } else if (networkName === "RINKEBY") {
     // Hardcoded this because the list provided at
     // https://github.com/Uniswap/default-token-list/blob/master/src/tokens/rinkeby.json
     // Doesn't have GNO or OWL and/or many others.
     tokens = rinkeby;
-  } else if (networkName === "xdai") {
+  } else if (networkName === "XDAI") {
     tokens = xdaiTokens.tokens;
   } else {
     console.error(`Unimplemented token list for ${networkName} network`);
@@ -40,17 +40,17 @@ export const fetchTokenList = async (networkName: string) => {
  * Will Execute only once on initial load because useEffect gets passed an empty array.
  */
 export function useTokenList() {
-  const safe = useSafe();
+  const { safe } = useSafeAppsSDK();
   const [tokenList, setTokenList] = useState<TokenMap>();
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const fetchToken = async () => {
       setIsLoading(true);
-      const result = await fetchTokenList(safe.info.network);
+      const result = await fetchTokenList(safe.network);
       setTokenList(result);
       setIsLoading(false);
     };
     fetchToken();
-  }, [safe.info.network]);
+  }, [safe.network]);
   return { tokenList, isLoading };
 }

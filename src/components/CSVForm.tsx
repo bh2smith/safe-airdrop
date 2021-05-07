@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-
 import MuiAlert from "@material-ui/lab/Alert";
 import {
   Card,
@@ -11,8 +10,8 @@ import {
   Loader,
 } from "@gnosis.pm/safe-react-components";
 import { TextField } from "@material-ui/core";
-import BigNumber from "bignumber.js";
-import { TokenMap } from "src/tokenList";
+import { TokenMap } from "src/hooks/tokenList";
+import { Payment } from "src/parser";
 
 export function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -34,13 +33,6 @@ export interface CSVFormProps {
   tokenList: TokenMap;
   submitting: boolean;
   onAbortSubmit: () => void;
-}
-
-export interface Payment {
-  receiver: string;
-  amount: BigNumber;
-  tokenAddress: string;
-  decimals: number;
 }
 
 export const CSVForm = (props: CSVFormProps) => {
@@ -78,7 +70,7 @@ export const CSVForm = (props: CSVFormProps) => {
       <Form>
         <Text size="md">
           Upload, edit or paste your transfer CSV. <br />
-          (token_address,receiver,amount)
+          (token_address,receiver,amount,decimals)
         </Text>
         <TextField
           variant="outlined"

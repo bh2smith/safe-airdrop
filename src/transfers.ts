@@ -2,9 +2,9 @@ import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 import { AbiItem } from "web3-utils";
 import { SafeInfo, Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { initWeb3 } from "./connect";
-import { TokenMap } from "./tokenList";
+import { TokenMap } from "./hooks/tokenList";
 import BigNumber from "bignumber.js";
-import { Payment } from "./components/CSVForm";
+import { Payment } from "./parser";
 
 export const TEN = new BigNumber(10);
 
