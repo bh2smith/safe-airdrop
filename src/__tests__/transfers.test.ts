@@ -1,41 +1,25 @@
-import { expect } from "chai";
 import { buildTransfers, TEN } from "../transfers";
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
+import { expect } from "chai";
 import { TokenInfo } from "@uniswap/token-lists";
 import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
-import { Payment } from "../components/CSVForm";
-import { fetchTokenList, TokenMap } from "src/tokenList";
+import { fetchTokenList, TokenMap } from "src/hooks/tokenList";
+import { Payment } from "src/parser";
+import { testData } from "../test/util";
+import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 
-let dummySafeInfo: SafeInfo = {
-  safeAddress: "0x123",
-  network: "rinkeby",
-  ethBalance: "100",
-};
-
+let dummySafeInfo = testData.dummySafeInfo;
 let tokenList: TokenMap;
 let listedTokens: string[];
 let listedToken: TokenInfo;
-const receiverAddress = "0x1000000000000000000000000000000000000000";
-const unlistedToken: TokenInfo = {
-  address: "0x6b175474e89094c44da98b954eedeac495271d0f",
-  decimals: 18,
-  symbol: "UNL",
-  name: "Unlisted",
-  chainId: -1,
-};
 
-const erc20Interface = new ethers.Contract(
-  "IERC20",
-  IERC20.abi,
-  ethers.getDefaultProvider()
-);
-
+const receiverAddress = testData.addresses.receiver1;
+const erc20 = new ethers.Contract("", IERC20.abi, ethers.getDefaultProvider());
 // TODO - make method erc20TransferData and replace data checks with this instead of hardcoded strings.
 // function erc20TransferData(amount: BigNumber, receiver: string): Bytes {}
 
 describe("Build Transfers:", () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     tokenList = await fetchTokenList(dummySafeInfo.network);
     listedTokens = Array.from(tokenList.keys());
     listedToken = tokenList.get(listedTokens[0]);
@@ -57,8 +41,8 @@ describe("Build Transfers:", () => {
       {
         receiver,
         amount: amount,
-        tokenAddress: unlistedToken.address,
-        decimals: unlistedToken.decimals,
+        tokenAddress: testData.unlistedToken.address,
+        decimals: testData.unlistedToken.decimals,
       },
       // Native Asset
       {
@@ -81,20 +65,20 @@ describe("Build Transfers:", () => {
       );
 
       let [listedTransfer, unlistedTransfer, nativeTransfer] = buildTransfers(
-        dummySafeInfo,
         large_payments,
-        tokenList
+        tokenList,
+        erc20
       );
       expect(listedTransfer.value).to.be.equal("0");
       expect(listedTransfer.to).to.be.equal(listedToken.address);
       expect(listedTransfer.data).to.be.equal(
-        "0xa9059cbb0000000000000000000000001000000000000000000000000000000000000000800000000000016c889a28c160ce0422bb9138ff1d4e48274000000000000000"
+        "0xa9059cbb0000000000000000000000000101010101010101010101010101010101010101800000000000016c889a28c160ce0422bb9138ff1d4e48274000000000000000"
       );
 
       expect(unlistedTransfer.value).to.be.equal("0");
-      expect(unlistedTransfer.to).to.be.equal(unlistedToken.address);
+      expect(unlistedTransfer.to).to.be.equal(testData.unlistedToken.address);
       expect(unlistedTransfer.data).to.be.equal(
-        "0xa9059cbb0000000000000000000000001000000000000000000000000000000000000000800000000000016c889a28c160ce0422bb9138ff1d4e48274000000000000000"
+        "0xa9059cbb0000000000000000000000000101010101010101010101010101010101010101800000000000016c889a28c160ce0422bb9138ff1d4e48274000000000000000"
       );
 
       expect(nativeTransfer.value).to.be.equal(
@@ -113,20 +97,20 @@ describe("Build Transfers:", () => {
         receiverAddress
       );
       let [listed, unlisted, native] = buildTransfers(
-        dummySafeInfo,
         small_payments,
-        tokenList
+        tokenList,
+        erc20
       );
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
-        "0xa9059cbb0000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000174876e800"
+        "0xa9059cbb0000000000000000000000000101010101010101010101010101010101010101000000000000000000000000000000000000000000000000000000174876e800"
       );
 
       expect(unlisted.value).to.be.equal("0");
-      expect(unlisted.to).to.be.equal(unlistedToken.address);
+      expect(unlisted.to).to.be.equal(testData.unlistedToken.address);
       expect(unlisted.data).to.be.equal(
-        "0xa9059cbb0000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000174876e800"
+        "0xa9059cbb0000000000000000000000000101010101010101010101010101010101010101000000000000000000000000000000000000000000000000000000174876e800"
       );
 
       expect(native.value).to.be.equal(
@@ -142,20 +126,20 @@ describe("Build Transfers:", () => {
       let amount = new BigNumber("123456.000000789");
       let payments = listedUnlistedAndNativePayments(amount, receiverAddress);
       let [listed, unlisted, native] = buildTransfers(
-        dummySafeInfo,
         payments,
-        tokenList
+        tokenList,
+        erc20
       );
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
-        "0xa9059cbb0000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000001a24902beecbd5109200"
+        "0xa9059cbb0000000000000000000000000101010101010101010101010101010101010101000000000000000000000000000000000000000000001a24902beecbd5109200"
       );
 
       expect(unlisted.value).to.be.equal("0");
-      expect(unlisted.to).to.be.equal(unlistedToken.address);
+      expect(unlisted.to).to.be.equal(testData.unlistedToken.address);
       expect(unlisted.data).to.be.equal(
-        "0xa9059cbb0000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000001a24902beecbd5109200"
+        "0xa9059cbb0000000000000000000000000101010101010101010101010101010101010101000000000000000000000000000000000000000000001a24902beecbd5109200"
       );
 
       expect(native.value).to.be.equal(
@@ -182,11 +166,11 @@ describe("Build Transfers:", () => {
         tokenAddress: crappyToken.address,
         decimals: crappyToken.decimals,
       };
-      let [transfer] = buildTransfers(dummySafeInfo, [payment], tokenList);
+      let [transfer] = buildTransfers([payment], tokenList, erc20);
       expect(transfer.value).to.be.equal("0");
       expect(transfer.to).to.be.equal(crappyToken.address);
       expect(transfer.data).to.be.equal(
-        "0xa9059cbb00000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001"
+        "0xa9059cbb00000000000000000000000001010101010101010101010101010101010101010000000000000000000000000000000000000000000000000000000000000001"
       );
     });
   });

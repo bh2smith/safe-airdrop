@@ -1,13 +1,15 @@
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
-import { TokenMap } from "./tokenList";
+import { TokenMap } from "./hooks/tokenList";
 import BigNumber from "bignumber.js";
-import { Payment } from "./components/CSVForm";
+import { Payment } from "./parser";
 import { Contract } from "ethers";
+
 export const TEN = new BigNumber(10);
 
 export function buildTransfers(
   transferData: Payment[],
   tokenList: TokenMap,
+  // provider: ethers.providers.Provider
   erc20: Contract
 ): Transaction[] {
   const txList: Transaction[] = transferData.map((transfer, _) => {
@@ -37,9 +39,10 @@ export function buildTransfers(
       return {
         to: transfer.tokenAddress,
         value: "0",
-        data: erc20.methods
-          .transfer(transfer.receiver, amountData.toFixed())
-          .encodeABI(),
+        data: erc20.interface.encodeFunctionData("transfer", [
+          transfer.receiver,
+          amountData.toFixed(),
+        ]),
       };
     }
   });
