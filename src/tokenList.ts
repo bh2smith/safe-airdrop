@@ -32,7 +32,7 @@ export const fetchTokenList = async (networkName: string) => {
   } else {
     console.error(`Unimplemented token list for ${networkName} network`);
   }
-  console.log(`Fetched ${tokens.length} for ${networkName} network`);
+  // console.log(`Fetched ${tokens.length} for ${networkName} network`);
   return tokenMap(tokens);
 };
 
