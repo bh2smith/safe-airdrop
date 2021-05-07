@@ -57,9 +57,12 @@ export const parseCSV = (csvText: string, tokenList: TokenMap) => {
  */
 const transformRow = (row: CSVRow): Payment => ({
   // avoids errors from getAddress. Invalid addresses are later caught in validateRow
-  tokenAddress: utils.isAddress(row.token_address)
-    ? utils.getAddress(row.token_address)
-    : row.token_address,
+  tokenAddress:
+    row.token_address === "" || row.token_address === null
+      ? null
+      : utils.isAddress(row.token_address)
+      ? utils.getAddress(row.token_address)
+      : row.token_address,
   amount: new BigNumber(row.amount),
   receiver: utils.isAddress(row.receiver)
     ? utils.getAddress(row.receiver)
@@ -85,13 +88,7 @@ const validateRow = (
 
 const areAddressesValid = (row: Payment): string[] => {
   const warnings: string[] = [];
-  if (
-    !(
-      row.tokenAddress === "" ||
-      row.tokenAddress === null ||
-      utils.isAddress(row.tokenAddress)
-    )
-  ) {
+  if (!(row.tokenAddress === null || utils.isAddress(row.tokenAddress))) {
     warnings.push("Invalid Token Address: " + row.tokenAddress);
   }
   if (!utils.isAddress(row.receiver)) {

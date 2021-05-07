@@ -9,9 +9,10 @@ import {
   Table,
   Loader,
 } from "@gnosis.pm/safe-react-components";
-import { TextField } from "@material-ui/core";
 import { TokenMap } from "src/hooks/tokenList";
 import { Payment } from "src/parser";
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/theme-tomorrow";
 
 export function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -24,6 +25,8 @@ const Form = styled.div`
   justify-content: space-around;
   gap: 8px;
 `;
+
+const EditorWrapper = styled.div``;
 
 export interface CSVFormProps {
   onChange: (transactionCSV: string) => void;
@@ -72,14 +75,28 @@ export const CSVForm = (props: CSVFormProps) => {
           Upload, edit or paste your transfer CSV. <br />
           (token_address,receiver,amount,decimals)
         </Text>
-        <TextField
-          variant="outlined"
-          label="CSV"
-          onChange={(event) => props.onChange(event.target.value)}
-          value={props.csvText}
-          multiline
-          rows={6}
-        />
+        <EditorWrapper>
+          <AceEditor
+            onChange={(newCode) => props.onChange(newCode)}
+            value={props.csvText}
+            theme="tomorrow"
+            width={"700px"}
+            minLines={6}
+            maxLines={32}
+            setOptions={{
+              firstLineNumber: 0,
+            }}
+            debounceChangePeriod={200}
+            showPrintMargin={false}
+            style={{
+              borderWidth: 1,
+              borderColor: "rgba(0, 0, 0, 0.23)",
+              borderRadius: "4px",
+              borderStyle: "solid",
+              boxShadow: "rgba(40, 54, 61, 0.12) 1px 2px 4px 0px",
+            }}
+          />
+        </EditorWrapper>
         <div>
           <input
             accept="*.csv"
