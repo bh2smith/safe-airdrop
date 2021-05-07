@@ -3,6 +3,7 @@ import { buildTransfers, TEN } from "../transfers";
 import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { TokenInfo } from "@uniswap/token-lists";
 import BigNumber from "bignumber.js";
+import { ethers } from "ethers";
 import { Payment } from "../components/CSVForm";
 import { fetchTokenList, TokenMap } from "src/tokenList";
 
@@ -23,6 +24,12 @@ const unlistedToken: TokenInfo = {
   name: "Unlisted",
   chainId: -1,
 };
+
+const erc20Interface = new ethers.Contract(
+  "IERC20",
+  IERC20.abi,
+  ethers.getDefaultProvider()
+);
 
 // TODO - make method erc20TransferData and replace data checks with this instead of hardcoded strings.
 // function erc20TransferData(amount: BigNumber, receiver: string): Bytes {}

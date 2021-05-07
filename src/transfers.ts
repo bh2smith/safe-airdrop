@@ -1,21 +1,16 @@
-import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
-import { AbiItem } from "web3-utils";
-import { SafeInfo, Transaction } from "@gnosis.pm/safe-apps-sdk";
-import { initWeb3 } from "./connect";
+import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { TokenMap } from "./tokenList";
 import BigNumber from "bignumber.js";
 import { Payment } from "./components/CSVForm";
-
+import { Contract } from "ethers";
 export const TEN = new BigNumber(10);
 
 export function buildTransfers(
-  safeInfo: SafeInfo,
   transferData: Payment[],
-  tokenList: TokenMap
+  tokenList: TokenMap,
+  erc20: Contract
 ): Transaction[] {
-  const web3 = initWeb3(safeInfo.network);
-  const erc20 = new web3.eth.Contract(IERC20.abi as AbiItem[]);
-  const txList: Transaction[] = transferData.map((transfer, index) => {
+  const txList: Transaction[] = transferData.map((transfer, _) => {
     if (transfer.tokenAddress === null) {
       return {
         to: transfer.receiver,

@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import BigNumber from "bignumber.js";
-import { useSafe } from "@rmeissner/safe-apps-react-sdk";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
 import { parseString } from "@fast-csv/parse";
-
-import { utils } from "ethers";
-
+import { utils, ethers } from "ethers";
+import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 import { buildTransfers } from "./transfers";
 import { useTokenList } from "./tokenList";
 import { Header } from "./components/Header";
@@ -20,7 +20,17 @@ type SnakePayment = {
 };
 
 const App: React.FC = () => {
-  const safe = useSafe();
+  // const safe = useSafe();
+  const { sdk, safe } = useSafeAppsSDK();
+  const web3Provider = useMemo(
+    () => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)),
+    [sdk, safe]
+  );
+  const erc20Interface = new ethers.Contract(
+    "IERC20",
+    IERC20.abi,
+    web3Provider
+  );
   const { tokenList, isLoading } = useTokenList();
   const [submitting, setSubmitting] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
@@ -67,11 +77,10 @@ const App: React.FC = () => {
 
   const submitTx = useCallback(async () => {
     setSubmitting(true);
-
     try {
-      const txList = buildTransfers(safe.info, transferContent, tokenList);
+      const txList = buildTransfers(transferContent, tokenList, erc20Interface);
       console.log(`Encoded ${txList.length} ERC20 transfers.`);
-      const safeTxHash = await safe.sendTransactions(txList);
+      const safeTxHash = await web3Provider.sendTransaction(txList);
       console.log({ safeTxHash });
       const safeTx = await safe.loadSafeTransaction(safeTxHash);
       console.log({ safeTx });
