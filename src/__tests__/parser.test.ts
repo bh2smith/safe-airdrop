@@ -3,22 +3,16 @@ import { expect } from "chai";
 import { TokenMap, fetchTokenList } from "src/hooks/tokenList";
 import { TokenInfo } from "@uniswap/token-lists";
 import { parseCSV } from "src/parser";
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import BigNumber from "bignumber.js";
+import { testData } from "../test/util";
 
 let tokenList: TokenMap;
 let listedTokens: string[];
 let listedToken: TokenInfo;
-const unlistedTokenAddress: string =
-  "0x6b175474e89094c44da98b954eedeac495271d0f";
 
-let validReceiverAddress = "0x1000000000000000000000000000000000000000";
+let validReceiverAddress = testData.addresses.receiver1;
 
-let dummySafeInfo: SafeInfo = {
-  safeAddress: "0x123",
-  network: "rinkeby",
-  ethBalance: "100",
-};
+const unlistedTokenAddress = testData.unlistedToken.address;
 
 /**
  * concatenates csv row arrays into one string.
@@ -30,8 +24,8 @@ const csvStringFromRows = (...rows: string[][]): string => {
 };
 
 describe("Parsing CSVs ", () => {
-  beforeEach(async () => {
-    tokenList = await fetchTokenList(dummySafeInfo.network);
+  beforeAll(async () => {
+    tokenList = await fetchTokenList(testData.dummySafeInfo.network);
     listedTokens = Array.from(tokenList.keys());
     listedToken = tokenList.get(listedTokens[0]);
   });
@@ -90,7 +84,7 @@ describe("Parsing CSVs ", () => {
       unlistedTokenAddress,
       validReceiverAddress,
       "1",
-      "19",
+      "-2",
     ];
     const unlistedTokenWithoutDecimal = [
       unlistedTokenAddress,
@@ -123,7 +117,7 @@ describe("Parsing CSVs ", () => {
     expect(warnings).to.have.lengthOf(5);
     const [
       warningNegativeAmount,
-      warningTooHighDecimals,
+      warningNegativeDecimals,
       warningUndefinedDecimals,
       warningInvalidTokenAddress,
       warningInvalidReceiverAddress,
@@ -133,7 +127,7 @@ describe("Parsing CSVs ", () => {
     expect(warningNegativeAmount).to.equal(
       "1: Only positive amounts possible: -1"
     );
-    expect(warningTooHighDecimals).to.equal("2: Invalid decimals: 19");
+    expect(warningNegativeDecimals).to.equal("2: Invalid decimals: -2");
     expect(warningUndefinedDecimals).to.equal("3: Invalid decimals: undefined");
     expect(warningInvalidTokenAddress).to.equal(
       "4: Invalid Token Address: 0x420"

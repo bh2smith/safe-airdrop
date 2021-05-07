@@ -115,8 +115,6 @@ const isDecimalValid = (row: Payment, tokenList: TokenMap): string[] => {
           ? utils.getAddress(row.tokenAddress)
           : row.tokenAddress
       )?.decimals || row.decimals;
-    return decimals >= 0 && decimals <= 18
-      ? []
-      : ["Invalid decimals: " + decimals];
+    return decimals >= 0 ? [] : ["Invalid decimals: " + decimals];
   }
 };
