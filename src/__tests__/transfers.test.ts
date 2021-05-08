@@ -62,7 +62,6 @@ describe("Build Transfers:", () => {
       );
 
       let [listedTransfer, unlistedTransfer, nativeTransfer] = buildTransfers(
-        dummySafeInfo,
         large_payments,
         tokenList
       );
@@ -94,7 +93,6 @@ describe("Build Transfers:", () => {
         receiverAddress
       );
       let [listed, unlisted, native] = buildTransfers(
-        dummySafeInfo,
         small_payments,
         tokenList
       );
@@ -122,11 +120,7 @@ describe("Build Transfers:", () => {
     it("works with arbitrary amount strings on listed, unlisted and native transfers", () => {
       let amount = new BigNumber("123456.000000789");
       let payments = listedUnlistedAndNativePayments(amount, receiverAddress);
-      let [listed, unlisted, native] = buildTransfers(
-        dummySafeInfo,
-        payments,
-        tokenList
-      );
+      let [listed, unlisted, native] = buildTransfers(payments, tokenList);
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
@@ -163,7 +157,7 @@ describe("Build Transfers:", () => {
         tokenAddress: crappyToken.address,
         decimals: crappyToken.decimals,
       };
-      let [transfer] = buildTransfers(dummySafeInfo, [payment], tokenList);
+      let [transfer] = buildTransfers([payment], tokenList);
       expect(transfer.value).to.be.equal("0");
       expect(transfer.to).to.be.equal(crappyToken.address);
       expect(transfer.data).to.be.equal(
