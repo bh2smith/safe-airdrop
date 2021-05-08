@@ -10,7 +10,7 @@ import BigNumber from "bignumber.js";
 export interface Payment {
   receiver: string;
   amount: BigNumber;
-  tokenAddress: string;
+  tokenAddress: string | null;
   decimals?: number;
 }
 

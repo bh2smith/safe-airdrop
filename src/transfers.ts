@@ -1,28 +1,30 @@
-import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
-import { AbiItem } from "web3-utils";
-import { SafeInfo, Transaction } from "@gnosis.pm/safe-apps-sdk";
-import { initWeb3 } from "./connect";
+import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { TokenMap } from "./hooks/tokenList";
 import BigNumber from "bignumber.js";
 import { Payment } from "./parser";
+import { ethers } from "ethers";
+import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
 
 export const TEN = new BigNumber(10);
 
+// TODO - when token data is unknown need to get contract at address with web3Provider
+// const erc20 = new ethers.Contract(token.address, IERC20.abi, provider);
+
 export function buildTransfers(
-  safeInfo: SafeInfo,
   transferData: Payment[],
   tokenList: TokenMap
 ): Transaction[] {
-  const web3 = initWeb3(safeInfo.network);
-  const erc20 = new web3.eth.Contract(IERC20.abi as AbiItem[]);
-  const txList: Transaction[] = transferData.map((transfer, index) => {
+  const erc20 = new ethers.utils.Interface(IERC20.abi);
+  const txList: Transaction[] = transferData.map((transfer, _) => {
     if (transfer.tokenAddress === null) {
+      // Native asset transfer
       return {
         to: transfer.receiver,
         value: transfer.amount.multipliedBy(TEN.pow(18)).toFixed(),
         data: "0x",
       };
     } else {
+      // ERC20 transfer
       const exponent = new BigNumber(
         TEN.pow(
           tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals
@@ -42,9 +44,10 @@ export function buildTransfers(
       return {
         to: transfer.tokenAddress,
         value: "0",
-        data: erc20.methods
-          .transfer(transfer.receiver, amountData.toFixed())
-          .encodeABI(),
+        data: erc20.encodeFunctionData("transfer", [
+          transfer.receiver,
+          amountData.toFixed(),
+        ]),
       };
     }
   });
