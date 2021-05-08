@@ -1,7 +1,7 @@
 import { utils } from "ethers";
 import { parseString, RowValidateCallback } from "@fast-csv/parse";
 import { TokenMap } from "./hooks/tokenList";
-import { Message } from "./contexts/MessageContextProvider";
+import { CodeWarning } from "./contexts/MessageContextProvider";
 import BigNumber from "bignumber.js";
 /**
  * Includes methods to parse, transform and validate csv content
@@ -27,17 +27,20 @@ const generateWarnings = (
   rowNumber: number,
   warnings: string
 ) => {
-  const messages: Message[] = warnings.split(";").map((warning: string) => ({
-    message: rowNumber + ": " + warning,
-    severity: "warning",
-  }));
+  const messages: CodeWarning[] = warnings
+    .split(";")
+    .map((warning: string) => ({
+      message: warning,
+      severity: "warning",
+      lineNo: rowNumber,
+    }));
   return messages;
 };
 
 export const parseCSV = (csvText: string, tokenList: TokenMap) => {
-  return new Promise<[Payment[], Message[]]>((resolve, reject) => {
+  return new Promise<[Payment[], CodeWarning[]]>((resolve, reject) => {
     const results: any[] = [];
-    const resultingWarnings: Message[] = [];
+    const resultingWarnings: CodeWarning[] = [];
     parseString<CSVRow, Payment>(csvText, { headers: true })
       .transform(transformRow)
       .validate((row: Payment, callback: RowValidateCallback) =>

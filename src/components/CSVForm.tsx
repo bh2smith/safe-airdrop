@@ -1,6 +1,5 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
-import MuiAlert from "@material-ui/lab/Alert";
 import {
   Card,
   Text,
@@ -11,12 +10,10 @@ import {
 } from "@gnosis.pm/safe-react-components";
 import { TokenMap } from "src/hooks/tokenList";
 import { Payment } from "src/parser";
-import AceEditor from "react-ace";
+import AceEditor, { IMarker } from "react-ace";
 import "ace-builds/src-noconflict/theme-tomorrow";
-
-export function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+import "ace-builds/src-noconflict/mode-text";
+import { MessageContext } from "src/contexts/MessageContextProvider";
 
 const Form = styled.div`
   flex: 1;
@@ -39,6 +36,9 @@ export interface CSVFormProps {
 }
 
 export const CSVForm = (props: CSVFormProps) => {
+  const { codeWarnings } = useContext(MessageContext);
+  console.log("Found ", codeWarnings.length + " Code Warnings");
+
   const tokenList = props.tokenList;
   const extractTokenElement = (payment: Payment) => {
     return (
@@ -81,6 +81,7 @@ export const CSVForm = (props: CSVFormProps) => {
             value={props.csvText}
             theme="tomorrow"
             width={"700px"}
+            mode={"text"}
             minLines={6}
             maxLines={32}
             setOptions={{
@@ -95,6 +96,16 @@ export const CSVForm = (props: CSVFormProps) => {
               borderStyle: "solid",
               boxShadow: "rgba(40, 54, 61, 0.12) 1px 2px 4px 0px",
             }}
+            markers={codeWarnings.map(
+              (warning): IMarker => ({
+                startRow: warning.lineNo,
+                endRow: warning.lineNo,
+                className: "error-marker",
+                type: "fullLine",
+                startCol: 0,
+                endCol: 30,
+              })
+            )}
           />
         </EditorWrapper>
         <div>

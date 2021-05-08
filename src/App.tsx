@@ -18,7 +18,7 @@ const App: React.FC = () => {
     "token_address,receiver,amount,decimals"
   );
 
-  const { addMessage, setMessages } = useContext(MessageContext);
+  const { addMessage, setCodeWarnings } = useContext(MessageContext);
 
   const onChangeTextHandler = useCallback(
     async (csvText: string) => {
@@ -28,13 +28,13 @@ const App: React.FC = () => {
       parsePromise
         .then(([transfers, warnings]) => {
           setTransferContent(transfers);
-          setMessages(warnings);
+          setCodeWarnings(warnings);
         })
         .catch((reason: any) =>
           addMessage({ severity: "error", message: reason.message })
         );
     },
-    [addMessage, setMessages, tokenList]
+    [addMessage, setCodeWarnings, tokenList]
   );
 
   const submitTx = useCallback(async () => {
