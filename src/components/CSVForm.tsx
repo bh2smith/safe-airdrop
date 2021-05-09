@@ -4,7 +4,6 @@ import {
   Card,
   Text,
   Button,
-  Link,
   Table,
   Loader,
 } from "@gnosis.pm/safe-react-components";
@@ -14,6 +13,7 @@ import AceEditor, { IMarker } from "react-ace";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/mode-text";
 import { MessageContext } from "src/contexts/MessageContextProvider";
+import { CSVUpload } from "./CSVUpload";
 
 const Form = styled.div`
   flex: 1;
@@ -37,6 +37,7 @@ export interface CSVFormProps {
 
 export const CSVForm = (props: CSVFormProps) => {
   const { codeWarnings } = useContext(MessageContext);
+
   console.log("Found ", codeWarnings.length + " Code Warnings");
 
   const tokenList = props.tokenList;
@@ -56,18 +57,6 @@ export const CSVForm = (props: CSVFormProps) => {
     );
   };
 
-  const onChangeFileHandler = async (event: any) => {
-    console.log("Received Filename", event.target.files[0].name);
-
-    const reader = new FileReader();
-    reader.onload = function (evt) {
-      if (!evt.target) {
-        return;
-      }
-      props.onChange(evt.target.result as string);
-    };
-    reader.readAsText(event.target.files[0]);
-  };
   return (
     <Card>
       <Form>
@@ -108,31 +97,9 @@ export const CSVForm = (props: CSVFormProps) => {
             )}
           />
         </EditorWrapper>
-        <div>
-          <input
-            accept="*.csv"
-            id="csvUploadButton"
-            type="file"
-            name="file"
-            onChange={onChangeFileHandler}
-            style={{ display: "none" }}
-          />
-          <label htmlFor="csvUploadButton">
-            <Button
-              size="md"
-              variant="contained"
-              color="primary"
-              component="span"
-            >
-              Upload CSV
-            </Button>
-          </label>
-        </div>
-        <div>
-          <Link href="./sample.csv" download>
-            Sample Transfer File
-          </Link>
-        </div>
+
+        <CSVUpload onChange={props.onChange} />
+
         {props.transferContent.length > 0 && (
           <>
             <div>
