@@ -1,9 +1,10 @@
+import React, { useContext } from "react";
 import AceEditor, { IMarker } from "react-ace";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/mode-text";
 import styled from "styled-components";
-import React, { useContext } from "react";
-import { MessageContext } from "src/contexts/MessageContextProvider";
+
+import { MessageContext } from "../../src/contexts/MessageContextProvider";
 
 const EditorWrapper = styled.div``;
 

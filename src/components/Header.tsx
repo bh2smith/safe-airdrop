@@ -1,10 +1,10 @@
+import { Title } from "@gnosis.pm/safe-react-components";
+import { Snackbar } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 import React, { useContext } from "react";
 import styled from "styled-components";
 
-import MuiAlert from "@material-ui/lab/Alert";
-import { Title } from "@gnosis.pm/safe-react-components";
-import { Snackbar } from "@material-ui/core";
-import { MessageContext, Message } from "src/contexts/MessageContextProvider";
+import { MessageContext, Message } from "../contexts/MessageContextProvider";
 
 export function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;

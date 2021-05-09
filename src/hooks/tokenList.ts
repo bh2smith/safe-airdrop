@@ -1,9 +1,10 @@
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { TokenInfo } from "@uniswap/token-lists";
-import rinkeby from "../static/rinkebyTokens.json";
 import { utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useState, useEffect } from "react";
+
+import rinkeby from "../static/rinkebyTokens.json";
 
 export type TokenMap = Map<string, TokenInfo>;
 
@@ -16,7 +17,9 @@ function tokenMap(tokenList: TokenInfo[]): TokenMap {
   return res;
 }
 
-export const fetchTokenList = async (networkName: string) => {
+export const fetchTokenList = async (
+  networkName: string
+): Promise<TokenMap> => {
   let tokens: TokenInfo[];
   if (networkName === "MAINNET") {
     const mainnetTokenURL = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
@@ -38,7 +41,7 @@ export const fetchTokenList = async (networkName: string) => {
  * Hook which fetches the tokenList for Components.
  * Will Execute only once on initial load because useEffect gets passed an empty array.
  */
-export function useTokenList() {
+export function useTokenList(): { tokenList: TokenMap; isLoading: boolean } {
   const { safe } = useSafeAppsSDK();
   const [tokenList, setTokenList] = useState<TokenMap>();
   const [isLoading, setIsLoading] = useState(false);

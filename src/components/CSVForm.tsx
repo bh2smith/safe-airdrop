@@ -1,5 +1,3 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
 import {
   Card,
   Text,
@@ -7,11 +5,15 @@ import {
   Table,
   Loader,
 } from "@gnosis.pm/safe-react-components";
-import { TokenMap } from "src/hooks/tokenList";
-import { Payment } from "src/parser";
-import { MessageContext } from "src/contexts/MessageContextProvider";
-import { CSVUpload } from "./CSVUpload";
+import React, { useContext } from "react";
+import styled from "styled-components";
+
+import { MessageContext } from "../../src/contexts/MessageContextProvider";
+import { TokenMap } from "../hooks/tokenList";
+import { Payment } from "../parser";
+
 import { CSVEditor } from "./CSVEditor";
+import { CSVUpload } from "./CSVUpload";
 
 const Form = styled.div`
   flex: 1;

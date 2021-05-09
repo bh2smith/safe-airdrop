@@ -1,5 +1,3 @@
-import React, { useCallback, useMemo } from "react";
-import { useDropzone } from "react-dropzone";
 import {
   Button,
   Link,
@@ -7,6 +5,8 @@ import {
   theme as GnosisTheme,
 } from "@gnosis.pm/safe-react-components";
 import { createStyles } from "@material-ui/core";
+import React, { useCallback, useMemo } from "react";
+import { useDropzone } from "react-dropzone";
 
 export type CSVUploadProps = {
   onChange: (string) => void;

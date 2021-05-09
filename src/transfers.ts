@@ -1,14 +1,15 @@
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
+
+import { erc20Interface } from "./erc20";
 import { TokenMap } from "./hooks/tokenList";
 import { Payment } from "./parser";
 import { toWei } from "./utils";
-import { erc20Interface } from "./erc20";
 
 export function buildTransfers(
   transferData: Payment[],
   tokenList: TokenMap
 ): Transaction[] {
-  const txList: Transaction[] = transferData.map((transfer, _) => {
+  const txList: Transaction[] = transferData.map((transfer) => {
     if (transfer.tokenAddress === null) {
       // Native asset transfer
       return {
@@ -20,7 +21,7 @@ export function buildTransfers(
       // ERC20 transfer
       const decimals =
         tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals;
-      let amountData = toWei(transfer.amount, decimals);
+      const amountData = toWei(transfer.amount, decimals);
       return {
         to: transfer.tokenAddress,
         value: "0",
