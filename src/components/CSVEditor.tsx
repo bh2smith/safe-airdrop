@@ -13,7 +13,7 @@ export type CSVEditorProps = {
   csvText: string;
 };
 
-export const CSVEditor = (props: CSVEditorProps) => {
+export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
   const { codeWarnings } = useContext(MessageContext);
   return (
     <EditorWrapper>

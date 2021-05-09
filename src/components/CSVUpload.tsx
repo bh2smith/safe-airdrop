@@ -12,7 +12,7 @@ export type CSVUploadProps = {
   onChange: (string) => void;
 };
 
-export const CSVUpload = (props: CSVUploadProps) => {
+export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
   const { onChange } = props;
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {

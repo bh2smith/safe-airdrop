@@ -33,7 +33,7 @@ export interface CSVFormProps {
   onAbortSubmit: () => void;
 }
 
-export const CSVForm = (props: CSVFormProps) => {
+export const CSVForm = (props: CSVFormProps): JSX.Element => {
   const { codeWarnings } = useContext(MessageContext);
 
   console.log("Found ", codeWarnings.length + " Code Warnings");
