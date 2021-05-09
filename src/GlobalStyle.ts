@@ -2,6 +2,8 @@ import avertaBoldFont from "@gnosis.pm/safe-react-components/dist/fonts/averta-b
 import avertaFont from "@gnosis.pm/safe-react-components/dist/fonts/averta-normal.woff2";
 import { createGlobalStyle } from "styled-components";
 
+import errorIcon from "./static/error-icon.svg";
+
 const GlobalStyle = createGlobalStyle`
     html {
         height: 100%
@@ -35,6 +37,17 @@ const GlobalStyle = createGlobalStyle`
         background-color: lightpink;
         display: block;
       }
+    
+    .error-marker:hover::after {
+        content: 'DescriptionTest';
+    }
+    .ace_error {
+        background-image: url(${errorIcon}) !important;
+        background-size: 15px;
+    }
+    .ace_tooltip {
+        font-family: 'Averta' !important;
+    }
 `;
 
 export default GlobalStyle;
