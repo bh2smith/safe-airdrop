@@ -1,5 +1,5 @@
 module.exports = {
-  webpack: function (config, env) {
+  webpack: function (config) {
     return config;
   },
   jest: function (config) {
@@ -19,7 +19,7 @@ module.exports = {
       return config;
     };
   },
-  paths: function (paths, env) {
+  paths: function (paths) {
     return paths;
   },
 };

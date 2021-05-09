@@ -1,6 +1,3 @@
-import React from "react";
-import styled from "styled-components";
-import MuiAlert from "@material-ui/lab/Alert";
 import {
   Card,
   Text,
@@ -10,8 +7,12 @@ import {
   Loader,
 } from "@gnosis.pm/safe-react-components";
 import { TextField } from "@material-ui/core";
-import { TokenMap } from "src/hooks/tokenList";
-import { Payment } from "src/parser";
+import MuiAlert from "@material-ui/lab/Alert";
+import React from "react";
+import styled from "styled-components";
+
+import { TokenMap } from "../hooks/tokenList";
+import { Payment } from "../parser";
 
 export function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;

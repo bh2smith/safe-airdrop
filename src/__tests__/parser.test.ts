@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { expect } from "chai";
-import { TokenMap, fetchTokenList } from "src/hooks/tokenList";
 import { TokenInfo } from "@uniswap/token-lists";
-import { parseCSV } from "src/parser";
-import BigNumber from "bignumber.js";
+import { BigNumber } from "bignumber.js";
+import { expect } from "chai";
+
+import { TokenMap, fetchTokenList } from "../hooks/tokenList";
+import { parseCSV } from "../parser";
 import { testData } from "../test/util";
 
 let tokenList: TokenMap;
 let listedTokens: string[];
 let listedToken: TokenInfo;
 
-let validReceiverAddress = testData.addresses.receiver1;
-
+const validReceiverAddress = testData.addresses.receiver1;
 const unlistedTokenAddress = testData.unlistedToken.address;
 
 /**

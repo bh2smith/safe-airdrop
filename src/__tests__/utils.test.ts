@@ -1,6 +1,7 @@
-import BigNumber from "bignumber.js";
+import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
-import { fromWei, toWei, TEN, ONE, ZERO } from "src/utils";
+
+import { fromWei, toWei, TEN, ONE, ZERO } from "../utils";
 
 // TODO - this is super ugly at the moment and is probably missing some stuff.
 describe("toWei()", () => {
