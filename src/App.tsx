@@ -1,17 +1,18 @@
-import React, { useCallback, useState, useContext } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 // TODO - Will need for web3Provider
 // import { useMemo } from "react";
 // import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
 // import { ethers } from "ethers";
-import { buildTransfers } from "./transfers";
-import { useTokenList } from "./hooks/tokenList";
-import { Header } from "./components/Header";
-import { CSVForm } from "./components/CSVForm";
 import { Loader, Text } from "@gnosis.pm/safe-react-components";
+import React, { useCallback, useState, useContext } from "react";
 import styled from "styled-components";
-import { parseCSV, Payment } from "./parser";
+
+import { CSVForm } from "./components/CSVForm";
+import { Header } from "./components/Header";
 import { MessageContext } from "./contexts/MessageContextProvider";
+import { useTokenList } from "./hooks/tokenList";
+import { parseCSV, Payment } from "./parser";
+import { buildTransfers } from "./transfers";
 
 const App: React.FC = () => {
   const { sdk } = useSafeAppsSDK();

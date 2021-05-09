@@ -1,15 +1,17 @@
-import { buildTransfers } from "../transfers";
-import BigNumber from "bignumber.js";
-import { expect } from "chai";
-import { TokenInfo } from "@uniswap/token-lists";
-import { fetchTokenList, TokenMap } from "src/hooks/tokenList";
-import { Payment } from "src/parser";
-import { testData } from "../test/util";
-import { toWei, fromWei, MAX_U256 } from "../utils";
-import { erc20Interface } from "../erc20";
 import { assert } from "console";
 
-let dummySafeInfo = testData.dummySafeInfo;
+import { TokenInfo } from "@uniswap/token-lists";
+import { BigNumber } from "bignumber.js";
+import { expect } from "chai";
+
+import { erc20Interface } from "../erc20";
+import { fetchTokenList, TokenMap } from "../hooks/tokenList";
+import { Payment } from "../parser";
+import { testData } from "../test/util";
+import { buildTransfers } from "../transfers";
+import { toWei, fromWei, MAX_U256 } from "../utils";
+
+const dummySafeInfo = testData.dummySafeInfo;
 let tokenList: TokenMap;
 let listedTokens: string[];
 let listedToken: TokenInfo;
@@ -25,7 +27,7 @@ describe("Build Transfers:", () => {
 
   describe("Integers", () => {
     it("works with large integers on listed, unlisted and native asset transfers", () => {
-      let largePayments: Payment[] = [
+      const largePayments: Payment[] = [
         // Listed ERC20
         {
           receiver,
@@ -49,7 +51,7 @@ describe("Build Transfers:", () => {
         },
       ];
 
-      let [listedTransfer, unlistedTransfer, nativeTransfer] = buildTransfers(
+      const [listedTransfer, unlistedTransfer, nativeTransfer] = buildTransfers(
         largePayments,
         tokenList
       );
@@ -79,8 +81,8 @@ describe("Build Transfers:", () => {
 
   describe("Decimals", () => {
     it("works with decimal payments on listed, unlisted and native transfers", () => {
-      let tinyAmount = new BigNumber("0.0000001");
-      let smallPayments: Payment[] = [
+      const tinyAmount = new BigNumber("0.0000001");
+      const smallPayments: Payment[] = [
         // Listed ERC20
         {
           receiver,
@@ -103,7 +105,11 @@ describe("Build Transfers:", () => {
           decimals: null,
         },
       ];
-      let [listed, unlisted, native] = buildTransfers(smallPayments, tokenList);
+
+      const [listed, unlisted, native] = buildTransfers(
+        smallPayments,
+        tokenList
+      );
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
@@ -130,8 +136,8 @@ describe("Build Transfers:", () => {
 
   describe("Mixed", () => {
     it("works with arbitrary amount strings on listed, unlisted and native transfers", () => {
-      let mixedAmount = new BigNumber("123456.000000789");
-      let mixedPayments = [
+      const mixedAmount = new BigNumber("123456.000000789");
+      const mixedPayments: Payment[] = [
         // Listed ERC20
         {
           receiver,
@@ -154,7 +160,11 @@ describe("Build Transfers:", () => {
           decimals: null,
         },
       ];
-      let [listed, unlisted, native] = buildTransfers(mixedPayments, tokenList);
+
+      const [listed, unlisted, native] = buildTransfers(
+        mixedPayments,
+        tokenList
+      );
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
@@ -181,7 +191,7 @@ describe("Build Transfers:", () => {
 
   describe("Truncation on too many decimals", () => {
     it("cuts fractional part of token with 0 decimals", () => {
-      let amount = new BigNumber("1.000000789");
+      const amount = new BigNumber("1.000000789");
       const crappyToken: TokenInfo = {
         address: "0x6b175474e89094c44da98b954eedeac495271d0f",
         decimals: 0,
@@ -189,13 +199,14 @@ describe("Build Transfers:", () => {
         name: "No Decimals",
         chainId: -1,
       };
-      let payment: Payment = {
+
+      const payment: Payment = {
         receiver,
         amount: amount,
         tokenAddress: crappyToken.address,
         decimals: crappyToken.decimals,
       };
-      let [transfer] = buildTransfers([payment], tokenList);
+      const [transfer] = buildTransfers([payment], tokenList);
       expect(transfer.value).to.be.equal("0");
       expect(transfer.to).to.be.equal(crappyToken.address);
       expect(transfer.data).to.be.equal(

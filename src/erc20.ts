@@ -1,5 +1,5 @@
-import { ethers } from "ethers";
 import IERC20 from "@openzeppelin/contracts/build/contracts/IERC20.json";
+import { ethers } from "ethers";
 
 export const erc20Interface = new ethers.utils.Interface(IERC20.abi);
 

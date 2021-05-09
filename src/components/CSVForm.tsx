@@ -1,5 +1,3 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
 import {
   Card,
   Text,
@@ -8,12 +6,20 @@ import {
   Table,
   Loader,
 } from "@gnosis.pm/safe-react-components";
-import { TokenMap } from "src/hooks/tokenList";
-import { Payment } from "src/parser";
+import MuiAlert from "@material-ui/lab/Alert";
+import React, { useContext } from "react";
 import AceEditor, { IMarker } from "react-ace";
+import styled from "styled-components";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/mode-text";
-import { MessageContext } from "src/contexts/MessageContextProvider";
+
+import { MessageContext } from "../contexts/MessageContextProvider";
+import { TokenMap } from "../hooks/tokenList";
+import { Payment } from "../parser";
+
+export function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const Form = styled.div`
   flex: 1;
