@@ -14,7 +14,7 @@ const HeaderContainer = styled.div`
   width: 100%;
 `;
 
-export const Header = () => {
+export const Header = (): JSX.Element => {
   const messageContext = useContext(MessageContext);
   const messages = messageContext.messages;
   return (
