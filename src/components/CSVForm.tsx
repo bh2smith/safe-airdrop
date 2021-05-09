@@ -1,5 +1,3 @@
-import React, { useContext } from "react";
-import styled from "styled-components";
 import {
   Card,
   Text,
@@ -8,15 +6,14 @@ import {
   Table,
   Loader,
 } from "@gnosis.pm/safe-react-components";
-import { TextField } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
-import React from "react";
+import React, { useContext } from "react";
 import AceEditor, { IMarker } from "react-ace";
+import styled from "styled-components";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/mode-text";
-import { MessageContext } from "src/contexts/MessageContextProvider";
-import styled from "styled-components";
 
+import { MessageContext } from "../contexts/MessageContextProvider";
 import { TokenMap } from "../hooks/tokenList";
 import { Payment } from "../parser";
 

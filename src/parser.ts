@@ -2,9 +2,8 @@ import { parseString, RowValidateCallback } from "@fast-csv/parse";
 import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
 
-import { Message } from "./contexts/MessageContextProvider";
-import { TokenMap } from "./hooks/tokenList";
 import { CodeWarning } from "./contexts/MessageContextProvider";
+import { TokenMap } from "./hooks/tokenList";
 
 /**
  * Includes methods to parse, transform and validate csv content
@@ -43,8 +42,8 @@ const generateWarnings = (
 export const parseCSV = (
   csvText: string,
   tokenList: TokenMap
-): Promise<[Payment[], Message[]]> => {
-  return new Promise<[Payment[], Message[]]>((resolve, reject) => {
+): Promise<[Payment[], CodeWarning[]]> => {
+  return new Promise<[Payment[], CodeWarning[]]>((resolve, reject) => {
     const results: any[] = [];
     const resultingWarnings: CodeWarning[] = [];
     parseString<CSVRow, Payment>(csvText, { headers: true })
