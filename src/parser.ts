@@ -1,7 +1,7 @@
 import { utils } from "ethers";
 import { parseString, RowValidateCallback } from "@fast-csv/parse";
 import { TokenMap } from "./hooks/tokenList";
-import { Message } from "./contexts/MessageContextProvider";
+import { CodeWarning } from "./contexts/MessageContextProvider";
 import BigNumber from "bignumber.js";
 /**
  * Includes methods to parse, transform and validate csv content
@@ -10,7 +10,7 @@ import BigNumber from "bignumber.js";
 export interface Payment {
   receiver: string;
   amount: BigNumber;
-  tokenAddress: string;
+  tokenAddress: string | null;
   decimals?: number;
 }
 
@@ -27,17 +27,20 @@ const generateWarnings = (
   rowNumber: number,
   warnings: string
 ) => {
-  const messages: Message[] = warnings.split(";").map((warning: string) => ({
-    message: rowNumber + ": " + warning,
-    severity: "warning",
-  }));
+  const messages: CodeWarning[] = warnings
+    .split(";")
+    .map((warning: string) => ({
+      message: warning,
+      severity: "warning",
+      lineNo: rowNumber,
+    }));
   return messages;
 };
 
 export const parseCSV = (csvText: string, tokenList: TokenMap) => {
-  return new Promise<[Payment[], Message[]]>((resolve, reject) => {
+  return new Promise<[Payment[], CodeWarning[]]>((resolve, reject) => {
     const results: any[] = [];
-    const resultingWarnings: Message[] = [];
+    const resultingWarnings: CodeWarning[] = [];
     parseString<CSVRow, Payment>(csvText, { headers: true })
       .transform(transformRow)
       .validate((row: Payment, callback: RowValidateCallback) =>
@@ -57,9 +60,12 @@ export const parseCSV = (csvText: string, tokenList: TokenMap) => {
  */
 const transformRow = (row: CSVRow): Payment => ({
   // avoids errors from getAddress. Invalid addresses are later caught in validateRow
-  tokenAddress: utils.isAddress(row.token_address)
-    ? utils.getAddress(row.token_address)
-    : row.token_address,
+  tokenAddress:
+    row.token_address === "" || row.token_address === null
+      ? null
+      : utils.isAddress(row.token_address)
+      ? utils.getAddress(row.token_address)
+      : row.token_address,
   amount: new BigNumber(row.amount),
   receiver: utils.isAddress(row.receiver)
     ? utils.getAddress(row.receiver)
@@ -85,13 +91,7 @@ const validateRow = (
 
 const areAddressesValid = (row: Payment): string[] => {
   const warnings: string[] = [];
-  if (
-    !(
-      row.tokenAddress === "" ||
-      row.tokenAddress === null ||
-      utils.isAddress(row.tokenAddress)
-    )
-  ) {
+  if (!(row.tokenAddress === null || utils.isAddress(row.tokenAddress))) {
     warnings.push("Invalid Token Address: " + row.tokenAddress);
   }
   if (!utils.isAddress(row.receiver)) {
