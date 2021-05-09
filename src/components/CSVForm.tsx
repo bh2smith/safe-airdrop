@@ -9,11 +9,9 @@ import {
 } from "@gnosis.pm/safe-react-components";
 import { TokenMap } from "src/hooks/tokenList";
 import { Payment } from "src/parser";
-import AceEditor, { IMarker } from "react-ace";
-import "ace-builds/src-noconflict/theme-tomorrow";
-import "ace-builds/src-noconflict/mode-text";
 import { MessageContext } from "src/contexts/MessageContextProvider";
 import { CSVUpload } from "./CSVUpload";
+import { CSVEditor } from "./CSVEditor";
 
 const Form = styled.div`
   flex: 1;
@@ -22,8 +20,6 @@ const Form = styled.div`
   justify-content: space-around;
   gap: 8px;
 `;
-
-const EditorWrapper = styled.div``;
 
 export interface CSVFormProps {
   onChange: (transactionCSV: string) => void;
@@ -64,39 +60,8 @@ export const CSVForm = (props: CSVFormProps) => {
           Upload, edit or paste your transfer CSV. <br />
           (token_address,receiver,amount,decimals)
         </Text>
-        <EditorWrapper>
-          <AceEditor
-            onChange={(newCode) => props.onChange(newCode)}
-            value={props.csvText}
-            theme="tomorrow"
-            width={"700px"}
-            mode={"text"}
-            minLines={6}
-            maxLines={32}
-            setOptions={{
-              firstLineNumber: 0,
-            }}
-            debounceChangePeriod={200}
-            showPrintMargin={false}
-            style={{
-              borderWidth: 1,
-              borderColor: "rgba(0, 0, 0, 0.23)",
-              borderRadius: "4px",
-              borderStyle: "solid",
-              boxShadow: "rgba(40, 54, 61, 0.12) 1px 2px 4px 0px",
-            }}
-            markers={codeWarnings.map(
-              (warning): IMarker => ({
-                startRow: warning.lineNo,
-                endRow: warning.lineNo,
-                className: "error-marker",
-                type: "fullLine",
-                startCol: 0,
-                endCol: 30,
-              })
-            )}
-          />
-        </EditorWrapper>
+
+        <CSVEditor csvText={props.csvText} onChange={props.onChange} />
 
         <CSVUpload onChange={props.onChange} />
 
