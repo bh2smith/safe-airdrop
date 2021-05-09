@@ -6198,10 +6198,10 @@ hoist-non-react-statics@^3.0.0, hoist-non-react-statics@^3.3.0, hoist-non-react-
   dependencies:
     react-is "^16.7.0"
 
-honeyswap-default-token-list@^2.1.6:
-  version "2.23.0"
-  resolved "https://registry.yarnpkg.com/honeyswap-default-token-list/-/honeyswap-default-token-list-2.23.0.tgz#8d7c70a6a56a061474345462b9ea5f303bbc1a10"
-  integrity sha512-gf59KdB7g8OL55KGPhOiosDDVu0IQ2YoorGYNzaTF9f7jrds4rKLPzvchMsAb86JwQP2AR0TIJbaZ4plCwDYUA==
+honeyswap-default-token-list@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/honeyswap-default-token-list/-/honeyswap-default-token-list-3.1.1.tgz#23f657adef699c69a6ae21e3991c427d6aaf7819"
+  integrity sha512-hKcxoyZLsYRrIlUnZizzjSP/kwp5i+/KVHwbekSs5h0vNqwY/udNrPRMtJ0qOZdpz8rGkj2szx5n955CqpLd+w==
 
 hoopy@^0.1.4:
   version "0.1.4"
