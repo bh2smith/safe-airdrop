@@ -1,6 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
-import { Button, Link, Text } from "@gnosis.pm/safe-react-components";
+import {
+  Button,
+  Link,
+  Text,
+  theme as GnosisTheme,
+} from "@gnosis.pm/safe-react-components";
 import { createStyles } from "@material-ui/core";
 
 export type CSVUploadProps = {
@@ -102,7 +107,7 @@ const styles = createStyles({
     borderWidth: 2,
     borderRadius: 2,
     width: "660px",
-    borderColor: "#eeeeee",
+    borderColor: "rgba(0, 0, 0, 0.23)",
     borderStyle: "dashed",
     backgroundColor: "#fafafa",
     color: "#bdbdbd",
@@ -113,9 +118,9 @@ const styles = createStyles({
     borderColor: "#2196f3",
   },
   acceptStyle: {
-    borderColor: "#008C73",
+    borderColor: GnosisTheme.colors.primary,
   },
   rejectStyle: {
-    borderColor: "#ff1744",
+    borderColor: GnosisTheme.colors.error,
   },
 });
