@@ -29,6 +29,12 @@ const GlobalStyle = createGlobalStyle`
         url(${avertaFont}) format('woff2'),
         url(${avertaBoldFont}) format('woff');
     }
+
+    .error-marker {
+        position: absolute;
+        background-color: lightpink;
+        display: block;
+      }
 `;
 
 export default GlobalStyle;

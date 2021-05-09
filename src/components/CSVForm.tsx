@@ -1,3 +1,5 @@
+import React, { useContext } from "react";
+import styled from "styled-components";
 import {
   Card,
   Text,
@@ -9,6 +11,10 @@ import {
 import { TextField } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import React from "react";
+import AceEditor, { IMarker } from "react-ace";
+import "ace-builds/src-noconflict/theme-tomorrow";
+import "ace-builds/src-noconflict/mode-text";
+import { MessageContext } from "src/contexts/MessageContextProvider";
 import styled from "styled-components";
 
 import { TokenMap } from "../hooks/tokenList";
@@ -26,6 +32,8 @@ const Form = styled.div`
   gap: 8px;
 `;
 
+const EditorWrapper = styled.div``;
+
 export interface CSVFormProps {
   onChange: (transactionCSV: string) => void;
   onSubmit: () => void;
@@ -37,6 +45,9 @@ export interface CSVFormProps {
 }
 
 export const CSVForm = (props: CSVFormProps) => {
+  const { codeWarnings } = useContext(MessageContext);
+  console.log("Found ", codeWarnings.length + " Code Warnings");
+
   const tokenList = props.tokenList;
   const extractTokenElement = (payment: Payment) => {
     return (
@@ -73,14 +84,39 @@ export const CSVForm = (props: CSVFormProps) => {
           Upload, edit or paste your transfer CSV. <br />
           (token_address,receiver,amount,decimals)
         </Text>
-        <TextField
-          variant="outlined"
-          label="CSV"
-          onChange={(event) => props.onChange(event.target.value)}
-          value={props.csvText}
-          multiline
-          rows={6}
-        />
+        <EditorWrapper>
+          <AceEditor
+            onChange={(newCode) => props.onChange(newCode)}
+            value={props.csvText}
+            theme="tomorrow"
+            width={"700px"}
+            mode={"text"}
+            minLines={6}
+            maxLines={32}
+            setOptions={{
+              firstLineNumber: 0,
+            }}
+            debounceChangePeriod={200}
+            showPrintMargin={false}
+            style={{
+              borderWidth: 1,
+              borderColor: "rgba(0, 0, 0, 0.23)",
+              borderRadius: "4px",
+              borderStyle: "solid",
+              boxShadow: "rgba(40, 54, 61, 0.12) 1px 2px 4px 0px",
+            }}
+            markers={codeWarnings.map(
+              (warning): IMarker => ({
+                startRow: warning.lineNo,
+                endRow: warning.lineNo,
+                className: "error-marker",
+                type: "fullLine",
+                startCol: 0,
+                endCol: 30,
+              })
+            )}
+          />
+        </EditorWrapper>
         <div>
           <input
             accept="*.csv"

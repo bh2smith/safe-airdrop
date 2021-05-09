@@ -105,6 +105,7 @@ describe("Build Transfers:", () => {
           decimals: null,
         },
       ];
+
       const [listed, unlisted, native] = buildTransfers(
         smallPayments,
         tokenList
@@ -136,7 +137,7 @@ describe("Build Transfers:", () => {
   describe("Mixed", () => {
     it("works with arbitrary amount strings on listed, unlisted and native transfers", () => {
       const mixedAmount = new BigNumber("123456.000000789");
-      const mixedPayments = [
+      const mixedPayments: Payment[] = [
         // Listed ERC20
         {
           receiver,
@@ -159,6 +160,7 @@ describe("Build Transfers:", () => {
           decimals: null,
         },
       ];
+
       const [listed, unlisted, native] = buildTransfers(
         mixedPayments,
         tokenList
@@ -197,6 +199,7 @@ describe("Build Transfers:", () => {
         name: "No Decimals",
         chainId: -1,
       };
+
       const payment: Payment = {
         receiver,
         amount: amount,
