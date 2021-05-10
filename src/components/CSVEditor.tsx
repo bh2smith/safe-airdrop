@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import AceEditor, { IMarker } from "react-ace";
+import AceEditor, { IMarker, IAnnotation } from "react-ace";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/mode-text";
 import styled from "styled-components";
@@ -45,6 +45,14 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
             type: "fullLine",
             startCol: 0,
             endCol: 30,
+          })
+        )}
+        annotations={codeWarnings.map(
+          (warning): IAnnotation => ({
+            row: warning.lineNo,
+            type: "error",
+            column: 0,
+            text: warning.message,
           })
         )}
       />
