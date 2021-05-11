@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { TokenInfo } from "@uniswap/token-lists";
 import { BigNumber } from "bignumber.js";
+import * as chai from "chai";
 import { expect } from "chai";
+import chaiAsPromised from "chai-as-promised";
 
 import { TokenMap, fetchTokenList } from "../hooks/tokenList";
 import { parseCSV } from "../parser";
@@ -13,6 +15,9 @@ let listedToken: TokenInfo;
 
 const validReceiverAddress = testData.addresses.receiver1;
 const unlistedTokenAddress = testData.unlistedToken.address;
+
+// this lets us handle expectations on Promises.
+chai.use(chaiAsPromised);
 
 /**
  * concatenates csv row arrays into one string.
@@ -29,6 +34,15 @@ describe("Parsing CSVs ", () => {
     listedTokens = Array.from(tokenList.keys());
     listedToken = tokenList.get(listedTokens[0]);
   });
+
+  it("should throw errors for invalid CSVs", async () => {
+    // thins csv contains more values than headers in row1
+    const invalidCSV = "head1,header2\nvalue1,value2,value3";
+    expect(parseCSV(invalidCSV, tokenList)).to.be.rejectedWith(
+      "column header mismatch expected: 2 columns got: 3"
+    );
+  });
+
   it("should transform simple, valid CSVs correctly", async () => {
     const rowWithoutDecimal = [listedToken.address, validReceiverAddress, "1"];
     const rowWithDecimal = [
