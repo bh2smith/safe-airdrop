@@ -26,9 +26,8 @@ const App: React.FC = () => {
   const [csvText, setCsvText] = useState<string>(
     "token_address,receiver,amount,decimals"
   );
-  const { addMessage, setCodeWarnings, setMessages } = useContext(
-    MessageContext
-  );
+  const { addMessage, setCodeWarnings, setMessages } =
+    useContext(MessageContext);
 
   const web3Provider = useMemo(
     () => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)),
