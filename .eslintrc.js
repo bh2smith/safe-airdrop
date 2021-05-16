@@ -4,6 +4,7 @@ module.exports = {
     "plugin:import/recommended",
     "plugin:import/typescript",
     "plugin:prettier/recommended",
+    "react-app",
   ],
   ignorePatterns: ["build/", "node_modules/", "!.prettierrc.js", "lib/"],
   rules: {
