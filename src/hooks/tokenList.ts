@@ -22,7 +22,7 @@ export const fetchTokenList = async (
 ): Promise<TokenMap> => {
   let tokens: TokenInfo[];
   if (networkName === "MAINNET") {
-    const mainnetTokenURL = "https://gateway.ipfs.io/ipns/tokens.uniswap.org";
+    const mainnetTokenURL = "https://tokens.coingecko.com/uniswap/all.json";
     tokens = (await (await fetch(mainnetTokenURL)).json()).tokens;
   } else if (networkName === "RINKEBY") {
     // Hardcoded this because the list provided at
@@ -34,6 +34,7 @@ export const fetchTokenList = async (
   } else {
     console.error(`Unimplemented token list for ${networkName} network`);
   }
+  console.log(`Fetched ${tokens.length} for ${networkName} network`);
   return tokenMap(tokens);
 };
 
