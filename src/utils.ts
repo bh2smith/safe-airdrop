@@ -89,7 +89,12 @@ export const checkAllBalances = async (
         utils.getAddress(tokenAddress),
         web3Provider
       );
-      const tokenBalance = await erc20Contract.balanceOf(safe.safeAddress);
+      const tokenBalance = await erc20Contract
+        .balanceOf(safe.safeAddress)
+        .catch((reason) => {
+          console.error(reason);
+          return ethers.BigNumber.from(-1);
+        });
       const tokenInfo = tokenList.get(tokenAddress);
       if (
         !isSufficientBalance(

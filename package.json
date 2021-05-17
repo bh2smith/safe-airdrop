@@ -11,7 +11,9 @@
     "eject": "react-scripts eject",
     "fmt": "prettier --check '**/*.ts'",
     "fmt:write": "prettier --write '**/*.ts'",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "generate-types": "typechain --target=ethers-v5 --out-dir src/contracts './node_modules/@openzeppelin/contracts/build/contracts/IERC20.json'",
+    "postinstall": "yarn generate-types"
   },
   "dependencies": {
     "@fast-csv/parse": "^4.3.6",
@@ -40,6 +42,7 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.4",
+    "@typechain/ethers-v5": "^7.0.0",
     "@types/chai": "^4.2.18",
     "@types/chai-as-promised": "^7.1.4",
     "@types/node": "^14.14.45",
@@ -59,7 +62,8 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^6.0.0",
     "prettier": "^2.3.0",
-    "pretty-quick": "^3.1.0"
+    "pretty-quick": "^3.1.0",
+    "typechain": "^5.0.0"
   },
   "browserslist": {
     "production": [
