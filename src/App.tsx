@@ -19,16 +19,10 @@ const App: React.FC = () => {
   const { tokenList, isLoading } = useTokenList();
   const [submitting, setSubmitting] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
-  const [csvText, setCsvText] = useState<string>(
-    "token_address,receiver,amount,decimals"
-  );
-  const { addMessage, setCodeWarnings, setMessages } =
-    useContext(MessageContext);
+  const [csvText, setCsvText] = useState<string>("token_address,receiver,amount,decimals");
+  const { addMessage, setCodeWarnings, setMessages } = useContext(MessageContext);
 
-  const web3Provider = useMemo(
-    () => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)),
-    [sdk, safe]
-  );
+  const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
 
   const onChangeTextHandler = useCallback(
     (csvText: string) => {
@@ -39,23 +33,20 @@ const App: React.FC = () => {
         .then(([transfers, warnings]) => {
           console.log("CSV parsed!");
           const summary = transfersToSummary(transfers);
-          checkAllBalances(summary, web3Provider, safe, tokenList).then(
-            (insufficientBalances) =>
-              setMessages(
-                insufficientBalances.map((insufficientBalanceInfo) => ({
-                  message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
-                  severity: "warning",
-                }))
-              )
+          checkAllBalances(summary, web3Provider, safe, tokenList).then((insufficientBalances) =>
+            setMessages(
+              insufficientBalances.map((insufficientBalanceInfo) => ({
+                message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
+                severity: "warning",
+              })),
+            ),
           );
           setTransferContent(transfers);
           setCodeWarnings(warnings);
         })
-        .catch((reason: any) =>
-          addMessage({ severity: "error", message: reason.message })
-        );
+        .catch((reason: any) => addMessage({ severity: "error", message: reason.message }));
     },
-    [addMessage, safe, setCodeWarnings, setMessages, tokenList, web3Provider]
+    [addMessage, safe, setCodeWarnings, setMessages, tokenList, web3Provider],
   );
 
   const submitTx = useCallback(async () => {

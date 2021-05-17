@@ -1,9 +1,4 @@
-import {
-  Button,
-  Link,
-  Text,
-  theme as GnosisTheme,
-} from "@gnosis.pm/safe-react-components";
+import { Button, Link, Text, theme as GnosisTheme } from "@gnosis.pm/safe-react-components";
 import { createStyles } from "@material-ui/core";
 import React, { useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
@@ -28,16 +23,10 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
         reader.readAsText(file);
       });
     },
-    [onChange]
+    [onChange],
   );
 
-  const {
-    getRootProps,
-    getInputProps,
-    isDragActive,
-    isDragAccept,
-    isDragReject,
-  } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     maxFiles: 1,
     onDrop,
     accept: "text/csv",
@@ -50,7 +39,7 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
       ...(isDragAccept ? styles.acceptStyle : {}),
       ...(isDragReject ? styles.rejectStyle : {}),
     }),
-    [isDragActive, isDragReject, isDragAccept]
+    [isDragActive, isDragReject, isDragAccept],
   );
 
   return (
@@ -74,12 +63,7 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
               gap: "8px",
             }}
           >
-            <Button
-              size="md"
-              variant="contained"
-              color="primary"
-              component="span"
-            >
+            <Button size="md" variant="contained" color="primary" component="span">
               Upload CSV
             </Button>
             <Text center size="lg">

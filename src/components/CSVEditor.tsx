@@ -45,7 +45,7 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
             type: "fullLine",
             startCol: 0,
             endCol: 30,
-          })
+          }),
         )}
         annotations={codeWarnings.map(
           (warning): IAnnotation => ({
@@ -53,7 +53,7 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
             type: "error",
             column: 0,
             text: warning.message,
-          })
+          }),
         )}
       />
     </EditorWrapper>
