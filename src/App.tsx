@@ -1,9 +1,5 @@
 import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-// TODO - Will need for web3Provider
-// import { useMemo } from "react";
-// import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
-// import { ethers } from "ethers";
 import { Loader, Text } from "@gnosis.pm/safe-react-components";
 import { ethers } from "ethers";
 import React, { useCallback, useState, useContext, useMemo } from "react";
@@ -47,11 +43,7 @@ const App: React.FC = () => {
             (insufficientBalances) =>
               setMessages(
                 insufficientBalances.map((insufficientBalanceInfo) => ({
-                  message:
-                    "Insufficient Balance: " +
-                    insufficientBalanceInfo.transferAmount +
-                    " of " +
-                    insufficientBalanceInfo.token,
+                  message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
                   severity: "warning",
                 }))
               )
