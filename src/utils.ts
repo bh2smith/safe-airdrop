@@ -71,19 +71,17 @@ export const checkAllBalances = async (
   tokenList: TokenMap
 ): Promise<InsufficientBalanceInfo[]> => {
   const insufficientTokens: InsufficientBalanceInfo[] = [];
-  for (const summaryEntry of summary.values()) {
-    const tokenAddress = summaryEntry.tokenAddress;
-    const tokenAmount = summaryEntry.amount;
+  for (const { tokenAddress, amount, decimals } of summary.values()) {
     if (tokenAddress === null) {
       // Check ETH Balance
       const tokenBalance = await web3Provider.getBalance(
         safe.safeAddress,
         "latest"
       );
-      if (!isSufficientBalance(tokenBalance, tokenAmount, 18)) {
+      if (!isSufficientBalance(tokenBalance, amount, 18)) {
         insufficientTokens.push({
           token: "ETH",
-          transferAmount: tokenAmount.toFixed(),
+          transferAmount: amount.toFixed(),
         });
       }
     } else {
@@ -91,19 +89,18 @@ export const checkAllBalances = async (
         utils.getAddress(tokenAddress),
         web3Provider
       );
-      console.log(erc20Contract);
       const tokenBalance = await erc20Contract.balanceOf(safe.safeAddress);
       const tokenInfo = tokenList.get(tokenAddress);
       if (
         !isSufficientBalance(
           tokenBalance,
-          tokenAmount,
-          tokenInfo?.decimals || summaryEntry.decimals
+          amount,
+          tokenInfo?.decimals || decimals
         )
       ) {
         insufficientTokens.push({
           token: tokenInfo?.symbol || tokenAddress,
-          transferAmount: tokenAmount.toFixed(),
+          transferAmount: amount.toFixed(),
         });
       }
     }
@@ -113,10 +110,10 @@ export const checkAllBalances = async (
 
 const isSufficientBalance = (
   tokenBalance: ethers.BigNumber,
-  tokenAmount: BigNumber,
+  transferAmount: BigNumber,
   decimals: number
 ) => {
   const tokenBalanceNumber = new BigNumber(tokenBalance.toString());
-  const balanceFromWei = fromWei(tokenBalanceNumber, decimals);
-  return balanceFromWei.gte(tokenAmount);
+  const transferAmountInWei = toWei(transferAmount, decimals);
+  return tokenBalanceNumber.gte(transferAmountInWei);
 };

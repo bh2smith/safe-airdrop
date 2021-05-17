@@ -43,7 +43,7 @@ describe("fromWei()", () => {
   });
 });
 
-describe("transerToSummary", () => {
+describe("transerToSummary()", () => {
   it("works for integer native currency", () => {
     const transfers: Payment[] = [
       {
@@ -63,7 +63,6 @@ describe("transerToSummary", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    // For some reason expect.to.equal() doesnt work for BigNumbers.
     expect(summary.get(null).amount.toFixed()).to.equal("6");
   });
 
@@ -86,7 +85,6 @@ describe("transerToSummary", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    // For some reason expect.to.equal() doesnt work for BigNumbers.
     expect(summary.get(null).amount.toFixed()).to.equal("0.111");
   });
 
@@ -109,7 +107,6 @@ describe("transerToSummary", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    // For some reason expect.to.equal() doesnt work for BigNumbers.
     expect(
       summary.get(testData.unlistedToken.address).amount.toFixed()
     ).to.equal("0.111");
@@ -134,7 +131,6 @@ describe("transerToSummary", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    // For some reason expect.to.equal() doesnt work for BigNumbers.
     expect(
       summary.get(testData.unlistedToken.address).amount.toFixed()
     ).to.equal("6");
@@ -169,7 +165,6 @@ describe("transerToSummary", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    // For some reason expect.to.equal() doesnt work for BigNumbers.
     expect(
       summary.get(testData.unlistedToken.address).amount.toFixed()
     ).to.equal("6.4");
