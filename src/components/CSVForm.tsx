@@ -1,11 +1,5 @@
-import {
-  Card,
-  Text,
-  Button,
-  Table,
-  Loader,
-} from "@gnosis.pm/safe-react-components";
-import React, { useContext } from "react";
+import { Card, Text, Button, Table, Loader } from "@gnosis.pm/safe-react-components";
+import { useContext } from "react";
 import styled from "styled-components";
 
 import { MessageContext } from "../../src/contexts/MessageContextProvider";
@@ -92,21 +86,12 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
               <>
                 <Loader size="md" />
                 <br />
-                <Button
-                  size="lg"
-                  color="secondary"
-                  onClick={props.onAbortSubmit}
-                >
+                <Button size="lg" color="secondary" onClick={props.onAbortSubmit}>
                   Cancel
                 </Button>
               </>
             ) : (
-              <Button
-                style={{ alignSelf: "center" }}
-                size="lg"
-                color="primary"
-                onClick={props.onSubmit}
-              >
+              <Button style={{ alignSelf: "center" }} size="lg" color="primary" onClick={props.onSubmit}>
                 Submit
               </Button>
             )}

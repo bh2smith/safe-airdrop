@@ -27,34 +27,27 @@ const generateWarnings = (
   // We need the row parameter because of the api of fast-csv
   _row: Payment,
   rowNumber: number,
-  warnings: string
+  warnings: string,
 ) => {
-  const messages: CodeWarning[] = warnings
-    .split(";")
-    .map((warning: string) => ({
-      message: warning,
-      severity: "warning",
-      lineNo: rowNumber,
-    }));
+  const messages: CodeWarning[] = warnings.split(";").map((warning: string) => ({
+    message: warning,
+    severity: "warning",
+    lineNo: rowNumber,
+  }));
   return messages;
 };
 
-export const parseCSV = (
-  csvText: string,
-  tokenList: TokenMap
-): Promise<[Payment[], CodeWarning[]]> => {
+export const parseCSV = (csvText: string, tokenList: TokenMap): Promise<[Payment[], CodeWarning[]]> => {
   return new Promise<[Payment[], CodeWarning[]]>((resolve, reject) => {
     const results: any[] = [];
     const resultingWarnings: CodeWarning[] = [];
     parseString<CSVRow, Payment>(csvText, { headers: true })
       .transform(transformRow)
-      .validate((row: Payment, callback: RowValidateCallback) =>
-        validateRow(row, tokenList, callback)
-      )
+      .validate((row: Payment, callback: RowValidateCallback) => validateRow(row, tokenList, callback))
       .on("data", (data) => results.push(data))
       .on("end", () => resolve([results, resultingWarnings]))
       .on("data-invalid", (row: Payment, rowNumber: number, warnings: string) =>
-        resultingWarnings.push(...generateWarnings(row, rowNumber, warnings))
+        resultingWarnings.push(...generateWarnings(row, rowNumber, warnings)),
       )
       .on("error", (error) => reject(error));
   });
@@ -72,25 +65,15 @@ const transformRow = (row: CSVRow): Payment => ({
       ? utils.getAddress(row.token_address)
       : row.token_address,
   amount: new BigNumber(row.amount),
-  receiver: utils.isAddress(row.receiver)
-    ? utils.getAddress(row.receiver)
-    : row.receiver,
+  receiver: utils.isAddress(row.receiver) ? utils.getAddress(row.receiver) : row.receiver,
   decimals: row.decimals ? Number(row.decimals) : undefined,
 });
 
 /**
  * Validates, that addresses are valid, the amount is big enough and a decimal is given or can be found in token lists.
  */
-const validateRow = (
-  row: Payment,
-  tokenList: TokenMap,
-  callback: RowValidateCallback
-) => {
-  const warnings = [
-    ...areAddressesValid(row),
-    ...isAmountPositive(row),
-    ...isDecimalValid(row, tokenList),
-  ];
+const validateRow = (row: Payment, tokenList: TokenMap, callback: RowValidateCallback) => {
+  const warnings = [...areAddressesValid(row), ...isAmountPositive(row), ...isDecimalValid(row, tokenList)];
   callback(null, warnings.length === 0, warnings.join(";"));
 };
 
@@ -106,20 +89,15 @@ const areAddressesValid = (row: Payment): string[] => {
 };
 
 const isAmountPositive = (row: Payment): string[] =>
-  row.amount.isGreaterThan(0)
-    ? []
-    : ["Only positive amounts possible: " + row.amount.toFixed()];
+  row.amount.isGreaterThan(0) ? [] : ["Only positive amounts possible: " + row.amount.toFixed()];
 
 const isDecimalValid = (row: Payment, tokenList: TokenMap): string[] => {
   if (row.tokenAddress == null || row.tokenAddress === "") {
     return [];
   } else {
     const decimals =
-      tokenList.get(
-        utils.isAddress(row.tokenAddress)
-          ? utils.getAddress(row.tokenAddress)
-          : row.tokenAddress
-      )?.decimals || row.decimals;
+      tokenList.get(utils.isAddress(row.tokenAddress) ? utils.getAddress(row.tokenAddress) : row.tokenAddress)
+        ?.decimals || row.decimals;
     return decimals >= 0 ? [] : ["Invalid decimals: " + decimals];
   }
 };

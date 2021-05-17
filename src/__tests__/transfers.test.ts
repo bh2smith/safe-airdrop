@@ -51,26 +51,17 @@ describe("Build Transfers:", () => {
         },
       ];
 
-      const [listedTransfer, unlistedTransfer, nativeTransfer] = buildTransfers(
-        largePayments,
-        tokenList
-      );
+      const [listedTransfer, unlistedTransfer, nativeTransfer] = buildTransfers(largePayments, tokenList);
       expect(listedTransfer.value).to.be.equal("0");
       expect(listedTransfer.to).to.be.equal(listedToken.address);
       expect(listedTransfer.data).to.be.equal(
-        erc20Interface.encodeFunctionData("transfer", [
-          receiver,
-          MAX_U256.toFixed(),
-        ])
+        erc20Interface.encodeFunctionData("transfer", [receiver, MAX_U256.toFixed()]),
       );
 
       expect(unlistedTransfer.value).to.be.equal("0");
       expect(unlistedTransfer.to).to.be.equal(testData.unlistedToken.address);
       expect(unlistedTransfer.data).to.be.equal(
-        erc20Interface.encodeFunctionData("transfer", [
-          receiver,
-          MAX_U256.toFixed(),
-        ])
+        erc20Interface.encodeFunctionData("transfer", [receiver, MAX_U256.toFixed()]),
       );
 
       expect(nativeTransfer.value).to.be.equal(MAX_U256.toFixed());
@@ -106,17 +97,11 @@ describe("Build Transfers:", () => {
         },
       ];
 
-      const [listed, unlisted, native] = buildTransfers(
-        smallPayments,
-        tokenList
-      );
+      const [listed, unlisted, native] = buildTransfers(smallPayments, tokenList);
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
-        erc20Interface.encodeFunctionData("transfer", [
-          receiver,
-          toWei(tinyAmount, listedToken.decimals).toFixed(),
-        ])
+        erc20Interface.encodeFunctionData("transfer", [receiver, toWei(tinyAmount, listedToken.decimals).toFixed()]),
       );
 
       expect(unlisted.value).to.be.equal("0");
@@ -125,7 +110,7 @@ describe("Build Transfers:", () => {
         erc20Interface.encodeFunctionData("transfer", [
           receiver,
           toWei(tinyAmount, testData.unlistedToken.decimals).toFixed(),
-        ])
+        ]),
       );
 
       expect(native.value).to.be.equal(toWei(tinyAmount, 18).toString());
@@ -161,17 +146,11 @@ describe("Build Transfers:", () => {
         },
       ];
 
-      const [listed, unlisted, native] = buildTransfers(
-        mixedPayments,
-        tokenList
-      );
+      const [listed, unlisted, native] = buildTransfers(mixedPayments, tokenList);
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
-        erc20Interface.encodeFunctionData("transfer", [
-          receiver,
-          toWei(mixedAmount, listedToken.decimals).toFixed(),
-        ])
+        erc20Interface.encodeFunctionData("transfer", [receiver, toWei(mixedAmount, listedToken.decimals).toFixed()]),
       );
 
       expect(unlisted.value).to.be.equal("0");
@@ -180,7 +159,7 @@ describe("Build Transfers:", () => {
         erc20Interface.encodeFunctionData("transfer", [
           receiver,
           toWei(mixedAmount, testData.unlistedToken.decimals).toFixed(),
-        ])
+        ]),
       );
 
       expect(native.value).to.be.equal(toWei(mixedAmount, 18).toFixed());
@@ -210,10 +189,7 @@ describe("Build Transfers:", () => {
       expect(transfer.value).to.be.equal("0");
       expect(transfer.to).to.be.equal(crappyToken.address);
       expect(transfer.data).to.be.equal(
-        erc20Interface.encodeFunctionData("transfer", [
-          receiver,
-          toWei(amount, crappyToken.decimals).toFixed(),
-        ])
+        erc20Interface.encodeFunctionData("transfer", [receiver, toWei(amount, crappyToken.decimals).toFixed()]),
       );
     });
   });

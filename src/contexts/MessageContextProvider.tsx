@@ -38,9 +38,7 @@ export const MessageContextProvider = (props: MessageContextProviderProps) => {
   const [codeWarnings, setCodeWarnings] = useState<CodeWarning[]>([]);
 
   const removeMessage = (messageToRemove: Message | CodeWarning) =>
-    setMessages(
-      messages.filter((message) => message.message !== messageToRemove.message)
-    );
+    setMessages(messages.filter((message) => message.message !== messageToRemove.message));
 
   const addMessage = (messageToAdd: Message | CodeWarning) => {
     // Do not add equal message
@@ -58,9 +56,5 @@ export const MessageContextProvider = (props: MessageContextProviderProps) => {
     setCodeWarnings,
   };
 
-  return (
-    <MessageContext.Provider value={contextValue}>
-      {props.children}
-    </MessageContext.Provider>
-  );
+  return <MessageContext.Provider value={contextValue}>{props.children}</MessageContext.Provider>;
 };

@@ -17,9 +17,7 @@ function tokenMap(tokenList: TokenInfo[]): TokenMap {
   return res;
 }
 
-export const fetchTokenList = async (
-  networkName: string
-): Promise<TokenMap> => {
+export const fetchTokenList = async (networkName: string): Promise<TokenMap> => {
   let tokens: TokenInfo[];
   if (networkName === "MAINNET") {
     const mainnetTokenURL = "https://tokens.coingecko.com/uniswap/all.json";

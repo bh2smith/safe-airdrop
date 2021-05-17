@@ -12,10 +12,7 @@ export const TWO = new BigNumber(2);
 export const TEN = new BigNumber(10);
 export const MAX_U256 = TWO.pow(255).minus(1);
 
-export function toWei(
-  amount: string | number | BigNumber,
-  decimals: number
-): BigNumber {
+export function toWei(amount: string | number | BigNumber, decimals: number): BigNumber {
   let res = TEN.pow(decimals).multipliedBy(amount);
   if (res.decimalPlaces() > 0) {
     // TODO - reinstate this warning by passing along with return content
@@ -40,10 +37,7 @@ export type SummaryEntry = {
 };
 
 export const transfersToSummary = (transfers: Payment[]) => {
-  return transfers.reduce((previousValue, currentValue): Map<
-    string,
-    SummaryEntry
-  > => {
+  return transfers.reduce((previousValue, currentValue): Map<string, SummaryEntry> => {
     let tokenSummary = previousValue.get(currentValue.tokenAddress);
     if (typeof tokenSummary === "undefined") {
       tokenSummary = {
@@ -68,16 +62,13 @@ export const checkAllBalances = async (
   summary: Map<string, SummaryEntry>,
   web3Provider: ethers.providers.Web3Provider,
   safe: SafeInfo,
-  tokenList: TokenMap
+  tokenList: TokenMap,
 ): Promise<InsufficientBalanceInfo[]> => {
   const insufficientTokens: InsufficientBalanceInfo[] = [];
   for (const { tokenAddress, amount, decimals } of summary.values()) {
     if (tokenAddress === null) {
       // Check ETH Balance
-      const tokenBalance = await web3Provider.getBalance(
-        safe.safeAddress,
-        "latest"
-      );
+      const tokenBalance = await web3Provider.getBalance(safe.safeAddress, "latest");
       if (!isSufficientBalance(tokenBalance, amount, 18)) {
         insufficientTokens.push({
           token: "ETH",
@@ -85,24 +76,13 @@ export const checkAllBalances = async (
         });
       }
     } else {
-      const erc20Contract = erc20Instance(
-        utils.getAddress(tokenAddress),
-        web3Provider
-      );
-      const tokenBalance = await erc20Contract
-        .balanceOf(safe.safeAddress)
-        .catch((reason) => {
-          console.error(reason);
-          return ethers.BigNumber.from(-1);
-        });
+      const erc20Contract = erc20Instance(utils.getAddress(tokenAddress), web3Provider);
+      const tokenBalance = await erc20Contract.balanceOf(safe.safeAddress).catch((reason) => {
+        console.error(reason);
+        return ethers.BigNumber.from(-1);
+      });
       const tokenInfo = tokenList.get(tokenAddress);
-      if (
-        !isSufficientBalance(
-          tokenBalance,
-          amount,
-          tokenInfo?.decimals || decimals
-        )
-      ) {
+      if (!isSufficientBalance(tokenBalance, amount, tokenInfo?.decimals || decimals)) {
         insufficientTokens.push({
           token: tokenInfo?.symbol || tokenAddress,
           transferAmount: amount.toFixed(),
@@ -113,11 +93,7 @@ export const checkAllBalances = async (
   return insufficientTokens;
 };
 
-const isSufficientBalance = (
-  tokenBalance: ethers.BigNumber,
-  transferAmount: BigNumber,
-  decimals: number
-) => {
+const isSufficientBalance = (tokenBalance: ethers.BigNumber, transferAmount: BigNumber, decimals: number) => {
   const tokenBalanceNumber = new BigNumber(tokenBalance.toString());
   const transferAmountInWei = toWei(transferAmount, decimals);
   return tokenBalanceNumber.gte(transferAmountInWei);
