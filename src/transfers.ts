@@ -5,10 +5,7 @@ import { TokenMap } from "./hooks/tokenList";
 import { Payment } from "./parser";
 import { toWei } from "./utils";
 
-export function buildTransfers(
-  transferData: Payment[],
-  tokenList: TokenMap
-): Transaction[] {
+export function buildTransfers(transferData: Payment[], tokenList: TokenMap): Transaction[] {
   const txList: Transaction[] = transferData.map((transfer) => {
     if (transfer.tokenAddress === null) {
       // Native asset transfer
@@ -19,16 +16,12 @@ export function buildTransfers(
       };
     } else {
       // ERC20 transfer
-      const decimals =
-        tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals;
+      const decimals = tokenList.get(transfer.tokenAddress)?.decimals || transfer.decimals;
       const amountData = toWei(transfer.amount, decimals);
       return {
         to: transfer.tokenAddress,
         value: "0",
-        data: erc20Interface.encodeFunctionData("transfer", [
-          transfer.receiver,
-          amountData.toFixed(),
-        ]),
+        data: erc20Interface.encodeFunctionData("transfer", [transfer.receiver, amountData.toFixed()]),
       };
     }
   });

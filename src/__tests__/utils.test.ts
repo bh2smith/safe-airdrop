@@ -20,9 +20,7 @@ describe("toWei()", () => {
   it("mixed", () => {
     expect(toWei(1.234, 0).eq(ONE));
     expect(toWei(1.234, 3).eq(new BigNumber(1234)));
-    expect(
-      toWei(1.00000000000000000001, 18).eq(new BigNumber(1000000000000000000))
-    );
+    expect(toWei(1.00000000000000000001, 18).eq(new BigNumber(1000000000000000000)));
   });
 });
 
@@ -107,9 +105,7 @@ describe("transferToSummary()", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(
-      summary.get(testData.unlistedToken.address).amount.toFixed()
-    ).to.equal("0.111");
+    expect(summary.get(testData.unlistedToken.address).amount.toFixed()).to.equal("0.111");
   });
 
   it("works for integer in erc20", () => {
@@ -131,9 +127,7 @@ describe("transferToSummary()", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(
-      summary.get(testData.unlistedToken.address).amount.toFixed()
-    ).to.equal("6");
+    expect(summary.get(testData.unlistedToken.address).amount.toFixed()).to.equal("6");
   });
 
   it("works for mixed payments", () => {
@@ -165,9 +159,7 @@ describe("transferToSummary()", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(
-      summary.get(testData.unlistedToken.address).amount.toFixed()
-    ).to.equal("6.4");
+    expect(summary.get(testData.unlistedToken.address).amount.toFixed()).to.equal("6.4");
     expect(summary.get(null).amount.toFixed()).to.equal("3.33");
   });
 });
