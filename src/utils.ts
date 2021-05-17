@@ -77,10 +77,7 @@ export const checkAllBalances = async (
       }
     } else {
       const erc20Contract = erc20Instance(utils.getAddress(tokenAddress), web3Provider);
-      const tokenBalance = await erc20Contract.balanceOf(safe.safeAddress).catch((reason) => {
-        console.error(reason);
-        return ethers.BigNumber.from(-1);
-      });
+      const tokenBalance = await erc20Contract.balanceOf(safe.safeAddress);
       const tokenInfo = tokenList.get(tokenAddress);
       if (!isSufficientBalance(tokenBalance, amount, tokenInfo?.decimals || decimals)) {
         insufficientTokens.push({
