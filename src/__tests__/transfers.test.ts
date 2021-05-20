@@ -5,7 +5,7 @@ import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
 
 import { erc20Interface } from "../erc20";
-import { fetchTokenList, TokenMap } from "../hooks/tokenList";
+import { fetchTokenList, MinimalTokenInfo, TokenMap } from "../hooks/token";
 import { Payment } from "../parser";
 import { testData } from "../test/util";
 import { buildTransfers } from "../transfers";
@@ -13,15 +13,17 @@ import { toWei, fromWei, MAX_U256 } from "../utils";
 
 const dummySafeInfo = testData.dummySafeInfo;
 let tokenList: TokenMap;
-let listedTokens: string[];
-let listedToken: TokenInfo;
+let listedToken: MinimalTokenInfo;
 const receiver = testData.addresses.receiver1;
 
 describe("Build Transfers:", () => {
   beforeAll(async () => {
     tokenList = await fetchTokenList(dummySafeInfo.network);
-    listedTokens = Array.from(tokenList.keys());
-    listedToken = tokenList.get(listedTokens[0]);
+    let listedTokens = Array.from(tokenList.keys());
+    const tokenInfo = tokenList.get(listedTokens[0]);
+    if (typeof tokenInfo !== "undefined") {
+      listedToken = tokenInfo;
+    }
     assert(tokenList.get(testData.unlistedToken.address) === undefined);
   });
 
@@ -34,6 +36,7 @@ describe("Build Transfers:", () => {
           amount: fromWei(MAX_U256, listedToken.decimals),
           tokenAddress: listedToken.address,
           decimals: listedToken.decimals,
+          symbol: "LIT",
         },
         // Unlisted ERC20
         {
@@ -41,13 +44,15 @@ describe("Build Transfers:", () => {
           amount: fromWei(MAX_U256, testData.unlistedToken.decimals),
           tokenAddress: testData.unlistedToken.address,
           decimals: testData.unlistedToken.decimals,
+          symbol: "ULT",
         },
         // Native Asset
         {
           receiver,
           amount: fromWei(MAX_U256, 18),
           tokenAddress: null,
-          decimals: null,
+          decimals: 18,
+          symbol: "ETH",
         },
       ];
 
@@ -80,6 +85,7 @@ describe("Build Transfers:", () => {
           amount: tinyAmount,
           tokenAddress: listedToken.address,
           decimals: listedToken.decimals,
+          symbol: "LIT",
         },
         // Unlisted ERC20
         {
@@ -87,13 +93,15 @@ describe("Build Transfers:", () => {
           amount: tinyAmount,
           tokenAddress: testData.unlistedToken.address,
           decimals: testData.unlistedToken.decimals,
+          symbol: "ULT",
         },
         // Native Asset
         {
           receiver,
           amount: tinyAmount,
           tokenAddress: null,
-          decimals: null,
+          decimals: 18,
+          symbol: "ETH",
         },
       ];
 
@@ -129,6 +137,7 @@ describe("Build Transfers:", () => {
           amount: mixedAmount,
           tokenAddress: listedToken.address,
           decimals: listedToken.decimals,
+          symbol: "LIT",
         },
         // Unlisted ERC20
         {
@@ -136,13 +145,15 @@ describe("Build Transfers:", () => {
           amount: mixedAmount,
           tokenAddress: testData.unlistedToken.address,
           decimals: testData.unlistedToken.decimals,
+          symbol: "ULT",
         },
         // Native Asset
         {
           receiver,
           amount: mixedAmount,
           tokenAddress: null,
-          decimals: null,
+          decimals: 18,
+          symbol: "ETH",
         },
       ];
 
@@ -184,6 +195,7 @@ describe("Build Transfers:", () => {
         amount: amount,
         tokenAddress: crappyToken.address,
         decimals: crappyToken.decimals,
+        symbol: "CRP",
       };
       const [transfer] = buildTransfers([payment], tokenList);
       expect(transfer.value).to.be.equal("0");

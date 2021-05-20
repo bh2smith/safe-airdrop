@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { fetchTokenList } from "../hooks/tokenList";
+import { fetchTokenList } from "../hooks/token";
 
 const configuredNetworks = ["MAINNET", "RINKEBY", "XDAI"];
 

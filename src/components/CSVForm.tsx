@@ -3,7 +3,7 @@ import { useContext } from "react";
 import styled from "styled-components";
 
 import { MessageContext } from "../../src/contexts/MessageContextProvider";
-import { TokenMap } from "../hooks/tokenList";
+import { TokenMap } from "../hooks/token";
 import { Payment } from "../parser";
 
 import { CSVEditor } from "./CSVEditor";
@@ -44,7 +44,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
             marginRight: 3,
           }}
         />{" "}
-        {tokenList.get(payment.tokenAddress)?.symbol || payment.tokenAddress}
+        {payment.symbol}
       </div>
     );
   };

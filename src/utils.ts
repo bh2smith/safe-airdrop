@@ -3,7 +3,6 @@ import { BigNumber } from "bignumber.js";
 import { ethers, utils } from "ethers";
 
 import { erc20Instance } from "./erc20";
-import { TokenMap } from "./hooks/tokenList";
 import { Payment } from "./parser";
 
 export const ZERO = new BigNumber(0);
@@ -31,26 +30,28 @@ export function fromWei(amount: BigNumber, decimals: number): BigNumber {
 }
 
 export type SummaryEntry = {
-  tokenAddress: string;
+  tokenAddress: string | null;
   amount: BigNumber;
   decimals: number;
+  symbol: string;
 };
 
 export const transfersToSummary = (transfers: Payment[]) => {
-  return transfers.reduce((previousValue, currentValue): Map<string, SummaryEntry> => {
+  return transfers.reduce((previousValue, currentValue): Map<string | null, SummaryEntry> => {
     let tokenSummary = previousValue.get(currentValue.tokenAddress);
     if (typeof tokenSummary === "undefined") {
       tokenSummary = {
         tokenAddress: currentValue.tokenAddress,
         amount: new BigNumber(0),
         decimals: currentValue.decimals,
+        symbol: currentValue.symbol,
       };
       previousValue.set(currentValue.tokenAddress, tokenSummary);
     }
     tokenSummary.amount = tokenSummary.amount.plus(currentValue.amount);
 
     return previousValue;
-  }, new Map<string, SummaryEntry>());
+  }, new Map<string | null, SummaryEntry>());
 };
 
 export type InsufficientBalanceInfo = {
@@ -59,13 +60,12 @@ export type InsufficientBalanceInfo = {
 };
 
 export const checkAllBalances = async (
-  summary: Map<string, SummaryEntry>,
+  summary: Map<string | null, SummaryEntry>,
   web3Provider: ethers.providers.Web3Provider,
   safe: SafeInfo,
-  tokenList: TokenMap,
 ): Promise<InsufficientBalanceInfo[]> => {
   const insufficientTokens: InsufficientBalanceInfo[] = [];
-  for (const { tokenAddress, amount, decimals } of summary.values()) {
+  for (const { tokenAddress, amount, decimals, symbol } of summary.values()) {
     if (tokenAddress === null) {
       // Check ETH Balance
       const tokenBalance = await web3Provider.getBalance(safe.safeAddress, "latest");
@@ -81,10 +81,9 @@ export const checkAllBalances = async (
         console.error(reason);
         return ethers.BigNumber.from(-1);
       });
-      const tokenInfo = tokenList.get(tokenAddress);
-      if (!isSufficientBalance(tokenBalance, amount, tokenInfo?.decimals || decimals)) {
+      if (!isSufficientBalance(tokenBalance, amount, decimals)) {
         insufficientTokens.push({
-          token: tokenInfo?.symbol || tokenAddress,
+          token: symbol,
           transferAmount: amount.toFixed(),
         });
       }

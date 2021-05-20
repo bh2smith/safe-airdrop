@@ -8,7 +8,7 @@ import styled from "styled-components";
 import { CSVForm } from "./components/CSVForm";
 import { Header } from "./components/Header";
 import { MessageContext } from "./contexts/MessageContextProvider";
-import { useTokenList } from "./hooks/tokenList";
+import { useTokenInfoProvider, useTokenList } from "./hooks/token";
 import { parseCSV, Payment } from "./parser";
 import { buildTransfers } from "./transfers";
 import { checkAllBalances, transfersToSummary } from "./utils";
@@ -17,6 +17,7 @@ const App: React.FC = () => {
   const { safe, sdk } = useSafeAppsSDK();
 
   const { tokenList, isLoading } = useTokenList();
+  const tokenInfoProvider = useTokenInfoProvider();
   const [submitting, setSubmitting] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
   const [csvText, setCsvText] = useState<string>("token_address,receiver,amount,decimals");
@@ -28,12 +29,12 @@ const App: React.FC = () => {
     (csvText: string) => {
       setCsvText(csvText);
       // Parse CSV
-      const parsePromise = parseCSV(csvText, tokenList);
+      const parsePromise = parseCSV(csvText, tokenInfoProvider);
       parsePromise
         .then(([transfers, warnings]) => {
           console.log("CSV parsed!");
           const summary = transfersToSummary(transfers);
-          checkAllBalances(summary, web3Provider, safe, tokenList).then((insufficientBalances) =>
+          checkAllBalances(summary, web3Provider, safe).then((insufficientBalances) =>
             setMessages(
               insufficientBalances.map((insufficientBalanceInfo) => ({
                 message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
@@ -46,7 +47,7 @@ const App: React.FC = () => {
         })
         .catch((reason: any) => addMessage({ severity: "error", message: reason.message }));
     },
-    [addMessage, safe, setCodeWarnings, setMessages, tokenList, web3Provider],
+    [addMessage, safe, setCodeWarnings, setMessages, tokenInfoProvider, web3Provider],
   );
 
   const submitTx = useCallback(async () => {
