@@ -1,9 +1,9 @@
-import { parseString, RowValidateCallback } from "@fast-csv/parse";
+import { parseString, RowTransformCallback, RowValidateCallback } from "@fast-csv/parse";
 import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
 
 import { CodeWarning } from "./contexts/MessageContextProvider";
-import { TokenMap } from "./hooks/tokenList";
+import { TokenInfoProvider } from "./hooks/token";
 
 /**
  * Includes methods to parse, transform and validate csv content
@@ -13,7 +13,8 @@ export interface Payment {
   receiver: string;
   amount: BigNumber;
   tokenAddress: string | null;
-  decimals?: number;
+  decimals: number;
+  symbol?: string;
 }
 
 export type CSVRow = {
@@ -22,6 +23,12 @@ export type CSVRow = {
   token_address: string;
   decimals?: string;
 };
+
+interface PrePayment {
+  receiver: string;
+  amount: BigNumber;
+  tokenAddress: string | null;
+}
 
 const generateWarnings = (
   // We need the row parameter because of the api of fast-csv
@@ -37,13 +44,16 @@ const generateWarnings = (
   return messages;
 };
 
-export const parseCSV = (csvText: string, tokenList: TokenMap): Promise<[Payment[], CodeWarning[]]> => {
+export const parseCSV = (
+  csvText: string,
+  tokenInfoProvider: TokenInfoProvider,
+): Promise<[Payment[], CodeWarning[]]> => {
   return new Promise<[Payment[], CodeWarning[]]>((resolve, reject) => {
     const results: any[] = [];
     const resultingWarnings: CodeWarning[] = [];
     parseString<CSVRow, Payment>(csvText, { headers: true })
-      .transform(transformRow)
-      .validate((row: Payment, callback: RowValidateCallback) => validateRow(row, tokenList, callback))
+      .transform((row: CSVRow, callback) => transformRow(row, tokenInfoProvider, callback))
+      .validate((row: Payment, callback: RowValidateCallback) => validateRow(row, callback))
       .on("data", (data) => results.push(data))
       .on("end", () => resolve([results, resultingWarnings]))
       .on("data-invalid", (row: Payment, rowNumber: number, warnings: string) =>
@@ -56,24 +66,32 @@ export const parseCSV = (csvText: string, tokenList: TokenMap): Promise<[Payment
 /**
  * Transforms each row into a payment object.
  */
-const transformRow = (row: CSVRow): Payment => ({
-  // avoids errors from getAddress. Invalid addresses are later caught in validateRow
-  tokenAddress:
-    row.token_address === "" || row.token_address === null
-      ? null
-      : utils.isAddress(row.token_address)
-      ? utils.getAddress(row.token_address)
-      : row.token_address,
-  amount: new BigNumber(row.amount),
-  receiver: utils.isAddress(row.receiver) ? utils.getAddress(row.receiver) : row.receiver,
-  decimals: row.decimals ? Number(row.decimals) : undefined,
-});
+const transformRow = (
+  row: CSVRow,
+  tokenInfoProvider: TokenInfoProvider,
+  callback: RowTransformCallback<Payment>,
+): void => {
+  const prePayment: PrePayment = {
+    // avoids errors from getAddress. Invalid addresses are later caught in validateRow
+    tokenAddress:
+      row.token_address === "" || row.token_address === null
+        ? null
+        : utils.isAddress(row.token_address)
+        ? utils.getAddress(row.token_address)
+        : row.token_address,
+    amount: new BigNumber(row.amount),
+    receiver: utils.isAddress(row.receiver) ? utils.getAddress(row.receiver) : row.receiver,
+  };
+  toPayment(prePayment, tokenInfoProvider)
+    .then((row) => callback(null, row))
+    .catch((reason) => callback(reason));
+};
 
 /**
  * Validates, that addresses are valid, the amount is big enough and a decimal is given or can be found in token lists.
  */
-const validateRow = (row: Payment, tokenList: TokenMap, callback: RowValidateCallback) => {
-  const warnings = [...areAddressesValid(row), ...isAmountPositive(row), ...isDecimalValid(row, tokenList)];
+const validateRow = (row: Payment, callback: RowValidateCallback) => {
+  const warnings = [...areAddressesValid(row), ...isAmountPositive(row), ...isTokenValid(row)];
   callback(null, warnings.length === 0, warnings.join(";"));
 };
 
@@ -91,13 +109,38 @@ const areAddressesValid = (row: Payment): string[] => {
 const isAmountPositive = (row: Payment): string[] =>
   row.amount.isGreaterThan(0) ? [] : ["Only positive amounts possible: " + row.amount.toFixed()];
 
-const isDecimalValid = (row: Payment, tokenList: TokenMap): string[] => {
-  if (row.tokenAddress == null || row.tokenAddress === "") {
-    return [];
-  } else {
-    const decimals =
-      tokenList.get(utils.isAddress(row.tokenAddress) ? utils.getAddress(row.tokenAddress) : row.tokenAddress)
-        ?.decimals || row.decimals;
-    return decimals >= 0 ? [] : ["Invalid decimals: " + decimals];
+const isTokenValid = (row: Payment): string[] =>
+  row.decimals === -1 && row.symbol === "TOKEN_NOT_FOUND" ? [`No token contract was found at ${row.tokenAddress}`] : [];
+
+export async function toPayment(prePayment: PrePayment, tokenInfoProvider: TokenInfoProvider): Promise<Payment> {
+  if (prePayment.tokenAddress === null) {
+    // Native asset payment.
+    return {
+      receiver: prePayment.receiver,
+      amount: prePayment.amount,
+      tokenAddress: prePayment.tokenAddress,
+      decimals: 18,
+      symbol: "ETH",
+    };
   }
-};
+  const tokenInfo = await tokenInfoProvider.getTokenInfo(prePayment.tokenAddress);
+  if (typeof tokenInfo !== "undefined") {
+    let decimals = tokenInfo.decimals;
+    let symbol = tokenInfo.symbol;
+    return {
+      receiver: prePayment.receiver,
+      amount: prePayment.amount,
+      tokenAddress: prePayment.tokenAddress,
+      decimals,
+      symbol,
+    };
+  } else {
+    return {
+      receiver: prePayment.receiver,
+      amount: prePayment.amount,
+      tokenAddress: prePayment.tokenAddress,
+      decimals: -1,
+      symbol: "TOKEN_NOT_FOUND",
+    };
+  }
+}
