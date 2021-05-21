@@ -46,31 +46,21 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
     <div>
       <div {...getRootProps({ style })}>
         <input {...getInputProps()} />
-        <input
-          accept="text/csv"
-          id="csvUploadButton"
-          type="file"
-          name="file"
-          onChange={onChange}
-          style={{ display: "none" }}
-        />
-        <label htmlFor="csvUploadButton">
-          <div
-            style={{
-              display: "inline-flex",
-              flexDirection: "row",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
-            <Button size="md" variant="contained" color="primary" component="span">
-              Upload CSV
-            </Button>
-            <Text center size="lg">
-              or drop file here
-            </Text>
-          </div>
-        </label>
+        <div
+          style={{
+            display: "inline-flex",
+            flexDirection: "row",
+            alignItems: "center",
+            gap: "8px",
+          }}
+        >
+          <Button size="md" variant="contained" color="primary" component="span">
+            Upload CSV
+          </Button>
+          <Text center size="lg">
+            or drop file here
+          </Text>
+        </div>
       </div>
       <div>
         <Link href="./sample.csv" download>
