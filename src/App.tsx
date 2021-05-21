@@ -20,7 +20,7 @@ const App: React.FC = () => {
   const tokenInfoProvider = useTokenInfoProvider();
   const [submitting, setSubmitting] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
-  const [csvText, setCsvText] = useState<string>("token_address,receiver,amount,decimals");
+  const [csvText, setCsvText] = useState<string>("token_address,receiver,amount");
   const { addMessage, setCodeWarnings, setMessages } = useContext(MessageContext);
 
   const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
