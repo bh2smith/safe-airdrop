@@ -54,7 +54,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
       <Form>
         <Text size="md">
           Upload, edit or paste your transfer CSV. <br />
-          (token_address,receiver,amount,decimals)
+          (token_address,receiver,amount)
         </Text>
 
         <CSVEditor csvText={props.csvText} onChange={props.onChange} />
