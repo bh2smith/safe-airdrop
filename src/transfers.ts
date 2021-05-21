@@ -1,11 +1,10 @@
 import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 
 import { erc20Interface } from "./erc20";
-import { TokenMap } from "./hooks/token";
 import { Payment } from "./parser";
 import { toWei } from "./utils";
 
-export function buildTransfers(transferData: Payment[], tokenList: TokenMap): Transaction[] {
+export function buildTransfers(transferData: Payment[]): Transaction[] {
   const txList: Transaction[] = transferData.map((transfer) => {
     if (transfer.tokenAddress === null) {
       // Native asset transfer

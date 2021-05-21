@@ -48,20 +48,26 @@ describe("transferToSummary()", () => {
         tokenAddress: null,
         amount: new BigNumber(1),
         receiver: testData.addresses.receiver1,
+        decimals: 18,
+        symbol: "ETH",
       },
       {
         tokenAddress: null,
         amount: new BigNumber(2),
         receiver: testData.addresses.receiver2,
+        decimals: 18,
+        symbol: "ETH",
       },
       {
         tokenAddress: null,
         amount: new BigNumber(3),
         receiver: testData.addresses.receiver3,
+        decimals: 18,
+        symbol: "ETH",
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(summary.get(null).amount.toFixed()).to.equal("6");
+    expect(summary.get(null)?.amount.toFixed()).to.equal("6");
   });
 
   it("works for decimals in native currency", () => {
@@ -70,20 +76,26 @@ describe("transferToSummary()", () => {
         tokenAddress: null,
         amount: new BigNumber(0.1),
         receiver: testData.addresses.receiver1,
+        decimals: 18,
+        symbol: "ETH",
       },
       {
         tokenAddress: null,
         amount: new BigNumber(0.01),
         receiver: testData.addresses.receiver2,
+        decimals: 18,
+        symbol: "ETH",
       },
       {
         tokenAddress: null,
         amount: new BigNumber(0.001),
         receiver: testData.addresses.receiver3,
+        decimals: 18,
+        symbol: "ETH",
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(summary.get(null).amount.toFixed()).to.equal("0.111");
+    expect(summary.get(null)?.amount.toFixed()).to.equal("0.111");
   });
 
   it("works for decimals in erc20", () => {
@@ -92,20 +104,26 @@ describe("transferToSummary()", () => {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(0.1),
         receiver: testData.addresses.receiver1,
+        decimals: 18,
+        symbol: "ULT",
       },
       {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(0.01),
         receiver: testData.addresses.receiver2,
+        decimals: 18,
+        symbol: "ULT",
       },
       {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(0.001),
         receiver: testData.addresses.receiver3,
+        decimals: 18,
+        symbol: "ULT",
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(summary.get(testData.unlistedToken.address).amount.toFixed()).to.equal("0.111");
+    expect(summary.get(testData.unlistedToken.address)?.amount.toFixed()).to.equal("0.111");
   });
 
   it("works for integer in erc20", () => {
@@ -114,20 +132,26 @@ describe("transferToSummary()", () => {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(1),
         receiver: testData.addresses.receiver1,
+        decimals: 18,
+        symbol: "ULT",
       },
       {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(2),
         receiver: testData.addresses.receiver2,
+        decimals: 18,
+        symbol: "ULT",
       },
       {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(3),
         receiver: testData.addresses.receiver3,
+        decimals: 18,
+        symbol: "ULT",
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(summary.get(testData.unlistedToken.address).amount.toFixed()).to.equal("6");
+    expect(summary.get(testData.unlistedToken.address)?.amount.toFixed()).to.equal("6");
   });
 
   it("works for mixed payments", () => {
@@ -136,30 +160,40 @@ describe("transferToSummary()", () => {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(1.1),
         receiver: testData.addresses.receiver1,
+        decimals: 18,
+        symbol: "ULT",
       },
       {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(2),
         receiver: testData.addresses.receiver2,
+        decimals: 18,
+        symbol: "ULT",
       },
       {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(3.3),
         receiver: testData.addresses.receiver3,
+        decimals: 18,
+        symbol: "ULT",
       },
       {
         tokenAddress: null,
         amount: new BigNumber(3),
         receiver: testData.addresses.receiver1,
+        decimals: 18,
+        symbol: "ETH",
       },
       {
         tokenAddress: null,
         amount: new BigNumber(0.33),
         receiver: testData.addresses.receiver1,
+        decimals: 18,
+        symbol: "ETH",
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(summary.get(testData.unlistedToken.address).amount.toFixed()).to.equal("6.4");
-    expect(summary.get(null).amount.toFixed()).to.equal("3.33");
+    expect(summary.get(testData.unlistedToken.address)?.amount.toFixed()).to.equal("6.4");
+    expect(summary.get(null)?.amount.toFixed()).to.equal("3.33");
   });
 });

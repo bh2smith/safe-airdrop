@@ -33,7 +33,7 @@ export type SummaryEntry = {
   tokenAddress: string | null;
   amount: BigNumber;
   decimals: number;
-  symbol: string;
+  symbol?: string;
 };
 
 export const transfersToSummary = (transfers: Payment[]) => {
@@ -83,7 +83,7 @@ export const checkAllBalances = async (
       });
       if (!isSufficientBalance(tokenBalance, amount, decimals)) {
         insufficientTokens.push({
-          token: symbol,
+          token: symbol || tokenAddress,
           transferAmount: amount.toFixed(),
         });
       }

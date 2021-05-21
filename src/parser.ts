@@ -14,7 +14,7 @@ export interface Payment {
   amount: BigNumber;
   tokenAddress: string | null;
   decimals: number;
-  symbol: string;
+  symbol?: string;
 }
 
 export type CSVRow = {
@@ -24,7 +24,7 @@ export type CSVRow = {
   decimals?: string;
 };
 
-export interface PrePayment {
+interface PrePayment {
   receiver: string;
   amount: BigNumber;
   tokenAddress: string | null;
@@ -110,9 +110,7 @@ const isAmountPositive = (row: Payment): string[] =>
   row.amount.isGreaterThan(0) ? [] : ["Only positive amounts possible: " + row.amount.toFixed()];
 
 const isTokenValid = (row: Payment): string[] =>
-  row.decimals === -1 && row.symbol === "SYMBOL_UNKNOWN"
-    ? [`No valid token contract with tokens was found at ${row.tokenAddress}`]
-    : [];
+  row.decimals === -1 && row.symbol === "TOKEN_NOT_FOUND" ? [`No token contract was found at ${row.tokenAddress}`] : [];
 
 export async function toPayment(prePayment: PrePayment, tokenInfoProvider: TokenInfoProvider): Promise<Payment> {
   if (prePayment.tokenAddress === null) {
@@ -142,7 +140,7 @@ export async function toPayment(prePayment: PrePayment, tokenInfoProvider: Token
       amount: prePayment.amount,
       tokenAddress: prePayment.tokenAddress,
       decimals: -1,
-      symbol: "SYMBOL_UNKNOWN",
+      symbol: "TOKEN_NOT_FOUND",
     };
   }
 }

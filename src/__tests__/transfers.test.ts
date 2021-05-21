@@ -1,30 +1,26 @@
-import { assert } from "console";
-
 import { TokenInfo } from "@uniswap/token-lists";
 import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
 
 import { erc20Interface } from "../erc20";
-import { fetchTokenList, MinimalTokenInfo, TokenMap } from "../hooks/token";
+import { fetchTokenList, MinimalTokenInfo } from "../hooks/token";
 import { Payment } from "../parser";
 import { testData } from "../test/util";
 import { buildTransfers } from "../transfers";
 import { toWei, fromWei, MAX_U256 } from "../utils";
 
 const dummySafeInfo = testData.dummySafeInfo;
-let tokenList: TokenMap;
 let listedToken: MinimalTokenInfo;
 const receiver = testData.addresses.receiver1;
 
 describe("Build Transfers:", () => {
   beforeAll(async () => {
-    tokenList = await fetchTokenList(dummySafeInfo.network);
+    const tokenList = await fetchTokenList(dummySafeInfo.network);
     let listedTokens = Array.from(tokenList.keys());
     const tokenInfo = tokenList.get(listedTokens[0]);
     if (typeof tokenInfo !== "undefined") {
       listedToken = tokenInfo;
     }
-    assert(tokenList.get(testData.unlistedToken.address) === undefined);
   });
 
   describe("Integers", () => {
@@ -56,7 +52,7 @@ describe("Build Transfers:", () => {
         },
       ];
 
-      const [listedTransfer, unlistedTransfer, nativeTransfer] = buildTransfers(largePayments, tokenList);
+      const [listedTransfer, unlistedTransfer, nativeTransfer] = buildTransfers(largePayments);
       expect(listedTransfer.value).to.be.equal("0");
       expect(listedTransfer.to).to.be.equal(listedToken.address);
       expect(listedTransfer.data).to.be.equal(
@@ -105,7 +101,7 @@ describe("Build Transfers:", () => {
         },
       ];
 
-      const [listed, unlisted, native] = buildTransfers(smallPayments, tokenList);
+      const [listed, unlisted, native] = buildTransfers(smallPayments);
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
@@ -157,7 +153,7 @@ describe("Build Transfers:", () => {
         },
       ];
 
-      const [listed, unlisted, native] = buildTransfers(mixedPayments, tokenList);
+      const [listed, unlisted, native] = buildTransfers(mixedPayments);
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
@@ -195,9 +191,9 @@ describe("Build Transfers:", () => {
         amount: amount,
         tokenAddress: crappyToken.address,
         decimals: crappyToken.decimals,
-        symbol: "CRP",
+        symbol: "BTC",
       };
-      const [transfer] = buildTransfers([payment], tokenList);
+      const [transfer] = buildTransfers([payment]);
       expect(transfer.value).to.be.equal("0");
       expect(transfer.to).to.be.equal(crappyToken.address);
       expect(transfer.data).to.be.equal(

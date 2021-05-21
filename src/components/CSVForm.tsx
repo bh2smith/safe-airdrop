@@ -44,7 +44,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
             marginRight: 3,
           }}
         />{" "}
-        {payment.symbol}
+        {payment.symbol || payment.tokenAddress}
       </div>
     );
   };

@@ -10,7 +10,6 @@ import rinkeby from "../static/rinkebyTokens.json";
 
 export type TokenMap = Map<string | null, MinimalTokenInfo>;
 
-// TODO - shouldn't there be a more convenient way of converting a list into a map?
 function tokenMap(tokenList: TokenInfo[]): TokenMap {
   const res: TokenMap = new Map<string, MinimalTokenInfo>();
   for (const token of tokenList) {
@@ -65,7 +64,7 @@ export function useTokenList(): {
 export type MinimalTokenInfo = {
   decimals: number;
   address: string;
-  symbol: string;
+  symbol?: string;
   logoURI?: string;
 };
 
@@ -86,7 +85,7 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
         const tokenContract = erc20Instance(tokenAddress, web3Provider);
         const decimals = await tokenContract.decimals().catch((reason) => undefined);
         const symbol = await tokenContract.symbol().catch((reason) => undefined);
-        if (typeof decimals !== "undefined" && typeof symbol !== "undefined") {
+        if (typeof decimals !== "undefined") {
           tokenList?.set(tokenAddress, {
             decimals,
             symbol,

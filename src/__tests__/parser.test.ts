@@ -110,15 +110,13 @@ describe("Parsing CSVs ", () => {
     expect(warningNegativeAmount.lineNo).to.equal(1);
 
     expect(warningTokenNotFound.message.toLowerCase()).to.equal(
-      `no valid token contract with tokens was found at ${testData.unlistedToken.address.toLowerCase()}`,
+      `no token contract was found at ${testData.unlistedToken.address.toLowerCase()}`,
     );
     expect(warningTokenNotFound.lineNo).to.equal(2);
 
     expect(warningInvalidTokenAddress.message).to.equal("Invalid Token Address: 0x420");
     expect(warningInvalidTokenAddress.lineNo).to.equal(3);
-    expect(warningInvalidTokenAddressForInvalidAddress.message).to.equal(
-      `No valid token contract with tokens was found at 0x420`,
-    );
+    expect(warningInvalidTokenAddressForInvalidAddress.message).to.equal(`No token contract was found at 0x420`);
     expect(warningInvalidTokenAddressForInvalidAddress.lineNo).to.equal(3);
 
     expect(warningInvalidReceiverAddress.message).to.equal("Invalid Receiver Address: 0x420");

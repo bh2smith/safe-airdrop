@@ -53,8 +53,7 @@ const App: React.FC = () => {
   const submitTx = useCallback(async () => {
     setSubmitting(true);
     try {
-      // TODO - will need to pass web3Provider in here eventually
-      const txs = buildTransfers(transferContent, tokenList);
+      const txs = buildTransfers(transferContent);
       console.log(`Encoded ${txs.length} ERC20 transfers.`);
       const sendTxResponse = await sdk.txs.send({ txs });
       const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
@@ -63,7 +62,7 @@ const App: React.FC = () => {
       console.error(e);
     }
     setSubmitting(false);
-  }, [transferContent, tokenList, sdk.txs]);
+  }, [transferContent, sdk.txs]);
   return (
     <Container>
       <Header />
