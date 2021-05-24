@@ -1,7 +1,7 @@
 {
   "short_name": "Safe Airdrop",
   "name": "CSV Airdrop",
-  "description": "Upload your CSV transfer files to send to aribitrarily many tokens, recipients and values",
+  "description": "Upload a CSV transfer file to send various tokens to arbitrarily many recipients",
   "iconPath": "logo.svg",
   "start_url": ".",
   "display": "standalone",
