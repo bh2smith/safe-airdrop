@@ -23,7 +23,7 @@ const App: React.FC = () => {
   const [csvText, setCsvText] = useState<string>("token_address,receiver,amount");
   const { addMessage, setCodeWarnings, setMessages } = useContext(MessageContext);
 
-  const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
+  const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [safe, sdk]);
 
   const onChangeTextHandler = useCallback(
     (csvText: string) => {
