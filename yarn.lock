@@ -1626,10 +1626,17 @@
   dependencies:
     "@gnosis.pm/safe-apps-sdk" "2.3.0"
 
-"@gnosis.pm/safe-apps-sdk@2.3.0", "@gnosis.pm/safe-apps-sdk@^2.3.0":
+"@gnosis.pm/safe-apps-sdk@2.3.0":
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-2.3.0.tgz#10813f065dbf94bb7f1da7c8e1f4ceb8667ef21a"
   integrity sha512-Psu896peovf21k5pBk/+WQnJUE5Jtj82ILumGfSADP7xD20U6DJT7Z8X9jnb+QZnin6Q5gU57ht2tKmc3T+5lQ==
+  dependencies:
+    semver "^7.3.2"
+
+"@gnosis.pm/safe-apps-sdk@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-2.4.0.tgz#51f4eef3deef92e05cd9014ff454b18957b92d2e"
+  integrity sha512-7Xxj8pvtTvWFbM93yo5yARk+uXeDT5tohhDyPMZdi1XH73ubYmG4J7nRZeWKBRfeRd2ojou+w+r2zmk24Hrndg==
   dependencies:
     semver "^7.3.2"
 
