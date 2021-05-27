@@ -29,6 +29,7 @@
     "bignumber.js": "^9.0.1",
     "ethers": "^5.0.24",
     "honeyswap-default-token-list": "^3.1.1",
+    "lodash.debounce": "^4.0.8",
     "react": "^17.0.2",
     "react-ace": "^9.4.0",
     "react-app-rewired": "^2.1.6",
@@ -41,10 +42,12 @@
     "typescript": "~4.2.4"
   },
   "devDependencies": {
+    "@simbathesailor/use-what-changed": "^2.0.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@typechain/ethers-v5": "^7.0.0",
     "@types/chai": "^4.2.18",
     "@types/chai-as-promised": "^7.1.4",
+    "@types/lodash.debounce": "^4.0.6",
     "@types/node": "^14.17.0",
     "@types/react": "^17.0.6",
     "@types/react-dom": "^17.0.5",
