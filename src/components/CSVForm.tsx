@@ -1,10 +1,16 @@
+import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Card, Text, Button, Table, Loader } from "@gnosis.pm/safe-react-components";
-import { useContext } from "react";
+import { ethers } from "ethers";
+import debounce from "lodash.debounce";
+import { useCallback, useContext, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import { MessageContext } from "../../src/contexts/MessageContextProvider";
-import { TokenMap } from "../hooks/token";
-import { Payment } from "../parser";
+import { MessageContext } from "../contexts/MessageContextProvider";
+import { useTokenInfoProvider, useTokenList } from "../hooks/token";
+import { parseCSV, Payment } from "../parser";
+import { buildTransfers } from "../transfers";
+import { checkAllBalances, transfersToSummary } from "../utils";
 
 import { CSVEditor } from "./CSVEditor";
 import { CSVUpload } from "./CSVUpload";
@@ -17,23 +23,69 @@ const Form = styled.div`
   gap: 8px;
 `;
 
-export interface CSVFormProps {
-  onChange: (transactionCSV: string) => void;
-  onSubmit: () => void;
-  csvText: string;
-  transferContent: Payment[];
-  tokenList: TokenMap;
-  submitting: boolean;
-  onAbortSubmit: () => void;
-  submitEnabled: boolean;
-}
+export interface CSVFormProps {}
 
 export const CSVForm = (props: CSVFormProps): JSX.Element => {
-  const { codeWarnings } = useContext(MessageContext);
+  // State definition:
+  const [parsing, setParsing] = useState(false);
+  const [transferContent, setTransferContent] = useState<Payment[]>([]);
+  const [csvText, setCsvText] = useState<string>("token_address,receiver,amount");
+  const [submitting, setSubmitting] = useState(false);
+
+  const { codeWarnings, setCodeWarnings, setMessages } = useContext(MessageContext);
+
+  const { safe, sdk } = useSafeAppsSDK();
+  const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [safe, sdk]);
+  const tokenInfoProvider = useTokenInfoProvider();
+  const { tokenList } = useTokenList();
+
+  const submitTx = useCallback(async () => {
+    setSubmitting(true);
+    try {
+      const txs = buildTransfers(transferContent);
+      console.log(`Encoded ${txs.length} ERC20 transfers.`);
+      const sendTxResponse = await sdk.txs.send({ txs });
+      const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
+      console.log({ safeTx });
+    } catch (e) {
+      console.error(e);
+    }
+    setSubmitting(false);
+  }, [transferContent, sdk.txs]);
+
+  const onChangeTextHandler = (csvText: string) => {
+    setCsvText(csvText);
+    parseAndValidateCSV(csvText);
+  };
+
+  const parseAndValidateCSV = useMemo(
+    () =>
+      debounce((csvText: string) => {
+        setParsing(true);
+        const parsePromise = parseCSV(csvText, tokenInfoProvider);
+        parsePromise
+          .then(([transfers, warnings]) => {
+            console.log("CSV parsed!");
+            const summary = transfersToSummary(transfers);
+            checkAllBalances(summary, web3Provider, safe).then((insufficientBalances) =>
+              setMessages(
+                insufficientBalances.map((insufficientBalanceInfo) => ({
+                  message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
+                  severity: "warning",
+                })),
+              ),
+            );
+            setTransferContent(transfers);
+            setCodeWarnings(warnings);
+            setParsing(false);
+          })
+          .catch((reason: any) => setMessages([{ severity: "error", message: reason.message }]));
+      }, 1000),
+    [safe, setCodeWarnings, setMessages, tokenInfoProvider, web3Provider],
+  );
 
   console.log("Found ", codeWarnings.length + " Code Warnings");
 
-  const tokenList = props.tokenList;
   const extractTokenElement = (payment: Payment) => {
     return (
       <div>
@@ -58,11 +110,11 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
           (token_address,receiver,amount)
         </Text>
 
-        <CSVEditor csvText={props.csvText} onChange={props.onChange} />
+        <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />
 
-        <CSVUpload onChange={props.onChange} />
+        <CSVUpload onChange={onChangeTextHandler} />
 
-        {props.transferContent.length > 0 && (
+        {transferContent.length > 0 && (
           <>
             <div>
               <Table
@@ -71,7 +123,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
                   { id: "receiver", label: "Receiver" },
                   { id: "amount", label: "Amount" },
                 ]}
-                rows={props.transferContent.map((row, index) => {
+                rows={transferContent.map((row, index) => {
                   return {
                     id: "" + index,
                     cells: [
@@ -83,23 +135,17 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
                 })}
               />
             </div>
-            {props.submitting ? (
+            {submitting ? (
               <>
                 <Loader size="md" />
                 <br />
-                <Button size="lg" color="secondary" onClick={props.onAbortSubmit}>
+                <Button size="lg" color="secondary" onClick={() => setSubmitting(false)}>
                   Cancel
                 </Button>
               </>
             ) : (
-              <Button
-                style={{ alignSelf: "center" }}
-                size="lg"
-                color="primary"
-                onClick={props.onSubmit}
-                disabled={!props.submitEnabled}
-              >
-                {props.submitEnabled ? "Submit" : <Loader size="sm" />}
+              <Button style={{ alignSelf: "center" }} size="lg" color="primary" onClick={submitTx} disabled={parsing}>
+                {parsing ? <Loader size="sm" /> : "Submit"}
               </Button>
             )}
           </>
