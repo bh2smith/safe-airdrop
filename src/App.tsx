@@ -1,7 +1,9 @@
 import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Loader, Text } from "@gnosis.pm/safe-react-components";
+import { useWhatChanged, setUseWhatChange } from "@simbathesailor/use-what-changed";
 import { ethers } from "ethers";
+import debounce from "lodash.debounce";
 import React, { useCallback, useState, useContext, useMemo } from "react";
 import styled from "styled-components";
 
@@ -13,42 +15,50 @@ import { parseCSV, Payment } from "./parser";
 import { buildTransfers } from "./transfers";
 import { checkAllBalances, transfersToSummary } from "./utils";
 
+setUseWhatChange(process.env.NODE_ENV === "development");
+
 const App: React.FC = () => {
   const { safe, sdk } = useSafeAppsSDK();
 
   const { tokenList, isLoading } = useTokenList();
   const tokenInfoProvider = useTokenInfoProvider();
   const [submitting, setSubmitting] = useState(false);
+  const [parsing, setParsing] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
   const [csvText, setCsvText] = useState<string>("token_address,receiver,amount");
-  const { addMessage, setCodeWarnings, setMessages } = useContext(MessageContext);
+  const { setCodeWarnings, setMessages } = useContext(MessageContext);
 
   const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [safe, sdk]);
 
-  const onChangeTextHandler = useCallback(
-    (csvText: string) => {
-      setCsvText(csvText);
-      // Parse CSV
-      const parsePromise = parseCSV(csvText, tokenInfoProvider);
-      parsePromise
-        .then(([transfers, warnings]) => {
-          console.log("CSV parsed!");
-          const summary = transfersToSummary(transfers);
-          checkAllBalances(summary, web3Provider, safe).then((insufficientBalances) =>
-            setMessages(
-              insufficientBalances.map((insufficientBalanceInfo) => ({
-                message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
-                severity: "warning",
-              })),
-            ),
-          );
-          setTransferContent(transfers);
-          setCodeWarnings(warnings);
-        })
-        .catch((reason: any) => addMessage({ severity: "error", message: reason.message }));
-    },
-    [addMessage, safe, setCodeWarnings, setMessages, tokenInfoProvider, web3Provider],
+  const parseAndValidateCSV = useMemo(
+    () =>
+      debounce((csvText: string) => {
+        setParsing(true);
+        const parsePromise = parseCSV(csvText, tokenInfoProvider);
+        parsePromise
+          .then(([transfers, warnings]) => {
+            console.log("CSV parsed!");
+            const summary = transfersToSummary(transfers);
+            checkAllBalances(summary, web3Provider, safe).then((insufficientBalances) =>
+              setMessages(
+                insufficientBalances.map((insufficientBalanceInfo) => ({
+                  message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
+                  severity: "warning",
+                })),
+              ),
+            );
+            setTransferContent(transfers);
+            setCodeWarnings(warnings);
+            setParsing(false);
+          })
+          .catch((reason: any) => setMessages([{ severity: "error", message: reason.message }]));
+      }, 1000),
+    [safe, setCodeWarnings, setMessages, tokenInfoProvider, web3Provider],
   );
+  const onChangeTextHandler = (csvText: string) => {
+    setCsvText(csvText);
+    parseAndValidateCSV(csvText);
+  };
 
   const submitTx = useCallback(async () => {
     setSubmitting(true);
@@ -80,6 +90,7 @@ const App: React.FC = () => {
           onSubmit={submitTx}
           onChange={onChangeTextHandler}
           tokenList={tokenList}
+          submitEnabled={!parsing}
         />
       )}
     </Container>

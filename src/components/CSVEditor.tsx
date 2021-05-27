@@ -28,7 +28,6 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
         setOptions={{
           firstLineNumber: 0,
         }}
-        debounceChangePeriod={200}
         showPrintMargin={false}
         style={{
           borderWidth: 1,

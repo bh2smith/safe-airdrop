@@ -25,6 +25,7 @@ export interface CSVFormProps {
   tokenList: TokenMap;
   submitting: boolean;
   onAbortSubmit: () => void;
+  submitEnabled: boolean;
 }
 
 export const CSVForm = (props: CSVFormProps): JSX.Element => {
@@ -91,8 +92,14 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
                 </Button>
               </>
             ) : (
-              <Button style={{ alignSelf: "center" }} size="lg" color="primary" onClick={props.onSubmit}>
-                Submit
+              <Button
+                style={{ alignSelf: "center" }}
+                size="lg"
+                color="primary"
+                onClick={props.onSubmit}
+                disabled={!props.submitEnabled}
+              >
+                {props.submitEnabled ? "Submit" : <Loader size="sm" />}
               </Button>
             )}
           </>

@@ -77,25 +77,29 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
   const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
   const { tokenList } = useTokenList();
 
-  return {
-    getTokenInfo: async (tokenAddress: string) => {
-      if (tokenList?.has(tokenAddress)) {
-        return tokenList.get(tokenAddress);
-      } else {
-        const tokenContract = erc20Instance(tokenAddress, web3Provider);
-        const decimals = await tokenContract.decimals().catch((reason) => undefined);
-        const symbol = await tokenContract.symbol().catch((reason) => undefined);
-        if (typeof decimals !== "undefined") {
-          tokenList?.set(tokenAddress, {
-            decimals,
-            symbol,
-            address: tokenAddress,
-          });
-          return { decimals, symbol, address: tokenAddress };
+  return useMemo(
+    () => ({
+      getTokenInfo: async (tokenAddress: string) => {
+        if (tokenList?.has(tokenAddress)) {
+          return tokenList.get(tokenAddress);
         } else {
-          return undefined;
+          const tokenContract = erc20Instance(tokenAddress, web3Provider);
+          const decimals = await tokenContract.decimals().catch((reason) => undefined);
+          const symbol = await tokenContract.symbol().catch((reason) => undefined);
+
+          if (typeof decimals !== "undefined") {
+            tokenList?.set(tokenAddress, {
+              decimals,
+              symbol,
+              address: tokenAddress,
+            });
+            return { decimals, symbol, address: tokenAddress };
+          } else {
+            return undefined;
+          }
         }
-      }
-    },
-  };
+      },
+    }),
+    [tokenList, web3Provider],
+  );
 };
