@@ -7,6 +7,7 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import { MessageContext } from "../contexts/MessageContextProvider";
+import { useEnsResolver } from "../hooks/ens";
 import { useTokenInfoProvider } from "../hooks/token";
 import { parseCSV, Payment } from "../parser";
 import { buildTransfers } from "../transfers";
@@ -37,6 +38,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
   const { safe, sdk } = useSafeAppsSDK();
   const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [safe, sdk]);
   const tokenInfoProvider = useTokenInfoProvider();
+  const ensResolver = useEnsResolver();
 
   const submitTx = useCallback(async () => {
     setSubmitting(true);
@@ -61,7 +63,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
     () =>
       debounce((csvText: string) => {
         setParsing(true);
-        const parsePromise = parseCSV(csvText, tokenInfoProvider);
+        const parsePromise = parseCSV(csvText, tokenInfoProvider, ensResolver);
         parsePromise
           .then(([transfers, warnings]) => {
             const summary = transfersToSummary(transfers);
@@ -79,7 +81,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
           })
           .catch((reason: any) => setMessages([{ severity: "error", message: reason.message }]));
       }, 1000),
-    [safe, setCodeWarnings, setMessages, tokenInfoProvider, web3Provider],
+    [ensResolver, safe, setCodeWarnings, setMessages, tokenInfoProvider, web3Provider],
   );
 
   return (
@@ -108,7 +110,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
               </>
             ) : (
               <Button style={{ alignSelf: "center" }} size="lg" color="primary" onClick={submitTx} disabled={parsing}>
-                {parsing ? <Loader size="sm" /> : "Submit"}
+                {parsing ? <Loader size="sm" color="primaryLight" /> : "Submit"}
               </Button>
             )}
           </>
