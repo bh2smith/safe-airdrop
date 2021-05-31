@@ -1627,12 +1627,17 @@
   dependencies:
     "@gnosis.pm/safe-apps-sdk" "2.4.0"
 
-"@gnosis.pm/safe-apps-sdk@2.4.0", "@gnosis.pm/safe-apps-sdk@^2.4.0":
+"@gnosis.pm/safe-apps-sdk@2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-2.4.0.tgz#51f4eef3deef92e05cd9014ff454b18957b92d2e"
   integrity sha512-7Xxj8pvtTvWFbM93yo5yARk+uXeDT5tohhDyPMZdi1XH73ubYmG4J7nRZeWKBRfeRd2ojou+w+r2zmk24Hrndg==
   dependencies:
     semver "^7.3.2"
+
+"@gnosis.pm/safe-apps-sdk@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-3.0.0.tgz#0f90185c3693f2683322d275e796e61ff99ce87d"
+  integrity sha512-dLCSlniYnxEqCglx4XdhByvi7KKuSYRWJKm1lVXAc4oJqwwVkoCwp0bFIejLZ/dnf7cQSBUUVsTGWhvSda511w==
 
 "@gnosis.pm/safe-react-components@^0.6.0":
   version "0.6.0"
