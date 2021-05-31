@@ -10,6 +10,12 @@ import rinkeby from "../static/rinkebyTokens.json";
 
 export type TokenMap = Map<string | null, MinimalTokenInfo>;
 
+const networkMap = {
+  1: "mainnet",
+  4: "rinkeby",
+  100: "xdai",
+};
+
 function tokenMap(tokenList: TokenInfo[]): TokenMap {
   const res: TokenMap = new Map<string, MinimalTokenInfo>();
   for (const token of tokenList) {
@@ -18,23 +24,23 @@ function tokenMap(tokenList: TokenInfo[]): TokenMap {
   return res;
 }
 
-export const fetchTokenList = async (networkName: string): Promise<TokenMap> => {
+export const fetchTokenList = async (chainId: number): Promise<TokenMap> => {
   let tokens: TokenInfo[];
-  if (networkName === "MAINNET") {
+  if (chainId === 1) {
     const mainnetTokenURL = "https://tokens.coingecko.com/uniswap/all.json";
     tokens = (await (await fetch(mainnetTokenURL)).json()).tokens;
-  } else if (networkName === "RINKEBY") {
+  } else if (chainId === 4) {
     // Hardcoded this because the list provided at
     // https://github.com/Uniswap/default-token-list/blob/master/src/tokens/rinkeby.json
     // Doesn't have GNO or OWL and/or many others.
     tokens = rinkeby;
-  } else if (networkName === "XDAI") {
+  } else if (chainId === 100) {
     tokens = xdaiTokens.tokens;
   } else {
-    console.error(`Unimplemented token list for ${networkName} network`);
-    throw new Error(`Unimplemented token list for ${networkName} network`);
+    console.error(`Unimplemented token list for ${networkMap[chainId]} network`);
+    throw new Error(`Unimplemented token list for ${networkMap[chainId]} network`);
   }
-  console.log(`Fetched ${tokens.length} for ${networkName} network`);
+  console.log(`Fetched ${tokens.length} for ${networkMap[chainId]} network`);
   return tokenMap(tokens);
 };
 
@@ -52,12 +58,12 @@ export function useTokenList(): {
   useEffect(() => {
     const fetchToken = async () => {
       setIsLoading(true);
-      const result = await fetchTokenList(safe.network);
+      const result = await fetchTokenList(safe.chainId);
       setTokenList(result);
       setIsLoading(false);
     };
     fetchToken();
-  }, [safe.network]);
+  }, [safe.chainId]);
   return { tokenList, isLoading };
 }
 
