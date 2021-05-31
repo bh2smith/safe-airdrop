@@ -3,6 +3,7 @@ import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
 
 import { CodeWarning } from "./contexts/MessageContextProvider";
+import { EnsResolver } from "./hooks/ens";
 import { TokenInfoProvider } from "./hooks/token";
 
 /**
@@ -15,6 +16,7 @@ export interface Payment {
   tokenAddress: string | null;
   decimals: number;
   symbol?: string;
+  receiverEnsName: string | null;
 }
 
 export type CSVRow = {
@@ -47,12 +49,13 @@ const generateWarnings = (
 export const parseCSV = (
   csvText: string,
   tokenInfoProvider: TokenInfoProvider,
+  ensResolver: EnsResolver,
 ): Promise<[Payment[], CodeWarning[]]> => {
   return new Promise<[Payment[], CodeWarning[]]>((resolve, reject) => {
     const results: any[] = [];
     const resultingWarnings: CodeWarning[] = [];
     parseString<CSVRow, Payment>(csvText, { headers: true })
-      .transform((row: CSVRow, callback) => transformRow(row, tokenInfoProvider, callback))
+      .transform((row: CSVRow, callback) => transformRow(row, tokenInfoProvider, ensResolver, callback))
       .validate((row: Payment, callback: RowValidateCallback) => validateRow(row, callback))
       .on("data", (data) => results.push(data))
       .on("end", () => resolve([results, resultingWarnings]))
@@ -69,6 +72,7 @@ export const parseCSV = (
 const transformRow = (
   row: CSVRow,
   tokenInfoProvider: TokenInfoProvider,
+  ensResolver: EnsResolver,
   callback: RowTransformCallback<Payment>,
 ): void => {
   const prePayment: PrePayment = {
@@ -82,7 +86,8 @@ const transformRow = (
     amount: new BigNumber(row.amount),
     receiver: utils.isAddress(row.receiver) ? utils.getAddress(row.receiver) : row.receiver,
   };
-  toPayment(prePayment, tokenInfoProvider)
+
+  toPayment(prePayment, tokenInfoProvider, ensResolver)
     .then((row) => callback(null, row))
     .catch((reason) => callback(reason));
 };
@@ -112,35 +117,49 @@ const isAmountPositive = (row: Payment): string[] =>
 const isTokenValid = (row: Payment): string[] =>
   row.decimals === -1 && row.symbol === "TOKEN_NOT_FOUND" ? [`No token contract was found at ${row.tokenAddress}`] : [];
 
-export async function toPayment(prePayment: PrePayment, tokenInfoProvider: TokenInfoProvider): Promise<Payment> {
+export async function toPayment(
+  prePayment: PrePayment,
+  tokenInfoProvider: TokenInfoProvider,
+  ensResolver: EnsResolver,
+): Promise<Payment> {
+  // depending on whether there is an ens name or an address provided we either resolve or lookup
+  let [resolvedReceiverAddress, receiverEnsName] = utils.isAddress(prePayment.receiver)
+    ? [prePayment.receiver, await ensResolver.lookupAddress(prePayment.receiver)]
+    : [await ensResolver.resolveName(prePayment.receiver), prePayment.receiver];
+  resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver;
   if (prePayment.tokenAddress === null) {
     // Native asset payment.
     return {
-      receiver: prePayment.receiver,
+      receiver: resolvedReceiverAddress,
       amount: prePayment.amount,
       tokenAddress: prePayment.tokenAddress,
       decimals: 18,
       symbol: "ETH",
+      receiverEnsName,
     };
   }
-  const tokenInfo = await tokenInfoProvider.getTokenInfo(prePayment.tokenAddress);
+  let resolvedTokenAddress = await ensResolver.resolveName(prePayment.tokenAddress);
+  const tokenInfo =
+    resolvedTokenAddress === null ? undefined : await tokenInfoProvider.getTokenInfo(resolvedTokenAddress);
   if (typeof tokenInfo !== "undefined") {
     let decimals = tokenInfo.decimals;
     let symbol = tokenInfo.symbol;
     return {
-      receiver: prePayment.receiver,
+      receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver,
       amount: prePayment.amount,
-      tokenAddress: prePayment.tokenAddress,
+      tokenAddress: resolvedTokenAddress,
       decimals,
       symbol,
+      receiverEnsName,
     };
   } else {
     return {
-      receiver: prePayment.receiver,
+      receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver,
       amount: prePayment.amount,
       tokenAddress: prePayment.tokenAddress,
       decimals: -1,
       symbol: "TOKEN_NOT_FOUND",
+      receiverEnsName,
     };
   }
 }
