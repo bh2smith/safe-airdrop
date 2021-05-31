@@ -31,7 +31,7 @@ describe("Parsing CSVs ", () => {
   let mockEnsResolver: EnsResolver;
 
   beforeAll(async () => {
-    tokenList = await fetchTokenList(testData.dummySafeInfo.network);
+    tokenList = await fetchTokenList(testData.dummySafeInfo.chainId);
     const fetchTokenFromList = async (tokenAddress: string) => tokenList.get(tokenAddress);
 
     let listedTokens = Array.from(tokenList.keys());

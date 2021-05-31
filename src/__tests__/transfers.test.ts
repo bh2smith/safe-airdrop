@@ -15,7 +15,7 @@ const receiver = testData.addresses.receiver1;
 
 describe("Build Transfers:", () => {
   beforeAll(async () => {
-    const tokenList = await fetchTokenList(dummySafeInfo.network);
+    const tokenList = await fetchTokenList(dummySafeInfo.chainId);
     let listedTokens = Array.from(tokenList.keys());
     const tokenInfo = tokenList.get(listedTokens[0]);
     if (typeof tokenInfo !== "undefined") {
