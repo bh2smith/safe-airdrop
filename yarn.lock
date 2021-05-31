@@ -1612,12 +1612,12 @@
     lodash.isundefined "^3.0.1"
     lodash.uniq "^4.5.0"
 
-"@gnosis.pm/safe-apps-provider@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.4.0.tgz#37998e0bf1f8a4d01885365196c6099527bc05f3"
-  integrity sha512-ewUYHgc4dUHvqIpzzFyhl6lJ0ps0V6OsOtewP5sQF/lSxIfrvAYfAYNbmblDXK0z1mryLNZw/x5MKFiRc0k4VA==
+"@gnosis.pm/safe-apps-provider@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.5.0.tgz#e0121553ef22c1458eb95cf0afed14e8c2570ae3"
+  integrity sha512-c4OuKV+cIW2aDmv0DZfLOelmyNNZz5Dr3OG5TvnCfmYhZtHyOd1x6bd2xnROCuiZU+QAUGJsm65mBe6iy8NAVQ==
   dependencies:
-    "@gnosis.pm/safe-apps-sdk" "2.4.0"
+    "@gnosis.pm/safe-apps-sdk" "3.0.0"
     events "^3.3.0"
 
 "@gnosis.pm/safe-apps-react-sdk@^2.3.1":
@@ -1633,6 +1633,11 @@
   integrity sha512-7Xxj8pvtTvWFbM93yo5yARk+uXeDT5tohhDyPMZdi1XH73ubYmG4J7nRZeWKBRfeRd2ojou+w+r2zmk24Hrndg==
   dependencies:
     semver "^7.3.2"
+
+"@gnosis.pm/safe-apps-sdk@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-3.0.0.tgz#0f90185c3693f2683322d275e796e61ff99ce87d"
+  integrity sha512-dLCSlniYnxEqCglx4XdhByvi7KKuSYRWJKm1lVXAc4oJqwwVkoCwp0bFIejLZ/dnf7cQSBUUVsTGWhvSda511w==
 
 "@gnosis.pm/safe-react-components@^0.6.0":
   version "0.6.0"
