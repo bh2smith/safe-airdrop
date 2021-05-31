@@ -16,6 +16,7 @@ export interface Payment {
   tokenAddress: string | null;
   decimals: number;
   symbol?: string;
+  receiverEnsName: string | null;
 }
 
 export type CSVRow = {
@@ -121,19 +122,21 @@ export async function toPayment(
   tokenInfoProvider: TokenInfoProvider,
   ensResolver: EnsResolver,
 ): Promise<Payment> {
+  let resolvedReceiverAddress = await ensResolver.resolveName(prePayment.receiver);
+  resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver;
+  let receiverEnsName = await ensResolver.lookupAddress(resolvedReceiverAddress);
   if (prePayment.tokenAddress === null) {
     // Native asset payment.
     return {
-      receiver: prePayment.receiver,
+      receiver: resolvedReceiverAddress,
       amount: prePayment.amount,
       tokenAddress: prePayment.tokenAddress,
       decimals: 18,
       symbol: "ETH",
+      receiverEnsName,
     };
   }
   let resolvedTokenAddress = await ensResolver.resolveName(prePayment.tokenAddress);
-  let resolvedReceiverAddress = await ensResolver.resolveName(prePayment.receiver);
-
   const tokenInfo =
     resolvedTokenAddress === null ? undefined : await tokenInfoProvider.getTokenInfo(resolvedTokenAddress);
   if (typeof tokenInfo !== "undefined") {
@@ -145,6 +148,7 @@ export async function toPayment(
       tokenAddress: resolvedTokenAddress,
       decimals,
       symbol,
+      receiverEnsName,
     };
   } else {
     return {
@@ -153,6 +157,7 @@ export async function toPayment(
       tokenAddress: prePayment.tokenAddress,
       decimals: -1,
       symbol: "TOKEN_NOT_FOUND",
+      receiverEnsName,
     };
   }
 }
