@@ -122,9 +122,11 @@ export async function toPayment(
   tokenInfoProvider: TokenInfoProvider,
   ensResolver: EnsResolver,
 ): Promise<Payment> {
-  let resolvedReceiverAddress = await ensResolver.resolveName(prePayment.receiver);
+  // depending on whether there is an ens name or an address provided we either resolve or lookup
+  let [resolvedReceiverAddress, receiverEnsName] = utils.isAddress(prePayment.receiver)
+    ? [prePayment.receiver, await ensResolver.lookupAddress(prePayment.receiver)]
+    : [await ensResolver.resolveName(prePayment.receiver), prePayment.receiver];
   resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver;
-  let receiverEnsName = await ensResolver.lookupAddress(resolvedReceiverAddress);
   if (prePayment.tokenAddress === null) {
     // Native asset payment.
     return {
