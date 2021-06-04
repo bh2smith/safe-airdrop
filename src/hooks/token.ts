@@ -10,11 +10,11 @@ import rinkeby from "../static/rinkebyTokens.json";
 
 export type TokenMap = Map<string | null, MinimalTokenInfo>;
 
-const networkMap = {
-  1: "mainnet",
-  4: "rinkeby",
-  100: "xdai",
-};
+export const networkMap = new Map([
+  [1, "mainnet"],
+  [4, "rinkeby"],
+  [100, "xdai"],
+]);
 
 function tokenMap(tokenList: TokenInfo[]): TokenMap {
   const res: TokenMap = new Map<string, MinimalTokenInfo>();
