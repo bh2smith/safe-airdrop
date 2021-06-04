@@ -1,13 +1,11 @@
 import { expect } from "chai";
 
-import { fetchTokenList } from "../hooks/token";
-
-const configuredNetworks = ["MAINNET", "RINKEBY", "XDAI"];
+import { fetchTokenList, networkMap } from "../hooks/token";
 
 describe("fetchTokenList()", () => {
-  for (const network of configuredNetworks) {
-    it(`fetches tokens for ${network} network`, () => {
-      expect(() => fetchTokenList(network)).to.not.throw();
+  for (const chainId of networkMap.keys()) {
+    it(`fetches tokens for ${networkMap[chainId]} network`, () => {
+      expect(() => fetchTokenList(chainId)).to.not.throw();
     });
   }
 });
