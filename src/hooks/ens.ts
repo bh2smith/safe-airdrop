@@ -46,7 +46,8 @@ export const useEnsResolver: () => EnsResolver = () => {
   const cachedLookupAddress = useCallback(
     async (address: string) => {
       const cachedAddress = lookupCache.get(address);
-      const resolvedEnsName = cachedAddress ? cachedAddress : await web3Provider.lookupAddress(address);
+      const resolvedEnsName =
+        typeof cachedAddress !== "undefined" ? cachedAddress : await web3Provider.lookupAddress(address);
       if (!lookupCache.has(address)) {
         lookupCache.set(address, resolvedEnsName);
       }
