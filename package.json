@@ -31,7 +31,7 @@
     "honeyswap-default-token-list": "^3.1.1",
     "lodash.debounce": "^4.0.8",
     "react": "^17.0.2",
-    "react-ace": "^9.4.0",
+    "react-ace": "^9.4.1",
     "react-app-rewired": "^2.1.6",
     "react-csv-reader": "^3.1.1",
     "react-dom": "^17.0.2",
