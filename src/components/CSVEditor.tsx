@@ -24,7 +24,7 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
         width={"700px"}
         mode={"text"}
         minLines={6}
-        maxLines={32}
+        maxLines={20}
         setOptions={{
           firstLineNumber: 0,
         }}

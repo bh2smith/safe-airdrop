@@ -57,7 +57,7 @@ const GlobalStyle = createGlobalStyle`
     }
     .MuiTableContainer-root {
         overflow: auto;
-        height: 500px;
+        height: 750px;
     }
 `;
 
