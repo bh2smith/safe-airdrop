@@ -48,6 +48,17 @@ const GlobalStyle = createGlobalStyle`
     .ace_tooltip {
         font-family: 'Averta' !important;
     }
+
+    .MuiTableCell-head {
+        position: sticky;
+        top: 0px;
+        background-color: #FFF;
+        box-shadow: 10px 2px 10px 0 rgba(40,54,61,0.18);
+    }
+    .MuiTableContainer-root {
+        overflow: auto;
+        height: 750px;
+    }
 `;
 
 export default GlobalStyle;
