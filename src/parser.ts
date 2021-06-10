@@ -52,12 +52,12 @@ export const parseCSV = (
   ensResolver: EnsResolver,
 ): Promise<[Payment[], CodeWarning[]]> => {
   return new Promise<[Payment[], CodeWarning[]]>((resolve, reject) => {
-    const results: any[] = [];
+    const results: Payment[] = [];
     const resultingWarnings: CodeWarning[] = [];
     parseString<CSVRow, Payment>(csvText, { headers: true })
       .transform((row: CSVRow, callback) => transformRow(row, tokenInfoProvider, ensResolver, callback))
       .validate((row: Payment, callback: RowValidateCallback) => validateRow(row, callback))
-      .on("data", (data) => results.push(data))
+      .on("data", (data: Payment) => results.push(data))
       .on("end", () => resolve([results, resultingWarnings]))
       .on("data-invalid", (row: Payment, rowNumber: number, warnings: string) =>
         resultingWarnings.push(...generateWarnings(row, rowNumber, warnings)),
@@ -123,8 +123,9 @@ export async function toPayment(
   ensResolver: EnsResolver,
 ): Promise<Payment> {
   // depending on whether there is an ens name or an address provided we either resolve or lookup
+  // For performance reasons the lookup will be done after the parsing.
   let [resolvedReceiverAddress, receiverEnsName] = utils.isAddress(prePayment.receiver)
-    ? [prePayment.receiver, await ensResolver.lookupAddress(prePayment.receiver)]
+    ? [prePayment.receiver, null]
     : [await ensResolver.resolveName(prePayment.receiver), prePayment.receiver];
   resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver;
   if (prePayment.tokenAddress === null) {

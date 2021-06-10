@@ -65,7 +65,20 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
         setParsing(true);
         const parsePromise = parseCSV(csvText, tokenInfoProvider, ensResolver);
         parsePromise
-          .then(([transfers, warnings]) => {
+          .then(async ([transfers, warnings]) => {
+            const uniqueReceiversWithoutEnsName = transfers.reduce(
+              (previousValue, currentValue): Set<string> =>
+                currentValue.receiverEnsName === null ? previousValue.add(currentValue.receiver) : previousValue,
+              new Set<string>(),
+            );
+            if (uniqueReceiversWithoutEnsName.size < 15) {
+              transfers = await Promise.all(
+                transfers.map(async (transfer) => ({
+                  ...transfer,
+                  receiverEnsName: await ensResolver.lookupAddress(transfer.receiver),
+                })),
+              );
+            }
             const summary = transfersToSummary(transfers);
             checkAllBalances(summary, web3Provider, safe).then((insufficientBalances) =>
               setMessages(
@@ -96,24 +109,26 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
 
         <CSVUpload onChange={onChangeTextHandler} />
 
-        {transferContent.length > 0 && (
-          <>
-            <TransferTable transferContent={transferContent} />
+        {transferContent.length > 0 && <TransferTable transferContent={transferContent} />}
 
-            {submitting ? (
-              <>
-                <Loader size="md" />
-                <br />
-                <Button size="lg" color="secondary" onClick={() => setSubmitting(false)}>
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <Button style={{ alignSelf: "center" }} size="lg" color="primary" onClick={submitTx} disabled={parsing}>
-                {parsing ? <Loader size="sm" color="primaryLight" /> : "Submit"}
-              </Button>
-            )}
+        {submitting ? (
+          <>
+            <Loader size="md" />
+            <br />
+            <Button size="lg" color="secondary" onClick={() => setSubmitting(false)}>
+              Cancel
+            </Button>
           </>
+        ) : (
+          <Button
+            style={{ alignSelf: "flex-start" }}
+            size="lg"
+            color="primary"
+            onClick={submitTx}
+            disabled={parsing || transferContent.length === 0}
+          >
+            {parsing ? <Loader size="sm" color="primaryLight" /> : "Submit"}
+          </Button>
         )}
       </Form>
     </Card>

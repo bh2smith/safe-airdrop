@@ -114,19 +114,19 @@ describe("Parsing CSVs ", () => {
     expect(paymentWithoutDecimal.receiver).to.equal(validReceiverAddress);
     expect(paymentWithoutDecimal.tokenAddress).to.equal(listedToken.address);
     expect(paymentWithoutDecimal.amount.isEqualTo(new BigNumber(1))).to.be.true;
-    expect(paymentWithoutDecimal.receiverEnsName).to.be.equal("receiver1.eth");
+    expect(paymentWithoutDecimal.receiverEnsName).to.be.null;
 
     expect(paymentWithDecimal.receiver).to.equal(validReceiverAddress);
     expect(paymentWithDecimal.tokenAddress?.toLowerCase()).to.equal(listedToken.address.toLowerCase());
     expect(paymentWithDecimal.decimals).to.equal(18);
     expect(paymentWithDecimal.amount.isEqualTo(new BigNumber(69.42))).to.be.true;
-    expect(paymentWithDecimal.receiverEnsName).to.be.equal("receiver1.eth");
+    expect(paymentWithDecimal.receiverEnsName).to.be.null;
 
     expect(paymentWithoutTokenAddress.decimals).to.be.equal(18);
     expect(paymentWithoutTokenAddress.receiver).to.equal(validReceiverAddress);
     expect(paymentWithoutTokenAddress.tokenAddress).to.equal(null);
     expect(paymentWithoutTokenAddress.amount.isEqualTo(new BigNumber(1))).to.be.true;
-    expect(paymentWithoutTokenAddress.receiverEnsName).to.be.equal("receiver1.eth");
+    expect(paymentWithoutTokenAddress.receiverEnsName).to.be.null;
   });
 
   it("should generate validation warnings", async () => {
