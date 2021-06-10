@@ -34,7 +34,7 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
           borderColor: "rgba(0, 0, 0, 0.23)",
           borderRadius: "4px",
           borderStyle: "solid",
-          boxShadow: "rgba(40, 54, 61, 0.12) 1px 2px 4px 0px",
+          boxShadow: "#F7F5F5 1px 2px 4px 0px",
         }}
         markers={codeWarnings.map(
           (warning): IMarker => ({

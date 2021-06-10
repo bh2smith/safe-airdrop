@@ -37,10 +37,10 @@ export const fetchTokenList = async (chainId: number): Promise<TokenMap> => {
   } else if (chainId === 100) {
     tokens = xdaiTokens.tokens;
   } else {
-    console.error(`Unimplemented token list for ${networkMap[chainId]} network`);
-    throw new Error(`Unimplemented token list for ${networkMap[chainId]} network`);
+    console.error(`Unimplemented token list for ${networkMap.get(chainId)} network`);
+    throw new Error(`Unimplemented token list for ${networkMap.get(chainId)} network`);
   }
-  console.log(`Fetched ${tokens.length} for ${networkMap[chainId]} network`);
+  console.log(`Fetched ${tokens.length} for ${networkMap.get(chainId)} network`);
   return tokenMap(tokens);
 };
 
@@ -56,13 +56,17 @@ export function useTokenList(): {
   const [tokenList, setTokenList] = useState<TokenMap>(new Map());
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
-    const fetchToken = async () => {
-      setIsLoading(true);
-      const result = await fetchTokenList(safe.chainId);
-      setTokenList(result);
-      setIsLoading(false);
+    let isMounted = true;
+    setIsLoading(true);
+    fetchTokenList(safe.chainId).then((result) => {
+      if (isMounted) {
+        setTokenList(result);
+        setIsLoading(false);
+      }
+    });
+    return function callback() {
+      isMounted = false;
     };
-    fetchToken();
   }, [safe.chainId]);
   return { tokenList, isLoading };
 }
