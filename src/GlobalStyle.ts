@@ -49,15 +49,23 @@ const GlobalStyle = createGlobalStyle`
         font-family: 'Averta' !important;
     }
 
+    .cardWithCustomShadow {
+        box-shadow: 1px 2px 10px 0 #F7F5F5;
+    }
+
     .MuiTableCell-head {
         position: sticky;
         top: 0px;
         background-color: #FFF;
-        box-shadow: 10px 2px 10px 0 rgba(40,54,61,0.18);
+        box-shadow: 10px 2px 10px 0 #F7F5F5;
     }
     .MuiTableContainer-root {
         overflow: auto;
-        height: 750px;
+        max-height: 750px;
+    }
+
+    .MuiPaper-elevation3 {
+        box-shadow: 0px 3px 3px -2px #F7F5F5,0px 3px 4px 0px #F7F5F5,0px 1px 8px 0px #F7F5F5 !important;
     }
 `;
 

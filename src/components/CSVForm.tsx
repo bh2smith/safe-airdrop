@@ -98,11 +98,14 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
   );
 
   return (
-    <Card>
+    <Card className="cardWithCustomShadow">
       <Form>
-        <Text size="md">
-          Upload, edit or paste your transfer CSV. <br />
-          (token_address,receiver,amount)
+        <Text size="xl">
+          Send arbitrarily many distinct tokens, to arbitrarily many distinct accounts with various different values
+          from a CSV file in a single transaction.
+        </Text>
+        <Text size="lg">
+          Upload, edit or paste your transfer CSV <br /> (token_address,receiver,amount)
         </Text>
 
         <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />

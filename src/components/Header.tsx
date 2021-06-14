@@ -1,4 +1,3 @@
-import { Title } from "@gnosis.pm/safe-react-components";
 import { Snackbar } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import React, { useContext } from "react";
@@ -27,7 +26,6 @@ export const Header = (): JSX.Element => {
   const messages = messageContext.messages;
   return (
     <HeaderContainer>
-      <Title size="md">CSV Airdrop</Title>
       {messages?.length > 0 && (
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
