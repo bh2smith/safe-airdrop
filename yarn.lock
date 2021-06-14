@@ -1158,10 +1158,10 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.13.10", "@babel/runtime@^7.14.0", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
-  version "7.14.0"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.14.0.tgz#46794bc20b612c5f75e62dd071e24dfd95f1cbe6"
-  integrity sha512-JELkvo/DlpNdJ7dlyw/eY7E0suy5i5GQH+Vlxaq1nsNJ+H7f4Vtv3jMeCEgRhZZQFXTjldYfQgv2qmM6M1v5wA==
+"@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.13.10", "@babel/runtime@^7.14.5", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+  version "7.14.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.14.5.tgz#665450911c6031af38f81db530f387ec04cd9a98"
+  integrity sha512-121rumjddw9c3NCQ55KGkyE1h/nzWhU/owjhw0l4mQrkzz4x9SGS1X8gFLraHwX7td3Yo4QTL+qj0NcIzN87BA==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -10107,12 +10107,12 @@ react-scripts@^4.0.3:
   optionalDependencies:
     fsevents "^2.1.3"
 
-react-svg@^13.0.5:
-  version "13.0.6"
-  resolved "https://registry.yarnpkg.com/react-svg/-/react-svg-13.0.6.tgz#3b868cd955941203a323cbd50a1c745e04090ddd"
-  integrity sha512-e4+Mg4P46ZJ0O9mUOAA2WIhSQOi5Tvk2VPILzdFyYC8mrbQCCM/Wll+lJQirmn/SQSuCqRiVliHYMoDeSt1/NA==
+react-svg@^14.0.1:
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/react-svg/-/react-svg-14.0.1.tgz#404b971d464fcb3fa1f0bd6c0b5ccabe539017d5"
+  integrity sha512-SnIiM1erfV6Uhz/Qn8LDPek1ksfJ16WXLprI43KBm+GpMK+l0gts2PBFDkATHyRce6dSmiYf18G1GprhaOdVsQ==
   dependencies:
-    "@babel/runtime" "^7.14.0"
+    "@babel/runtime" "^7.14.5"
     "@tanem/svg-injector" "^10.0.2"
     "@types/prop-types" "^15.7.3"
     prop-types "^15.7.2"
