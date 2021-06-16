@@ -40,7 +40,6 @@ export const fetchTokenList = async (chainId: number): Promise<TokenMap> => {
     console.error(`Unimplemented token list for ${networkMap.get(chainId)} network`);
     throw new Error(`Unimplemented token list for ${networkMap.get(chainId)} network`);
   }
-  console.log(`Fetched ${tokens.length} for ${networkMap.get(chainId)} network`);
   return tokenMap(tokens);
 };
 
