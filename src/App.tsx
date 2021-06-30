@@ -28,7 +28,7 @@ const App: React.FC = () => {
 };
 
 const Container = styled.div`
-  margin-left: 12px;
+  margin-left: 16px;
   display: flex;
   flex-direction: column;
   flex: 1;

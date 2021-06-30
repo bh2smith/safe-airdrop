@@ -17,7 +17,7 @@ const GlobalStyle = createGlobalStyle`
 
     #root {
         height: 100%;
-        padding-right: 0.5rem;
+        padding-right: 2rem;
     }
 
     .MuiFormControl-root,
@@ -50,7 +50,8 @@ const GlobalStyle = createGlobalStyle`
     }
 
     .cardWithCustomShadow {
-        box-shadow: 1px 2px 10px 0 #F7F5F5;
+        box-shadow: 1px 2px 10px 0.18 #000000;
+        margin-top: 16px;
     }
 
     .MuiTableCell-head {
