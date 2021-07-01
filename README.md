@@ -15,7 +15,7 @@ In this article, we demonstrate how to use the Gnosis Safe - CSV Airdrop
 ## Loading the App in Gnosis Safe Interface
 
 The current version is deployed on IPFS at
-https://cloudflare-ipfs.com/ipfs/QmTbZNBHDfSVzS2AkH8RynzmBrKb9hSJhBZTrQrwWz3pgu
+https://cloudflare-ipfs.com/ipfs/QmdFyTuzHnzj6Z1pRRLqjWXEbH56TBNKo3M1an21zKWCXt
 
 On mainnet or rinkeby, you can navigate to the [Gnosis Safe](https://gnosis-safe.io/app/) Apps tab and load the app from "Add Custom App", then follow the instructions below to perform your first airdrop.
 
