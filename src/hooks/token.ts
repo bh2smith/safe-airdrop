@@ -1,12 +1,12 @@
 import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { TokenInfo } from "@uniswap/token-lists";
 import { ethers, utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
 import { useState, useEffect, useMemo } from "react";
 
 import { erc20Instance } from "../erc20";
 import rinkeby from "../static/rinkebyTokens.json";
+import { TokenInfo } from "../utils";
 
 export type TokenMap = Map<string | null, MinimalTokenInfo>;
 
