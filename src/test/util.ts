@@ -1,5 +1,6 @@
 import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
-import { TokenInfo } from "@uniswap/token-lists";
+
+import { TokenInfo } from "../utils";
 
 const dummySafeInfo: SafeInfo = {
   safeAddress: "0x123",

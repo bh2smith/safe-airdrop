@@ -11,6 +11,19 @@ export const TWO = new BigNumber(2);
 export const TEN = new BigNumber(10);
 export const MAX_U256 = TWO.pow(255).minus(1);
 
+export interface TokenInfo {
+  readonly chainId: number;
+  readonly address: string;
+  readonly name: string;
+  readonly decimals: number;
+  readonly symbol: string;
+  readonly logoURI?: string;
+  readonly tags?: string[];
+  readonly extensions?: {
+    readonly [key: string]: string | number | boolean | null;
+  };
+}
+
 export function toWei(amount: string | number | BigNumber, decimals: number): BigNumber {
   let res = TEN.pow(decimals).multipliedBy(amount);
   if (res.decimalPlaces() > 0) {

@@ -1,4 +1,3 @@
-import { TokenInfo } from "@uniswap/token-lists";
 import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
 
@@ -7,7 +6,7 @@ import { fetchTokenList, MinimalTokenInfo } from "../hooks/token";
 import { Payment } from "../parser";
 import { testData } from "../test/util";
 import { buildTransfers } from "../transfers";
-import { toWei, fromWei, MAX_U256 } from "../utils";
+import { toWei, fromWei, MAX_U256, TokenInfo } from "../utils";
 
 const dummySafeInfo = testData.dummySafeInfo;
 let listedToken: MinimalTokenInfo;
