@@ -3,7 +3,7 @@ pull_request_rules:
     conditions:
       - "#approved-reviews-by>=1"
       - status-success~=^test \([0-9]+\.x, ubuntu-latest\)$
-      - base=main
+      - base=master
       - label=merge when green
     actions:
       merge:
@@ -14,7 +14,7 @@ pull_request_rules:
     conditions:
       - author~=^dependabot(|-preview)\[bot\]$
       - status-success~=^test \([0-9]+\.x, ubuntu-latest\)$
-      - base=main
+      - base=master
     actions:
       merge:
         method: squash
