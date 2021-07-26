@@ -21,6 +21,11 @@ export interface EnsResolver {
    * @param address address to lookup
    */
   lookupAddress(address: string): Promise<string | null>;
+
+  /**
+   * @returns true, if ENS is enabled for current network.
+   */
+  isEnsEnabled(): Promise<boolean>;
 }
 
 export const useEnsResolver: () => EnsResolver = () => {
@@ -56,11 +61,18 @@ export const useEnsResolver: () => EnsResolver = () => {
     [lookupCache, web3Provider],
   );
 
+  const isEnsEnabled = useCallback(async () => {
+    const network = await web3Provider.getNetwork();
+    console.log("ENS Address: " + network.ensAddress);
+    return typeof network.ensAddress !== "undefined" && network.ensAddress !== null;
+  }, [web3Provider]);
+
   return useMemo(
     () => ({
       resolveName: (ensName: string) => cachedResolveName(ensName),
       lookupAddress: (address: string) => cachedLookupAddress(address),
+      isEnsEnabled: () => isEnsEnabled(),
     }),
-    [cachedResolveName, cachedLookupAddress],
+    [cachedResolveName, cachedLookupAddress, isEnsEnabled],
   );
 };

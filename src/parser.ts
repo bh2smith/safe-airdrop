@@ -126,7 +126,10 @@ export async function toPayment(
   // For performance reasons the lookup will be done after the parsing.
   let [resolvedReceiverAddress, receiverEnsName] = utils.isAddress(prePayment.receiver)
     ? [prePayment.receiver, null]
-    : [await ensResolver.resolveName(prePayment.receiver), prePayment.receiver];
+    : [
+        (await ensResolver.isEnsEnabled()) ? await ensResolver.resolveName(prePayment.receiver) : null,
+        prePayment.receiver,
+      ];
   resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver;
   if (prePayment.tokenAddress === null) {
     // Native asset payment.
@@ -135,11 +138,13 @@ export async function toPayment(
       amount: prePayment.amount,
       tokenAddress: prePayment.tokenAddress,
       decimals: 18,
-      symbol: "ETH",
+      symbol: tokenInfoProvider.getNativeTokenSymbol(),
       receiverEnsName,
     };
   }
-  let resolvedTokenAddress = await ensResolver.resolveName(prePayment.tokenAddress);
+  let resolvedTokenAddress = (await ensResolver.isEnsEnabled())
+    ? await ensResolver.resolveName(prePayment.tokenAddress)
+    : prePayment.tokenAddress;
   const tokenInfo =
     resolvedTokenAddress === null ? undefined : await tokenInfoProvider.getTokenInfo(resolvedTokenAddress);
   if (typeof tokenInfo !== "undefined") {

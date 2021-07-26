@@ -73,10 +73,17 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
             );
             if (uniqueReceiversWithoutEnsName.size < 15) {
               transfers = await Promise.all(
-                transfers.map(async (transfer) => ({
-                  ...transfer,
-                  receiverEnsName: await ensResolver.lookupAddress(transfer.receiver),
-                })),
+                // If there is no ENS Name we will try to lookup the address
+                transfers.map(async (transfer) =>
+                  transfer.receiverEnsName
+                    ? transfer
+                    : {
+                        ...transfer,
+                        receiverEnsName: (await ensResolver.isEnsEnabled())
+                          ? await ensResolver.lookupAddress(transfer.receiver)
+                          : null,
+                      },
+                ),
               );
             }
             const summary = transfersToSummary(transfers);
