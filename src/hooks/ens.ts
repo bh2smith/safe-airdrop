@@ -63,7 +63,6 @@ export const useEnsResolver: () => EnsResolver = () => {
 
   const isEnsEnabled = useCallback(async () => {
     const network = await web3Provider.getNetwork();
-    console.log("ENS Address: " + network.ensAddress);
     return typeof network.ensAddress !== "undefined" && network.ensAddress !== null;
   }, [web3Provider]);
 
