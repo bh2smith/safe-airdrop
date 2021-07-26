@@ -1633,10 +1633,10 @@
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-4.0.0.tgz#2fa53ba3e6a88c606787cc7c4d7836181e256024"
   integrity sha512-D+jFrRnhzmDbuA3D6tLH615WXdOtBEsv3qCAbBfXFDUiDbXFPVZbMdgnWUowA8he6PBbBYTn7LbSJaq/K5T3ZA==
 
-"@gnosis.pm/safe-react-components@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-react-components/-/safe-react-components-0.6.0.tgz#9e6b34c3e02373d5116d66e67688d149c4a14239"
-  integrity sha512-L5ExDY9T5a/W4R1E2R5QUAHuiIJ3gNo7fs4XRPZ1vkf8vg9qgR4HOsy7gGrehKQhIxXDyZRNvNGq1lSb/DSoKw==
+"@gnosis.pm/safe-react-components@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-react-components/-/safe-react-components-0.7.0.tgz#395031c777a8e77d946d7c3aae1b17548cceffd2"
+  integrity sha512-e2cON1P61parOGxvtIlQH3CqxpSFzK8nKOBKh4XPm2FIoH1lCanf3EUjWdvdNE2EAsgn33T5ErsC3R+pPywISQ==
   dependencies:
     classnames "^2.2.6"
     react-media "^1.10.0"
