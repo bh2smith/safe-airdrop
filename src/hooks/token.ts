@@ -79,6 +79,7 @@ export type MinimalTokenInfo = {
 
 export interface TokenInfoProvider {
   getTokenInfo: (tokenAddress: string) => Promise<MinimalTokenInfo | undefined>;
+  getNativeTokenSymbol: () => string;
 }
 
 export const useTokenInfoProvider: () => TokenInfoProvider = () => {
@@ -108,7 +109,8 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
           }
         }
       },
+      getNativeTokenSymbol: () => (safe.chainId === 100 ? "xDai" : "ETH"),
     }),
-    [tokenList, web3Provider],
+    [safe.chainId, tokenList, web3Provider],
   );
 };

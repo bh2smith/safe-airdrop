@@ -50,6 +50,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
+        receiverEnsName: null,
       },
       {
         tokenAddress: null,
@@ -57,6 +58,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ETH",
+        receiverEnsName: null,
       },
       {
         tokenAddress: null,
@@ -64,6 +66,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ETH",
+        receiverEnsName: null,
       },
     ];
     const summary = transfersToSummary(transfers);
@@ -78,6 +81,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
+        receiverEnsName: null,
       },
       {
         tokenAddress: null,
@@ -85,6 +89,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ETH",
+        receiverEnsName: null,
       },
       {
         tokenAddress: null,
@@ -92,6 +97,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ETH",
+        receiverEnsName: null,
       },
     ];
     const summary = transfersToSummary(transfers);
@@ -106,6 +112,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ULT",
+        receiverEnsName: null,
       },
       {
         tokenAddress: testData.unlistedToken.address,
@@ -113,6 +120,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ULT",
+        receiverEnsName: null,
       },
       {
         tokenAddress: testData.unlistedToken.address,
@@ -120,6 +128,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ULT",
+        receiverEnsName: null,
       },
     ];
     const summary = transfersToSummary(transfers);
@@ -134,6 +143,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ULT",
+        receiverEnsName: null,
       },
       {
         tokenAddress: testData.unlistedToken.address,
@@ -141,6 +151,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ULT",
+        receiverEnsName: null,
       },
       {
         tokenAddress: testData.unlistedToken.address,
@@ -148,6 +159,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ULT",
+        receiverEnsName: null,
       },
     ];
     const summary = transfersToSummary(transfers);
@@ -162,6 +174,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ULT",
+        receiverEnsName: null,
       },
       {
         tokenAddress: testData.unlistedToken.address,
@@ -169,6 +182,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ULT",
+        receiverEnsName: null,
       },
       {
         tokenAddress: testData.unlistedToken.address,
@@ -176,6 +190,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ULT",
+        receiverEnsName: null,
       },
       {
         tokenAddress: null,
@@ -183,6 +198,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
+        receiverEnsName: null,
       },
       {
         tokenAddress: null,
@@ -190,6 +206,7 @@ describe("transferToSummary()", () => {
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
+        receiverEnsName: null,
       },
     ];
     const summary = transfersToSummary(transfers);

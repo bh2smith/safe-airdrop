@@ -42,6 +42,7 @@ describe("Parsing CSVs ", () => {
 
     mockTokenInfoProvider = {
       getTokenInfo: fetchTokenFromList,
+      getNativeTokenSymbol: () => "ETH",
     };
 
     mockEnsResolver = {
@@ -78,6 +79,7 @@ describe("Parsing CSVs ", () => {
             return null;
         }
       },
+      isEnsEnabled: async () => true,
     };
   });
 
@@ -184,7 +186,6 @@ describe("Parsing CSVs ", () => {
       mockTokenInfoProvider,
       mockEnsResolver,
     );
-
     expect(warnings).to.have.lengthOf(3);
     expect(payment).to.have.lengthOf(2);
     const [paymentReceiverEnsName, paymentTokenEnsName] = payment;
