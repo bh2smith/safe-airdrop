@@ -20,3 +20,10 @@ pull_request_rules:
         method: squash
         strict: smart+fasttrack
         commit_message: title+body
+  - name: automatic approval for Dependabot pull requests
+    conditions:
+      - author~=^dependabot(|-preview)\[bot\]$
+    actions:
+      review:
+        type: APPROVE
+        message: Automatically approving dependabot
