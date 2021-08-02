@@ -19,7 +19,7 @@ pull_request_rules:
       review:
         type: APPROVE
         message: Automatically approving dependabot
-      merge:
+      - merge:
         method: squash
         strict: smart+fasttrack
         commit_message: title+body
