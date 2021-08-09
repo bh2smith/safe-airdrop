@@ -1613,27 +1613,22 @@
     lodash.isundefined "^3.0.1"
     lodash.uniq "^4.5.0"
 
-"@gnosis.pm/safe-apps-provider@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.6.0.tgz#07cc78df57ca4d0fa9c24c4040ea6322ac759a23"
-  integrity sha512-xtB3lbEqJocYUhg6CVXJVBIah6hZCfRSUXw1e7VHe7QkZlwNIhuom4bF5ZIQlmNPzXF/XjC/Bl4//1R88rjs+w==
+"@gnosis.pm/safe-apps-provider@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.7.0.tgz#12cc7f4dec904f4010174386d3eb3690a1022073"
+  integrity sha512-n7som0FTKuEApO1IRL8c/zU+dKpEPzOtIVHErANOD2ml744xu0ytb2pT3mM6NLzM+/s6oMs4BCJBC71Bpttlzg==
   dependencies:
-    "@gnosis.pm/safe-apps-sdk" "4.0.0"
+    "@gnosis.pm/safe-apps-sdk" "4.1.0"
     events "^3.3.0"
 
-"@gnosis.pm/safe-apps-react-sdk@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-react-sdk/-/safe-apps-react-sdk-4.0.0.tgz#15c5014bbf3e0bff6ef4c296f9b8c184a50eb7fa"
-  integrity sha512-1+UoqdWUJOZ5cM+1hAosCMx2zHBNMC6YVm3vKYBfG8Er/z4VTimR27QldjVN241s/INA4Lw/LYmL5jFlynhOLw==
+"@gnosis.pm/safe-apps-react-sdk@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-react-sdk/-/safe-apps-react-sdk-4.0.1.tgz#3be05270f6bdf325d05dbc1b23fef5129aaa7794"
+  integrity sha512-rv0bM5u4lUGahLLfxzSu55uX3+bXKCnLQRlBT96iCUZdFUz90mWopfp1giLpWft75bx5KvuN8F56qVe0ikh85A==
   dependencies:
-    "@gnosis.pm/safe-apps-sdk" "4.0.0"
+    "@gnosis.pm/safe-apps-sdk" "4.1.0"
 
-"@gnosis.pm/safe-apps-sdk@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-4.0.0.tgz#2fa53ba3e6a88c606787cc7c4d7836181e256024"
-  integrity sha512-D+jFrRnhzmDbuA3D6tLH615WXdOtBEsv3qCAbBfXFDUiDbXFPVZbMdgnWUowA8he6PBbBYTn7LbSJaq/K5T3ZA==
-
-"@gnosis.pm/safe-apps-sdk@^4.1.0":
+"@gnosis.pm/safe-apps-sdk@4.1.0", "@gnosis.pm/safe-apps-sdk@^4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-4.1.0.tgz#95187bba585836a8f02d4eaa88c65568e8b51ef7"
   integrity sha512-j9soWW1BeKtSQpyRr5ZeidEV1owuqEZvZkV1Vg7D8zlTmV5N72PJHnLUn7k7KzUDGxzicVuvEE7Wqkc7AWrc/Q==
