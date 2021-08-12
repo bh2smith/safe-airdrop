@@ -14,6 +14,8 @@ export const networkMap = new Map([
   [1, "mainnet"],
   [4, "rinkeby"],
   [100, "xdai"],
+  [137, "polygon"],
+  [56, "bsc"],
 ]);
 
 function tokenMap(tokenList: TokenInfo[]): TokenMap {
@@ -26,19 +28,23 @@ function tokenMap(tokenList: TokenInfo[]): TokenMap {
 
 export const fetchTokenList = async (chainId: number): Promise<TokenMap> => {
   let tokens: TokenInfo[];
-  if (chainId === 1) {
-    const mainnetTokenURL = "https://tokens.coingecko.com/uniswap/all.json";
-    tokens = (await (await fetch(mainnetTokenURL)).json()).tokens;
-  } else if (chainId === 4) {
-    // Hardcoded this because the list provided at
-    // https://github.com/Uniswap/default-token-list/blob/master/src/tokens/rinkeby.json
-    // Doesn't have GNO or OWL and/or many others.
-    tokens = rinkeby;
-  } else if (chainId === 100) {
-    tokens = xdaiTokens.tokens;
-  } else {
-    console.error(`Unimplemented token list for ${networkMap.get(chainId)} network`);
-    throw new Error(`Unimplemented token list for ${networkMap.get(chainId)} network`);
+  switch (chainId) {
+    case 1:
+      const mainnetTokenURL = "https://tokens.coingecko.com/uniswap/all.json";
+      tokens = (await (await fetch(mainnetTokenURL)).json()).tokens;
+      break;
+    case 4:
+      // Hardcoded this because the list provided at
+      // https://github.com/Uniswap/default-token-list/blob/master/src/tokens/rinkeby.json
+      // Doesn't have GNO or OWL and/or many others.
+      tokens = rinkeby;
+      break;
+    case 100:
+      tokens = xdaiTokens.tokens;
+      break;
+    default:
+      console.warn(`Unimplemented token list for ${networkMap.get(chainId)} network`);
+      tokens = [];
   }
   return tokenMap(tokens);
 };
