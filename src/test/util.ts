@@ -5,6 +5,8 @@ import { TokenInfo } from "../utils";
 const dummySafeInfo: SafeInfo = {
   safeAddress: "0x123",
   chainId: 4,
+  threshold: 1,
+  owners: [],
 };
 
 const unlistedToken: TokenInfo = {
