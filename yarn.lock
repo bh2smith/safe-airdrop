@@ -10222,7 +10222,7 @@ react-scripts@^4.0.3:
   optionalDependencies:
     fsevents "^2.1.3"
 
-react-svg@^14.0.11:
+react-svg@^14.0.13:
   version "14.0.13"
   resolved "https://registry.yarnpkg.com/react-svg/-/react-svg-14.0.13.tgz#fd458d52884efcd8c8a6fb2dc20cc7c603b64b45"
   integrity sha512-jN8cFlThjC5kMgK9+dLAikzLXtJlOQhqCiLqAtc4J0y6Hvnap1dAVB1JNxzliCwZNI+VkYD3PViltHvpkpeeOQ==
