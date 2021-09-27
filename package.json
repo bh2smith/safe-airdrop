@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@fast-csv/parse": "^4.3.6",
-    "@gnosis.pm/safe-apps-provider": "^0.7.1",
-    "@gnosis.pm/safe-apps-react-sdk": "^4.0.3",
+    "@gnosis.pm/safe-apps-provider": "^0.8.0",
+    "@gnosis.pm/safe-apps-react-sdk": "^4.0.4",
     "@gnosis.pm/safe-apps-sdk": "^4.3.0",
     "@gnosis.pm/safe-react-components": "^0.8.0",
     "@material-ui/core": "^4.12.3",

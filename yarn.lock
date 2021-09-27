@@ -1802,27 +1802,22 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"
   integrity sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==
 
-"@gnosis.pm/safe-apps-provider@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.7.1.tgz#d55ba011cd496322faa346a50c1b6aea64b1da43"
-  integrity sha512-+y+hQ9Zr1GGrzehqdkhOUTEX1Ixm0jGUGMxbXQbG4C3PJRvQ2UVoqIXa7CJcqg0Gzru2bOM5CzNvv8pxxv23GA==
+"@gnosis.pm/safe-apps-provider@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.8.0.tgz#b01871f05f109227c306066802500894206eef38"
+  integrity sha512-4QkGkf0NJ+vr5Slo3VmnKGUjQkwp3vzzMFZwE38pt4kJ46HB/uWll9gEs08iQimZzYLTTEN57O2jDOuAE/odpg==
   dependencies:
-    "@gnosis.pm/safe-apps-sdk" "4.2.0"
+    "@gnosis.pm/safe-apps-sdk" "4.3.0"
     events "^3.3.0"
 
-"@gnosis.pm/safe-apps-react-sdk@^4.0.3":
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-react-sdk/-/safe-apps-react-sdk-4.0.3.tgz#14eda4890e641e151d67ba3f6b0a37ffcefe245c"
-  integrity sha512-hJUKuAnTwMfgwO2EETwVe9qKDa4xwHR4y2nAwyUmdjsRkiIbQLqIGTDBYoCElH2ZxQS8/PJVWZ5efT6cB83i+Q==
+"@gnosis.pm/safe-apps-react-sdk@^4.0.4":
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-react-sdk/-/safe-apps-react-sdk-4.0.4.tgz#1286beea5e9b518bf1368f9cfa07f6d41b83ab33"
+  integrity sha512-B9HOKNHuq4SImfVCgEsNGhGQp5vcKy2QCCgAFlORQkCbrclnP0IswgS8Y4hDkEoIieLljhqjzKjlGtsXNreJ3w==
   dependencies:
-    "@gnosis.pm/safe-apps-sdk" "4.2.0"
+    "@gnosis.pm/safe-apps-sdk" "4.3.0"
 
-"@gnosis.pm/safe-apps-sdk@4.2.0":
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-4.2.0.tgz#77069de1b4f3db724d1ded1fab39e1feacc7bc05"
-  integrity sha512-GpaxIbi658+KLtJpTGq6qdpVkbW7OQUKh8i0uhZ04SiAoIAtR9QNbP7V04OvvuqhKjhvCnvh37mJH2RZ2zZHDA==
-
-"@gnosis.pm/safe-apps-sdk@^4.3.0":
+"@gnosis.pm/safe-apps-sdk@4.3.0", "@gnosis.pm/safe-apps-sdk@^4.3.0":
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-4.3.0.tgz#37337035a2f0cc8aca54d9f20321778054dde342"
   integrity sha512-Evr/TdTmUUZXVZF0dcU1gLZj04+8Ea/6R8S3tRzxyOW5cN81NUuPNIiF5x/5Os3Mi+iPNG7qUZ5IHsU6Av3zPw==
