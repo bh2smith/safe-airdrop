@@ -125,7 +125,6 @@ const App: React.FC = () => {
                   setParsing={setParsing}
                 />
               )}
-              <Divider />
               <Card className="cardWithCustomShadow">
                 <div className="tableContainer">
                   {assetTransfers.length > 0 && <AssetTransferTable transferContent={assetTransfers} />}
@@ -144,7 +143,7 @@ const App: React.FC = () => {
                 </>
               ) : (
                 <Button
-                  style={{ alignSelf: "flex-start", marginTop: 16 }}
+                  style={{ alignSelf: "flex-start", marginTop: 16, marginBottom: 16 }}
                   size="lg"
                   color="primary"
                   onClick={submitTx}
