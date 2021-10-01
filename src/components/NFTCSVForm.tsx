@@ -1,5 +1,5 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Card, Text, Button, Loader } from "@gnosis.pm/safe-react-components";
+import { Card, Text } from "@gnosis.pm/safe-react-components";
 import debounce from "lodash.debounce";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import styled from "styled-components";
@@ -12,7 +12,6 @@ import { useERC721InfoProvider } from "../hooks/erc721InfoProvider";
 
 import { CSVEditor } from "./CSVEditor";
 import { CSVUpload } from "./CSVUpload";
-import { CollectiblesTransferTable } from "./assets/CollectiblesTransferTable";
 
 const Form = styled.div`
   flex: 1;
@@ -22,36 +21,26 @@ const Form = styled.div`
   gap: 8px;
 `;
 
-export interface CSVFormProps {}
+export interface CSVFormProps {
+  updateTxCount: (number) => void;
+  updateCsvContent: (string) => void;
+  csvContent: string;
+  updateTransferTable: (transfers: CollectibleTransfer[]) => void;
+  setParsing: (parsing: boolean) => void;
+}
 
 export const NFTCSVForm = (props: CSVFormProps): JSX.Element => {
-  const [parsing, setParsing] = useState(false);
-  const [transferContent, setTransferContent] = useState<CollectibleTransfer[]>([]);
-  const [csvText, setCsvText] = useState<string>("token_address,receiver,amount");
-  const [submitting, setSubmitting] = useState(false);
+  const { updateTxCount, csvContent, updateCsvContent, updateTransferTable, setParsing } = props;
+  const [csvText, setCsvText] = useState<string>(csvContent);
 
   const { setCodeWarnings, setMessages } = useContext(MessageContext);
 
-  const { sdk } = useSafeAppsSDK();
   const erc721InfoProvider = useERC721InfoProvider();
   const ensResolver = useEnsResolver();
 
-  const submitTx = useCallback(async () => {
-    setSubmitting(true);
-    try {
-      const txs = buildERC721Transfers(transferContent);
-      console.log(`Encoded ${txs.length} ERC20 transfers.`);
-      const sendTxResponse = await sdk.txs.send({ txs });
-      const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
-      console.log({ safeTx });
-    } catch (e) {
-      console.error(e);
-    }
-    setSubmitting(false);
-  }, [transferContent, sdk.txs]);
-
   const onChangeTextHandler = (csvText: string) => {
     setCsvText(csvText);
+    updateCsvContent(csvText);
     parseAndValidateCSV(csvText);
   };
 
@@ -83,13 +72,14 @@ export const NFTCSVForm = (props: CSVFormProps): JSX.Element => {
               );
             }
             // TODO Check Balances
-            setTransferContent(transfers);
+            updateTransferTable(transfers);
             setCodeWarnings(warnings);
+            updateTxCount(transfers.length);
             setParsing(false);
           })
           .catch((reason: any) => setMessages([{ severity: "error", message: reason.message }]));
       }, 1000),
-    [ensResolver, erc721InfoProvider, setCodeWarnings, setMessages],
+    [ensResolver, erc721InfoProvider, setCodeWarnings, setMessages, setParsing, updateTransferTable, updateTxCount],
   );
 
   return (
@@ -100,34 +90,12 @@ export const NFTCSVForm = (props: CSVFormProps): JSX.Element => {
           transaction.
         </Text>
         <Text size="lg">
-          Upload, edit or paste your NFT transfer CSV <br /> (nft_address,id,receiver)
+          Upload, edit or paste your NFT transfer CSV <br /> (token_address,tokenId,receiver)
         </Text>
 
         <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />
 
         <CSVUpload onChange={onChangeTextHandler} />
-
-        {transferContent.length > 0 && <CollectiblesTransferTable transferContent={transferContent} />}
-
-        {submitting ? (
-          <>
-            <Loader size="md" />
-            <br />
-            <Button size="lg" color="secondary" onClick={() => setSubmitting(false)}>
-              Cancel
-            </Button>
-          </>
-        ) : (
-          <Button
-            style={{ alignSelf: "flex-start" }}
-            size="lg"
-            color="primary"
-            onClick={submitTx}
-            disabled={parsing || transferContent.length === 0}
-          >
-            {parsing ? <Loader size="sm" color="primaryLight" /> : "Submit"}
-          </Button>
-        )}
       </Form>
     </Card>
   );

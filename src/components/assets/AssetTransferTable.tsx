@@ -13,7 +13,7 @@ type TransferTableProps = {
 export const AssetTransferTable = (props: TransferTableProps) => {
   const { transferContent } = props;
   return (
-    <div>
+    <div style={{ flex: "1" }}>
       <Table
         headers={[
           { id: "token", label: "Token" },

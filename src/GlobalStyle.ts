@@ -82,6 +82,13 @@ const GlobalStyle = createGlobalStyle`
     .navDot p {
         color: white !important;
     }
+
+    .tableContainer {
+        display: flex;
+        flex-direction: horizontal;
+        gap: 16px;
+        width: 100%;
+    }
 `;
 
 export default GlobalStyle;

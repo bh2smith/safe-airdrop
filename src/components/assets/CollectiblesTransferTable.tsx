@@ -13,7 +13,7 @@ type TransferTableProps = {
 export const CollectiblesTransferTable = (props: TransferTableProps) => {
   const { transferContent } = props;
   return (
-    <div>
+    <div style={{ flex: "1" }}>
       <Table
         headers={[
           { id: "token", label: "Token" },
@@ -25,11 +25,11 @@ export const CollectiblesTransferTable = (props: TransferTableProps) => {
             id: "" + index,
             cells: [
               { id: "token", content: <ERC20Token tokenAddress={row.tokenAddress} symbol={row.tokenName} /> },
+              { id: "id", content: <Text size="md">{row.tokenId.toString()}</Text> },
               {
                 id: "receiver",
                 content: <Receiver receiverAddress={row.receiver} receiverEnsName={row.receiverEnsName} />,
               },
-              { id: "id", content: <Text size="md">{row.tokenId.toString()}</Text> },
             ],
           };
         })}

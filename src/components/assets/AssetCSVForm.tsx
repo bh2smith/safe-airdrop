@@ -24,14 +24,17 @@ const Form = styled.div`
   justify-content: space-around;
   gap: 8px;
 `;
-
-export interface CSVFormProps {}
+export interface CSVFormProps {
+  updateTxCount: (count: number) => void;
+  updateCsvContent: (count: string) => void;
+  csvContent: string;
+  updateTransferTable: (transfers: Payment[]) => void;
+  setParsing: (parsing: boolean) => void;
+}
 
 export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
-  const [parsing, setParsing] = useState(false);
-  const [transferContent, setTransferContent] = useState<Payment[]>([]);
-  const [csvText, setCsvText] = useState<string>("token_address,receiver,amount");
-  const [submitting, setSubmitting] = useState(false);
+  const { updateTxCount, csvContent, updateCsvContent, updateTransferTable, setParsing } = props;
+  const [csvText, setCsvText] = useState<string>(csvContent);
 
   const { setCodeWarnings, setMessages } = useContext(MessageContext);
 
@@ -40,22 +43,9 @@ export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
   const tokenInfoProvider = useTokenInfoProvider();
   const ensResolver = useEnsResolver();
 
-  const submitTx = useCallback(async () => {
-    setSubmitting(true);
-    try {
-      const txs = buildAssetTransfers(transferContent);
-      console.log(`Encoded ${txs.length} ERC20 transfers.`);
-      const sendTxResponse = await sdk.txs.send({ txs });
-      const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
-      console.log({ safeTx });
-    } catch (e) {
-      console.error(e);
-    }
-    setSubmitting(false);
-  }, [transferContent, sdk.txs]);
-
   const onChangeTextHandler = (csvText: string) => {
     setCsvText(csvText);
+    updateCsvContent(csvText);
     parseAndValidateCSV(csvText);
   };
 
@@ -95,13 +85,24 @@ export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
                 })),
               ),
             );
-            setTransferContent(transfers);
+            updateTransferTable(transfers);
             setCodeWarnings(warnings);
+            updateTxCount(transfers.length);
             setParsing(false);
           })
           .catch((reason: any) => setMessages([{ severity: "error", message: reason.message }]));
       }, 1000),
-    [ensResolver, safe, setCodeWarnings, setMessages, tokenInfoProvider, web3Provider],
+    [
+      ensResolver,
+      safe,
+      setCodeWarnings,
+      setMessages,
+      setParsing,
+      tokenInfoProvider,
+      updateTransferTable,
+      updateTxCount,
+      web3Provider,
+    ],
   );
 
   return (
@@ -118,28 +119,6 @@ export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
         <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />
 
         <CSVUpload onChange={onChangeTextHandler} />
-
-        {transferContent.length > 0 && <AssetTransferTable transferContent={transferContent} />}
-
-        {submitting ? (
-          <>
-            <Loader size="md" />
-            <br />
-            <Button size="lg" color="secondary" onClick={() => setSubmitting(false)}>
-              Cancel
-            </Button>
-          </>
-        ) : (
-          <Button
-            style={{ alignSelf: "flex-start" }}
-            size="lg"
-            color="primary"
-            onClick={submitTx}
-            disabled={parsing || transferContent.length === 0}
-          >
-            {parsing ? <Loader size="sm" color="primaryLight" /> : "Submit"}
-          </Button>
-        )}
       </Form>
     </Card>
   );
