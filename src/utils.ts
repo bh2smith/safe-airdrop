@@ -2,8 +2,8 @@ import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { BigNumber } from "bignumber.js";
 import { ethers, utils } from "ethers";
 
-import { erc20Instance } from "./erc20";
-import { Payment } from "./parser";
+import { Payment } from "./assetParser";
+import { erc20Instance } from "./transfers/erc20";
 
 export const ZERO = new BigNumber(0);
 export const ONE = new BigNumber(1);

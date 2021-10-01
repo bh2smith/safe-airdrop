@@ -1,35 +1,35 @@
 import { Table, Text } from "@gnosis.pm/safe-react-components";
 import React from "react";
 
-import { Payment } from "../parser";
+import { CollectibleTransfer } from "../../collectiblesParser";
+import { Receiver } from "../Receiver";
 
-import { Receiver } from "./Receiver";
-import { Token } from "./Token";
+import { ERC20Token } from "./ERC20Token";
 
 type TransferTableProps = {
-  transferContent: Payment[];
+  transferContent: CollectibleTransfer[];
 };
 
-export const TransferTable = (props: TransferTableProps) => {
+export const CollectiblesTransferTable = (props: TransferTableProps) => {
   const { transferContent } = props;
   return (
     <div>
       <Table
         headers={[
           { id: "token", label: "Token" },
+          { id: "id", label: "ID" },
           { id: "receiver", label: "Receiver" },
-          { id: "amount", label: "Amount" },
         ]}
         rows={transferContent.map((row, index) => {
           return {
             id: "" + index,
             cells: [
-              { id: "token", content: <Token tokenAddress={row.tokenAddress} symbol={row.symbol} /> },
+              { id: "token", content: <ERC20Token tokenAddress={row.tokenAddress} symbol={row.tokenName} /> },
               {
                 id: "receiver",
                 content: <Receiver receiverAddress={row.receiver} receiverEnsName={row.receiverEnsName} />,
               },
-              { id: "amount", content: <Text size="md">{row.amount.toString()}</Text> },
+              { id: "id", content: <Text size="md">{row.tokenId.toString()}</Text> },
             ],
           };
         })}

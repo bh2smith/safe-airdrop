@@ -6,16 +6,16 @@ import debounce from "lodash.debounce";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import { MessageContext } from "../contexts/MessageContextProvider";
-import { useEnsResolver } from "../hooks/ens";
-import { useTokenInfoProvider } from "../hooks/token";
-import { parseCSV, Payment } from "../parser";
-import { buildTransfers } from "../transfers";
-import { checkAllBalances, transfersToSummary } from "../utils";
+import { AssetParser, Payment } from "../../assetParser";
+import { MessageContext } from "../../contexts/MessageContextProvider";
+import { useEnsResolver } from "../../hooks/ens";
+import { useTokenInfoProvider } from "../../hooks/token";
+import { buildAssetTransfers } from "../../transfers/transfers";
+import { checkAllBalances, transfersToSummary } from "../../utils";
+import { CSVEditor } from "../CSVEditor";
+import { CSVUpload } from "../CSVUpload";
 
-import { CSVEditor } from "./CSVEditor";
-import { CSVUpload } from "./CSVUpload";
-import { TransferTable } from "./TransferTable";
+import { AssetTransferTable } from "./AssetTransferTable";
 
 const Form = styled.div`
   flex: 1;
@@ -27,7 +27,7 @@ const Form = styled.div`
 
 export interface CSVFormProps {}
 
-export const CSVForm = (props: CSVFormProps): JSX.Element => {
+export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
   const [parsing, setParsing] = useState(false);
   const [transferContent, setTransferContent] = useState<Payment[]>([]);
   const [csvText, setCsvText] = useState<string>("token_address,receiver,amount");
@@ -43,7 +43,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
   const submitTx = useCallback(async () => {
     setSubmitting(true);
     try {
-      const txs = buildTransfers(transferContent);
+      const txs = buildAssetTransfers(transferContent);
       console.log(`Encoded ${txs.length} ERC20 transfers.`);
       const sendTxResponse = await sdk.txs.send({ txs });
       const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
@@ -63,7 +63,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
     () =>
       debounce((csvText: string) => {
         setParsing(true);
-        const parsePromise = parseCSV(csvText, tokenInfoProvider, ensResolver);
+        const parsePromise = AssetParser.parseCSV(csvText, tokenInfoProvider, ensResolver);
         parsePromise
           .then(async ([transfers, warnings]) => {
             const uniqueReceiversWithoutEnsName = transfers.reduce(
@@ -112,14 +112,14 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
           from a CSV file in a single transaction.
         </Text>
         <Text size="lg">
-          Upload, edit or paste your transfer CSV <br /> (token_address,receiver,amount)
+          Upload, edit or paste your asset transfer CSV <br /> (token_address,receiver,amount)
         </Text>
 
         <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />
 
         <CSVUpload onChange={onChangeTextHandler} />
 
-        {transferContent.length > 0 && <TransferTable transferContent={transferContent} />}
+        {transferContent.length > 0 && <AssetTransferTable transferContent={transferContent} />}
 
         {submitting ? (
           <>

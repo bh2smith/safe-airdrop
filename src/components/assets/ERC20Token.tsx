@@ -1,7 +1,7 @@
 import { Text } from "@gnosis.pm/safe-react-components";
 import styled from "styled-components";
 
-import { useTokenList } from "../hooks/token";
+import { useTokenList } from "../../hooks/token";
 
 type TokenProps = {
   tokenAddress: string | null;
@@ -17,7 +17,7 @@ const Container = styled.div`
   gap: 8px;
 `;
 
-export const Token = (props: TokenProps) => {
+export const ERC20Token = (props: TokenProps) => {
   const { tokenAddress, symbol } = props;
   const { tokenList } = useTokenList();
   return (

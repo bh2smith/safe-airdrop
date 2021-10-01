@@ -68,6 +68,20 @@ const GlobalStyle = createGlobalStyle`
     .MuiPaper-elevation3 {
         box-shadow: 0px 3px 3px -2px #F7F5F5,0px 3px 4px 0px #F7F5F5,0px 1px 8px 0px #F7F5F5 !important;
     }
+
+    .navLabel {
+        flex: 3;
+    }
+
+    .navDot {
+        width: 24px;
+        height: 24px;
+        top: -8px;
+    }
+
+    .navDot p {
+        color: white !important;
+    }
 `;
 
 export default GlobalStyle;

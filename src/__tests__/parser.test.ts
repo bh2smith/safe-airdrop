@@ -4,9 +4,9 @@ import * as chai from "chai";
 import { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
+import { AssetParser } from "../assetParser";
 import { EnsResolver } from "../hooks/ens";
 import { TokenMap, MinimalTokenInfo, fetchTokenList, TokenInfoProvider } from "../hooks/token";
-import { parseCSV } from "../parser";
 import { testData } from "../test/util";
 
 let tokenList: TokenMap;
@@ -86,7 +86,7 @@ describe("Parsing CSVs ", () => {
   it("should throw errors for invalid CSVs", async () => {
     // this csv contains more values than headers in row1
     const invalidCSV = "head1,header2\nvalue1,value2,value3";
-    expect(parseCSV(invalidCSV, mockTokenInfoProvider, mockEnsResolver)).to.be.rejectedWith(
+    expect(AssetParser.parseCSV(invalidCSV, mockTokenInfoProvider, mockEnsResolver)).to.be.rejectedWith(
       "column header mismatch expected: 2 columns got: 3",
     );
   });
@@ -95,7 +95,7 @@ describe("Parsing CSVs ", () => {
     // we hard coded in our mock that a ens of "error.eth" throws an error.
     const rowWithErrorReceiver = [listedToken.address, "error.eth", "1"];
     expect(
-      parseCSV(csvStringFromRows(rowWithErrorReceiver), mockTokenInfoProvider, mockEnsResolver),
+      AssetParser.parseCSV(csvStringFromRows(rowWithErrorReceiver), mockTokenInfoProvider, mockEnsResolver),
     ).to.be.rejectedWith("unexpected error!");
   });
 
@@ -104,7 +104,7 @@ describe("Parsing CSVs ", () => {
     const rowWithDecimalAmount = [listedToken.address, validReceiverAddress, "69.420"];
     const rowWithoutTokenAddress = ["", validReceiverAddress, "1"];
 
-    const [payment, warnings] = await parseCSV(
+    const [payment, warnings] = await AssetParser.parseCSV(
       csvStringFromRows(rowWithoutDecimal, rowWithDecimalAmount, rowWithoutTokenAddress),
       mockTokenInfoProvider,
       mockEnsResolver,
@@ -138,7 +138,7 @@ describe("Parsing CSVs ", () => {
     const rowWithInvalidTokenAddress = ["0x420", validReceiverAddress, "1"];
     const rowWithInvalidReceiverAddress = [listedToken.address, "0x420", "1"];
 
-    const [payment, warnings] = await parseCSV(
+    const [payment, warnings] = await AssetParser.parseCSV(
       csvStringFromRows(
         rowWithNegativeAmount,
         unlistedTokenWithoutDecimalInContract,
@@ -181,7 +181,7 @@ describe("Parsing CSVs ", () => {
     const unknownReceiverEnsName = [listedToken.address, "unknown.eth", "1"];
     const unknownTokenEnsName = ["unknown.eth", "receiver1.eth", "1"];
 
-    const [payment, warnings] = await parseCSV(
+    const [payment, warnings] = await AssetParser.parseCSV(
       csvStringFromRows(receiverEnsName, tokenEnsName, unknownReceiverEnsName, unknownTokenEnsName),
       mockTokenInfoProvider,
       mockEnsResolver,

@@ -1,11 +1,13 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Loader, Text } from "@gnosis.pm/safe-react-components";
+import { Dot, Icon, Loader, Tab, Text } from "@gnosis.pm/safe-react-components";
+import { Item } from "@gnosis.pm/safe-react-components/dist/navigation/Tab";
 import { setUseWhatChange } from "@simbathesailor/use-what-changed";
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
-import { CSVForm } from "./components/CSVForm";
 import { Header } from "./components/Header";
+import { NFTCSVForm } from "./components/NFTCSVForm";
+import { AssetCSVForm } from "./components/assets/AssetCSVForm";
 import { useTokenList, networkMap } from "./hooks/token";
 
 setUseWhatChange(process.env.NODE_ENV === "development");
@@ -13,6 +15,45 @@ setUseWhatChange(process.env.NODE_ENV === "development");
 const App: React.FC = () => {
   const { isLoading } = useTokenList();
   const { safe } = useSafeAppsSDK();
+  const [selectedTab, setSelectedTab] = useState("assets");
+  const navigationItems: Item[] = [
+    {
+      id: "assets",
+      icon: "assets",
+      label: "Assets",
+      customContent: (
+        <div style={{ display: "flex", gap: "8px", width: "100%", alignItems: "center" }}>
+          <Icon size="md" type="assets" />
+          <Text size="md" className="navLabel">
+            Assets
+          </Text>
+          <Dot className="navDot" color="primary">
+            <Text size="sm" color="white">
+              7
+            </Text>
+          </Dot>
+        </div>
+      ),
+    },
+    {
+      id: "collectibles",
+      icon: "collectibles",
+      label: "Collectibles",
+      customContent: (
+        <div style={{ display: "flex", gap: "8px", width: "100%", alignItems: "center" }}>
+          <Icon size="md" type="collectibles" />
+          <Text size="md" className="navLabel">
+            Collectibles
+          </Text>
+          <Dot className="navDot" color="primary">
+            <Text size="sm" color="white">
+              2
+            </Text>
+          </Dot>
+        </div>
+      ),
+    },
+  ];
   return (
     <Container>
       <Header />
@@ -24,7 +65,11 @@ const App: React.FC = () => {
               <Text size={"lg"}>Loading Tokenlist...</Text>
             </>
           ) : (
-            <CSVForm />
+            <>
+              <Tab items={navigationItems} selectedTab={selectedTab} onChange={setSelectedTab} />
+              {selectedTab === "assets" && <AssetCSVForm />}
+              {selectedTab === "collectibles" && <NFTCSVForm />}
+            </>
           )}
         </>
       ) : (

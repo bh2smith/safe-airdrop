@@ -1,11 +1,11 @@
 import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
 
-import { erc20Interface } from "../erc20";
+import { Payment } from "../assetParser";
 import { fetchTokenList, MinimalTokenInfo } from "../hooks/token";
-import { Payment } from "../parser";
 import { testData } from "../test/util";
-import { buildTransfers } from "../transfers";
+import { erc20Interface } from "../transfers/erc20";
+import { buildAssetTransfers } from "../transfers/transfers";
 import { toWei, fromWei, MAX_U256, TokenInfo } from "../utils";
 
 const dummySafeInfo = testData.dummySafeInfo;
@@ -54,7 +54,7 @@ describe("Build Transfers:", () => {
         },
       ];
 
-      const [listedTransfer, unlistedTransfer, nativeTransfer] = buildTransfers(largePayments);
+      const [listedTransfer, unlistedTransfer, nativeTransfer] = buildAssetTransfers(largePayments);
       expect(listedTransfer.value).to.be.equal("0");
       expect(listedTransfer.to).to.be.equal(listedToken.address);
       expect(listedTransfer.data).to.be.equal(
@@ -106,7 +106,7 @@ describe("Build Transfers:", () => {
         },
       ];
 
-      const [listed, unlisted, native] = buildTransfers(smallPayments);
+      const [listed, unlisted, native] = buildAssetTransfers(smallPayments);
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
@@ -161,7 +161,7 @@ describe("Build Transfers:", () => {
         },
       ];
 
-      const [listed, unlisted, native] = buildTransfers(mixedPayments);
+      const [listed, unlisted, native] = buildAssetTransfers(mixedPayments);
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
@@ -202,7 +202,7 @@ describe("Build Transfers:", () => {
         symbol: "BTC",
         receiverEnsName: null,
       };
-      const [transfer] = buildTransfers([payment]);
+      const [transfer] = buildAssetTransfers([payment]);
       expect(transfer.value).to.be.equal("0");
       expect(transfer.to).to.be.equal(crappyToken.address);
       expect(transfer.data).to.be.equal(
