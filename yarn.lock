@@ -10611,10 +10611,10 @@ react-app-rewired@^2.1.6:
   dependencies:
     semver "^5.6.0"
 
-react-csv-reader@^3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/react-csv-reader/-/react-csv-reader-3.3.1.tgz#cafd489469557bf49a6545e3717caf03829eb4a2"
-  integrity sha512-O59+221Uyq+kZMXSs5FSnWBhh0bNBhflEUgqH1TtHosCuGfSDdt9rBgOarxXtXIJXgezgOSjXtWZJpEsUBIkJA==
+react-csv-reader@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/react-csv-reader/-/react-csv-reader-3.4.0.tgz#29fb0659315c69cee56da6ed147ae39f01e526c8"
+  integrity sha512-jQ0V6zdi49trMCIb9EMBfWQMhvJixasSY2uwi+NP0syUwk+RcurD2WwdKxEr5lsAvoY+UoMkqotQii6CG1ST2A==
   dependencies:
     "@types/papaparse" "^5.2.4"
     papaparse "^5.3.0"
