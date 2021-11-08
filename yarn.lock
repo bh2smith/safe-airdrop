@@ -1157,10 +1157,10 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.10.2", "@babel/runtime@^7.10.4", "@babel/runtime@^7.11.2", "@babel/runtime@^7.15.4", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
-  version "7.15.4"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.15.4.tgz#fd17d16bfdf878e6dd02d19753a39fa8a8d9c84a"
-  integrity sha512-99catp6bHCaxr4sJ/DbTGgHS4+Rs2RVd2g7iOap6SLGPDknRK9ztKNsE/Fg6QhSeh1FGE5f6gHGQmvvn3I3xhw==
+"@babel/runtime@^7.10.2", "@babel/runtime@^7.10.4", "@babel/runtime@^7.11.2", "@babel/runtime@^7.16.0", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+  version "7.16.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.16.0.tgz#e27b977f2e2088ba24748bf99b5e1dece64e4f0b"
+  integrity sha512-Nht8L0O8YCktmsDV6FqFue7vQLRx3Hb0B37lS5y0jDRqRxlBG4wIJHnf9/bgSE2UyipKFA01YtS+npRdTWBUyw==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -2385,12 +2385,12 @@
     "@svgr/plugin-svgo" "^5.5.0"
     loader-utils "^2.0.0"
 
-"@tanem/svg-injector@^10.1.7":
-  version "10.1.7"
-  resolved "https://registry.yarnpkg.com/@tanem/svg-injector/-/svg-injector-10.1.7.tgz#9571b8ec32145f5429044148d1e09599d725fa2e"
-  integrity sha512-dS5QJ/p1HATAWnC5ysCyOPL/QLpqtHOQnRpS+FcYCznBEb/lMORwFeXhnUODcHt/Yo0XyRrtFIFNIYzXAVdZmA==
+"@tanem/svg-injector@^10.1.8":
+  version "10.1.9"
+  resolved "https://registry.yarnpkg.com/@tanem/svg-injector/-/svg-injector-10.1.9.tgz#b5db174b70c79a402fbde779ed668c2680803537"
+  integrity sha512-R0fsOCehvKc8y9dKbPW5U75S48ktJLoeRWCwhHB0U1vtuFj53CDJN8llbVEUv/Bt2tO/vwWtV05/5c9aPQ+xLA==
   dependencies:
-    "@babel/runtime" "^7.15.4"
+    "@babel/runtime" "^7.16.0"
     content-type "^1.0.4"
     tslib "^2.3.1"
 
@@ -10767,13 +10767,13 @@ react-scripts@^4.0.3:
   optionalDependencies:
     fsevents "^2.1.3"
 
-react-svg@^14.0.17:
-  version "14.0.17"
-  resolved "https://registry.yarnpkg.com/react-svg/-/react-svg-14.0.17.tgz#2fb666ba961f5487bc60e7f67060a39dad46baba"
-  integrity sha512-m2PufOk/78fE8ey10EC8UVVJQ4y2XhoTfDR1aYqqyhicuxpo+YV0qFnPom4GBNszOqaCIZQIEh3rCIPgm3mc7Q==
+react-svg@^14.1.1:
+  version "14.1.1"
+  resolved "https://registry.yarnpkg.com/react-svg/-/react-svg-14.1.1.tgz#d534d004afa774d22666bc73e2238f2089c9b26c"
+  integrity sha512-Wq1DK448Lg7SucksS6ZbMeGTwxouEtUmZ6WjmhxNJsnoIWf+iSIp/NL/0b3ubkK3IekdC2ORI6cDCM9tlvvE5A==
   dependencies:
-    "@babel/runtime" "^7.15.4"
-    "@tanem/svg-injector" "^10.1.7"
+    "@babel/runtime" "^7.16.0"
+    "@tanem/svg-injector" "^10.1.8"
     "@types/prop-types" "^15.7.4"
     prop-types "^15.7.2"
 
