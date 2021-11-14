@@ -7,6 +7,13 @@ import { testData } from "./util";
 let lastRegisteredEventHandler;
 let lastTrackedParentRequestID: string | undefined;
 
+/**
+ * Registers mocks to specific window events and the useEffect hook in order to capture the postMessage call to the parent window (gnosis safe).
+ *
+ * After rendering the SafeProvider the test has to invoke sendSafeInfo to mock send a gnosis safe to the SafeProvider using the captured values.
+ *
+ * @see sendSafeInfo
+ */
 export const setupMocksForSafeProvider = () => {
   let postMessageSpy: jest.SpyInstance<void, [message: any, options?: PostMessageOptions]>;
   let useEffectSpy: jest.SpyInstance<void, [effect: React.EffectCallback, deps?: React.DependencyList | undefined]>;
@@ -28,9 +35,14 @@ export const setupMocksForSafeProvider = () => {
       lastRegisteredEventHandler = handler;
     }
   });
-  return "test";
 };
 
+/**
+ * Mocks a MessageEvent by calling the previously registered handler.
+ * This MessageEvent includes the SafeInfo and some required meta information.
+ *
+ * @param safeInfo Optional Safe Info data which should be sent to the SafeProvider. By default its the dummySafeInfo from testData.
+ */
 export const sendSafeInfo = (safeInfo: SafeInfo = testData.dummySafeInfo) => {
   act(() => {
     // we now send the a fake SafeInfo Object to the Safe Provider

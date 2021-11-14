@@ -4,6 +4,8 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom/extend-expect";
 import "@testing-library/react";
+
+// we have to mock some crypto functionality of the browser window for the gnosis safe mocks
 import crypto from "crypto";
 
 function getRandomValues(buf: Uint8Array) {
