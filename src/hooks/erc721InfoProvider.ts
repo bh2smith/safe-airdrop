@@ -19,19 +19,29 @@ export const useERC721InfoProvider: () => ERC721InfoProvider = () => {
   const { safe, sdk } = useSafeAppsSDK();
   const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
 
+  const erc721ContractCache = useMemo(() => new Map<string, ERC721TokenInfo | undefined>(), []);
+
   const getTokenInfo = useCallback(
     async (tokenAddress: string) => {
+      if (erc721ContractCache.has(tokenAddress)) {
+        return erc721ContractCache.get(tokenAddress);
+      }
+      console.log("fetching erc721 token info");
       const erc721Contract = erc721Instance(tokenAddress, web3Provider);
       const name = await erc721Contract.name().catch(() => undefined);
       const symbol = await erc721Contract.symbol().catch(() => undefined);
-      if (!name || !symbol) {
-        // This is not a valid contract
-        return undefined;
-      } else {
-        return { name, symbol };
+
+      let fetchedTokenInfo: ERC721TokenInfo | undefined = undefined;
+      if (name && symbol) {
+        fetchedTokenInfo = {
+          name,
+          symbol,
+        };
       }
+      erc721ContractCache.set(tokenAddress, fetchedTokenInfo);
+      return fetchedTokenInfo;
     },
-    [web3Provider],
+    [erc721ContractCache, web3Provider],
   );
 
   const getFromAddress = useCallback(() => {

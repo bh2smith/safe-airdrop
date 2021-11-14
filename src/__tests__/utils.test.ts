@@ -1,7 +1,7 @@
 import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
 
-import { Payment } from "../parser";
+import { Payment } from "../assetParser";
 import { testData } from "../test/util";
 import { fromWei, toWei, TEN, ONE, ZERO, transfersToSummary } from "../utils";
 
