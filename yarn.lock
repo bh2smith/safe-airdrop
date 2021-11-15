@@ -1803,12 +1803,12 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"
   integrity sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==
 
-"@gnosis.pm/safe-apps-provider@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.8.1.tgz#2f8fb98ae84c8b57855d7f8d6dfbff1be08689c6"
-  integrity sha512-yonN0yP6kNsgENwFs2sBvJtSoPlXH3LtuZjHOg0FaBJs6qTN+cn7/yxOXeZ6ThWv79/68lv5/RbtO7aEsmA4dg==
+"@gnosis.pm/safe-apps-provider@^0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.9.0.tgz#02451e24d50e0ada5ccf98023c381481ccc8efd8"
+  integrity sha512-Z5hRy8SkroREHb4S5GAkzURuliS4Y2UWR92toLLIiu39NZKILq/OdbrNHYeiF8r8aemSnmxsmDX25cQ+8l/J6A==
   dependencies:
-    "@gnosis.pm/safe-apps-sdk" "5.0.0"
+    "@gnosis.pm/safe-apps-sdk" "6.0.0"
     events "^3.3.0"
 
 "@gnosis.pm/safe-apps-react-sdk@^4.0.5":
@@ -1826,7 +1826,7 @@
     "@changesets/cli" "^2.16.0"
     ethers "^5.4.7"
 
-"@gnosis.pm/safe-apps-sdk@^6.0.0":
+"@gnosis.pm/safe-apps-sdk@6.0.0", "@gnosis.pm/safe-apps-sdk@^6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-6.0.0.tgz#c3974d34c5758948cf16507eb0cdcedfaf63e2e7"
   integrity sha512-3d01OKG7mUVqyWqSmWLp6mjblcVVe3EoHNMXMaC7kBkmDVyDEqcrLKRxAjx1OvPkjSg6MTvPtNAsJtSd0jyeYA==
