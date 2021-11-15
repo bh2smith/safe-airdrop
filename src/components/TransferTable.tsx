@@ -15,6 +15,8 @@ export const TransferTable = (props: TransferTableProps) => {
   return (
     <div>
       <Table
+        isStickyHeader={true}
+        maxHeight={750}
         headers={[
           { id: "token", label: "Token" },
           { id: "receiver", label: "Receiver" },
