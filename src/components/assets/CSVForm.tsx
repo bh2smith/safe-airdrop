@@ -1,21 +1,19 @@
 import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Card, Text, Button, Loader } from "@gnosis.pm/safe-react-components";
+import { Text } from "@gnosis.pm/safe-react-components";
 import { ethers } from "ethers";
 import debounce from "lodash.debounce";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import { AssetParser, Payment } from "../../assetParser";
 import { MessageContext } from "../../contexts/MessageContextProvider";
 import { useEnsResolver } from "../../hooks/ens";
+import { useERC721InfoProvider } from "../../hooks/erc721InfoProvider";
 import { useTokenInfoProvider } from "../../hooks/token";
-import { buildAssetTransfers } from "../../transfers/transfers";
+import { AssetTransfer, CSVParser, Transfer } from "../../parser/csvParser";
 import { checkAllBalances, transfersToSummary } from "../../utils";
 import { CSVEditor } from "../CSVEditor";
 import { CSVUpload } from "../CSVUpload";
-
-import { AssetTransferTable } from "./AssetTransferTable";
 
 const Form = styled.div`
   flex: 1;
@@ -25,15 +23,14 @@ const Form = styled.div`
   gap: 8px;
 `;
 export interface CSVFormProps {
-  updateTxCount: (count: number) => void;
   updateCsvContent: (count: string) => void;
   csvContent: string;
-  updateTransferTable: (transfers: Payment[]) => void;
+  updateTransferTable: (transfers: Transfer[]) => void;
   setParsing: (parsing: boolean) => void;
 }
 
 export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
-  const { updateTxCount, csvContent, updateCsvContent, updateTransferTable, setParsing } = props;
+  const { csvContent, updateCsvContent, updateTransferTable, setParsing } = props;
   const [csvText, setCsvText] = useState<string>(csvContent);
 
   const { setCodeWarnings, setMessages } = useContext(MessageContext);
@@ -42,6 +39,7 @@ export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
   const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [safe, sdk]);
   const tokenInfoProvider = useTokenInfoProvider();
   const ensResolver = useEnsResolver();
+  const erc721TokenInfoProvider = useERC721InfoProvider();
 
   const onChangeTextHandler = (csvText: string) => {
     setCsvText(csvText);
@@ -53,8 +51,7 @@ export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
     () =>
       debounce((csvText: string) => {
         setParsing(true);
-        const parsePromise = AssetParser.parseCSV(csvText, tokenInfoProvider, ensResolver);
-        parsePromise
+        CSVParser.parseCSV(csvText, tokenInfoProvider, erc721TokenInfoProvider, ensResolver)
           .then(async ([transfers, warnings]) => {
             const uniqueReceiversWithoutEnsName = transfers.reduce(
               (previousValue, currentValue): Set<string> =>
@@ -76,7 +73,13 @@ export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
                 ),
               );
             }
-            const summary = transfersToSummary(transfers);
+            const summary = transfersToSummary(
+              transfers.filter(
+                (value) => value.token_type === "erc20" || value.token_type === "native",
+              ) as AssetTransfer[],
+            );
+            updateTransferTable(transfers);
+
             checkAllBalances(summary, web3Provider, safe).then((insufficientBalances) =>
               setMessages(
                 insufficientBalances.map((insufficientBalanceInfo) => ({
@@ -85,41 +88,37 @@ export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
                 })),
               ),
             );
-            updateTransferTable(transfers);
             setCodeWarnings(warnings);
-            updateTxCount(transfers.length);
             setParsing(false);
           })
           .catch((reason: any) => setMessages([{ severity: "error", message: reason.message }]));
       }, 1000),
     [
       ensResolver,
+      erc721TokenInfoProvider,
       safe,
       setCodeWarnings,
       setMessages,
       setParsing,
       tokenInfoProvider,
       updateTransferTable,
-      updateTxCount,
       web3Provider,
     ],
   );
 
   return (
-    <Card className="cardWithCustomShadow">
-      <Form>
-        <Text size="xl">
-          Send arbitrarily many distinct tokens, to arbitrarily many distinct accounts with various different values
-          from a CSV file in a single transaction.
-        </Text>
-        <Text size="lg">
-          Upload, edit or paste your asset transfer CSV <br /> (token_address,receiver,amount)
-        </Text>
+    <Form>
+      <Text size="xl">
+        Send arbitrarily many distinct tokens, to arbitrarily many distinct accounts with various different values from
+        a CSV file in a single transaction.
+      </Text>
+      <Text size="lg">
+        Upload, edit or paste your asset transfer CSV <br /> (token_type,token_address,receiver,value,id)
+      </Text>
 
-        <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />
+      <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />
 
-        <CSVUpload onChange={onChangeTextHandler} />
-      </Form>
-    </Card>
+      <CSVUpload onChange={onChangeTextHandler} />
+    </Form>
   );
 };

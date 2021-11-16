@@ -1,7 +1,7 @@
 import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
 
-import { Payment } from "../assetParser";
+import { AssetTransfer } from "../parser/csvParser";
 import { testData } from "../test/util";
 import { fromWei, toWei, TEN, ONE, ZERO, transfersToSummary } from "../utils";
 
@@ -43,7 +43,7 @@ describe("fromWei()", () => {
 
 describe("transferToSummary()", () => {
   it("works for integer native currency", () => {
-    const transfers: Payment[] = [
+    const transfers: AssetTransfer[] = [
       {
         tokenAddress: null,
         amount: new BigNumber(1),
@@ -74,7 +74,7 @@ describe("transferToSummary()", () => {
   });
 
   it("works for decimals in native currency", () => {
-    const transfers: Payment[] = [
+    const transfers: AssetTransfer[] = [
       {
         tokenAddress: null,
         amount: new BigNumber(0.1),
@@ -105,7 +105,7 @@ describe("transferToSummary()", () => {
   });
 
   it("works for decimals in erc20", () => {
-    const transfers: Payment[] = [
+    const transfers: AssetTransfer[] = [
       {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(0.1),
@@ -136,7 +136,7 @@ describe("transferToSummary()", () => {
   });
 
   it("works for integer in erc20", () => {
-    const transfers: Payment[] = [
+    const transfers: AssetTransfer[] = [
       {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(1),
@@ -167,7 +167,7 @@ describe("transferToSummary()", () => {
   });
 
   it("works for mixed payments", () => {
-    const transfers: Payment[] = [
+    const transfers: AssetTransfer[] = [
       {
         tokenAddress: testData.unlistedToken.address,
         amount: new BigNumber(1.1),

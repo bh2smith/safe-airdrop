@@ -1,13 +1,13 @@
 import { Table, Text } from "@gnosis.pm/safe-react-components";
 import React from "react";
 
-import { Payment } from "../../assetParser";
+import { AssetTransfer } from "../../parser/csvParser";
 import { Receiver } from "../Receiver";
 
 import { ERC20Token } from "./ERC20Token";
 
 type TransferTableProps = {
-  transferContent: Payment[];
+  transferContent: AssetTransfer[];
 };
 
 export const AssetTransferTable = (props: TransferTableProps) => {

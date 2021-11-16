@@ -1,8 +1,8 @@
 import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
 
-import { Payment } from "../assetParser";
 import { fetchTokenList, MinimalTokenInfo } from "../hooks/token";
+import { AssetTransfer } from "../parser/csvParser";
 import { testData } from "../test/util";
 import { erc20Interface } from "../transfers/erc20";
 import { buildAssetTransfers } from "../transfers/transfers";
@@ -24,7 +24,7 @@ describe("Build Transfers:", () => {
 
   describe("Integers", () => {
     it("works with large integers on listed, unlisted and native asset transfers", () => {
-      const largePayments: Payment[] = [
+      const largePayments: AssetTransfer[] = [
         // Listed ERC20
         {
           receiver,
@@ -76,7 +76,7 @@ describe("Build Transfers:", () => {
   describe("Decimals", () => {
     it("works with decimal payments on listed, unlisted and native transfers", () => {
       const tinyAmount = new BigNumber("0.0000001");
-      const smallPayments: Payment[] = [
+      const smallPayments: AssetTransfer[] = [
         // Listed ERC20
         {
           receiver,
@@ -131,7 +131,7 @@ describe("Build Transfers:", () => {
   describe("Mixed", () => {
     it("works with arbitrary amount strings on listed, unlisted and native transfers", () => {
       const mixedAmount = new BigNumber("123456.000000789");
-      const mixedPayments: Payment[] = [
+      const mixedPayments: AssetTransfer[] = [
         // Listed ERC20
         {
           receiver,
@@ -194,7 +194,7 @@ describe("Build Transfers:", () => {
         chainId: -1,
       };
 
-      const payment: Payment = {
+      const payment: AssetTransfer = {
         receiver,
         amount: amount,
         tokenAddress: crappyToken.address,

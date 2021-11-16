@@ -1,19 +1,15 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { Button, Card, Divider, Dot, Icon, Loader, Tab, Text } from "@gnosis.pm/safe-react-components";
-import { Item } from "@gnosis.pm/safe-react-components/dist/navigation/Tab";
+import { Button, Card, Divider, Loader, Text } from "@gnosis.pm/safe-react-components";
 import { setUseWhatChange } from "@simbathesailor/use-what-changed";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
-import { Payment } from "./assetParser";
-import { CollectibleTransfer } from "./collectiblesParser";
 import { Header } from "./components/Header";
-import { NFTCSVForm } from "./components/NFTCSVForm";
-import { AssetCSVForm } from "./components/assets/AssetCSVForm";
-import { AssetTransferTable } from "./components/assets/AssetTransferTable";
-import { CollectiblesTransferTable } from "./components/assets/CollectiblesTransferTable";
+import { Summary } from "./components/Summary";
+import { AssetCSVForm } from "./components/assets/CSVForm";
 import { useTokenList, networkMap } from "./hooks/token";
+import { AssetTransfer, CollectibleTransfer, Transfer } from "./parser/csvParser";
 import { buildAssetTransfers, buildERC721Transfers } from "./transfers/transfers";
 
 setUseWhatChange(process.env.NODE_ENV === "development");
@@ -21,19 +17,19 @@ setUseWhatChange(process.env.NODE_ENV === "development");
 const App: React.FC = () => {
   const { isLoading } = useTokenList();
   const { safe } = useSafeAppsSDK();
-  const [assetTxCount, setAssetTxCount] = useState(0);
-  const [assetsCsvText, setAssetsCsvText] = useState<string>("token_address,receiver,amount");
-  const [assetTransfers, setAssetTransfers] = useState<Payment[]>([]);
-
-  const [collectiblesCsvText, setCollectiblesCsvText] = useState<string>("token_address,tokenId,receiver");
-  const [collectibleTxCount, setCollectibleTxCount] = useState(0);
-  const [collectibleTransfers, setCollectibleTransfers] = useState<CollectibleTransfer[]>([]);
-
-  const [selectedTab, setSelectedTab] = useState("assets");
+  const [csvText, setCsvText] = useState<string>("token_type,token_address,receiver,value,id");
+  const [tokenTransfers, setTokenTransfers] = useState<Transfer[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
   const [parsing, setParsing] = useState(false);
   const { sdk } = useSafeAppsSDK();
+
+  const assetTransfers = tokenTransfers.filter(
+    (transfer) => transfer.token_type === "erc20" || transfer.token_type === "native",
+  ) as AssetTransfer[];
+  const collectibleTransfers = tokenTransfers.filter(
+    (transfer) => transfer.token_type === "erc1155" || transfer.token_type === "erc721",
+  ) as CollectibleTransfer[];
 
   const submitTx = useCallback(async () => {
     setSubmitting(true);
@@ -52,48 +48,6 @@ const App: React.FC = () => {
     setSubmitting(false);
   }, [assetTransfers, collectibleTransfers, sdk.txs]);
 
-  const navigationItems: Item[] = [
-    {
-      id: "assets",
-      icon: "assets",
-      label: "Assets",
-      customContent: (
-        <div style={{ display: "flex", gap: "8px", width: "100%", alignItems: "center" }}>
-          <Icon size="md" type="assets" />
-          <Text size="md" className="navLabel">
-            Assets
-          </Text>
-          {assetTxCount > 0 && (
-            <Dot className="navDot" color="primary">
-              <Text size="sm" color="white">
-                {assetTxCount}
-              </Text>
-            </Dot>
-          )}
-        </div>
-      ),
-    },
-    {
-      id: "collectibles",
-      icon: "collectibles",
-      label: "Collectibles",
-      customContent: (
-        <div style={{ display: "flex", gap: "8px", width: "100%", alignItems: "center" }}>
-          <Icon size="md" type="collectibles" />
-          <Text size="md" className="navLabel">
-            Collectibles
-          </Text>
-          {collectibleTxCount > 0 && (
-            <Dot className="navDot" color="primary">
-              <Text size="sm" color="white">
-                {collectibleTxCount}
-              </Text>
-            </Dot>
-          )}
-        </div>
-      ),
-    },
-  ];
   return (
     <Container>
       <Header />
@@ -105,34 +59,15 @@ const App: React.FC = () => {
               <Text size={"lg"}>Loading Tokenlist...</Text>
             </>
           ) : (
-            <>
-              <Tab items={navigationItems} selectedTab={selectedTab} onChange={setSelectedTab} />
-              {selectedTab === "assets" && (
-                <AssetCSVForm
-                  updateTxCount={setAssetTxCount}
-                  updateCsvContent={setAssetsCsvText}
-                  csvContent={assetsCsvText}
-                  updateTransferTable={setAssetTransfers}
-                  setParsing={setParsing}
-                />
-              )}
-              {selectedTab === "collectibles" && (
-                <NFTCSVForm
-                  updateTxCount={setCollectibleTxCount}
-                  updateCsvContent={setCollectiblesCsvText}
-                  csvContent={collectiblesCsvText}
-                  updateTransferTable={setCollectibleTransfers}
-                  setParsing={setParsing}
-                />
-              )}
-              <Card className="cardWithCustomShadow">
-                <div className="tableContainer">
-                  {assetTransfers.length > 0 && <AssetTransferTable transferContent={assetTransfers} />}
-                  {collectibleTransfers.length > 0 && (
-                    <CollectiblesTransferTable transferContent={collectibleTransfers} />
-                  )}
-                </div>
-              </Card>
+            <Card className="cardWithCustomShadow">
+              <AssetCSVForm
+                updateCsvContent={setCsvText}
+                csvContent={csvText}
+                updateTransferTable={setTokenTransfers}
+                setParsing={setParsing}
+              />
+              <Divider />
+              <Summary assetTransfers={assetTransfers} collectibleTransfers={collectibleTransfers} />
               {submitting ? (
                 <>
                   <Loader size="md" />
@@ -147,12 +82,12 @@ const App: React.FC = () => {
                   size="lg"
                   color="primary"
                   onClick={submitTx}
-                  disabled={parsing || assetTransfers.length + collectibleTransfers.length === 0}
+                  disabled={parsing || tokenTransfers.length + collectibleTransfers.length === 0}
                 >
                   {parsing ? <Loader size="sm" color="primaryLight" /> : "Submit"}
                 </Button>
               )}
-            </>
+            </Card>
           )}
         </>
       ) : (

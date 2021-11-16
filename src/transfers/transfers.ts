@@ -1,13 +1,12 @@
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 
-import { Payment } from "../assetParser";
-import { CollectibleTransfer } from "../collectiblesParser";
+import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
 import { toWei } from "../utils";
 
 import { erc20Interface } from "./erc20";
 import { erc721Interface } from "./erc721";
 
-export function buildAssetTransfers(transferData: Payment[]): BaseTransaction[] {
+export function buildAssetTransfers(transferData: AssetTransfer[]): BaseTransaction[] {
   const txList: BaseTransaction[] = transferData.map((transfer) => {
     if (transfer.tokenAddress === null) {
       // Native asset transfer
@@ -35,7 +34,7 @@ export function buildERC721Transfers(transferData: CollectibleTransfer[]): BaseT
     return {
       to: transfer.tokenAddress,
       value: "0",
-      data: erc721Interface.encodeFunctionData("transferFrom", [
+      data: erc721Interface.encodeFunctionData("safeTransferFrom", [
         transfer.from,
         transfer.receiver,
         transfer.tokenId.toFixed(),
