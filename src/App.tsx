@@ -63,6 +63,12 @@ const App: React.FC = () => {
                     <code>amount</code>: the amount of token to be transferred.
                   </li>
                 </ul>
+                <p>
+                  <b>
+                    Important: The CSV file has to use "," as a separator and the header row always has to be provided
+                    as the first row and include the described column names.
+                  </b>
+                </p>
               </Text>
               <Divider />
               <Title size="md" strong>
