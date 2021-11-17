@@ -3,7 +3,7 @@ import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { TokenInfo } from "../utils";
 
 const dummySafeInfo: SafeInfo = {
-  safeAddress: "0x123",
+  safeAddress: "0x1230000000000000000000000000000000000000",
   chainId: 4,
   threshold: 1,
   owners: [],

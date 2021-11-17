@@ -31,7 +31,6 @@ export interface EnsResolver {
 export const useEnsResolver: () => EnsResolver = () => {
   const { safe, sdk } = useSafeAppsSDK();
   const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
-
   const resolveCache = useMemo(() => new Map<string, string | null>(), []);
 
   const lookupCache = useMemo(() => new Map<string, string | null>(), []);
@@ -39,7 +38,8 @@ export const useEnsResolver: () => EnsResolver = () => {
   const cachedResolveName = useCallback(
     async (ensName: string) => {
       const cachedAddress = resolveCache.get(ensName);
-      const resolvedAddress = cachedAddress ? cachedAddress : await web3Provider.resolveName(ensName);
+      const resolvedAddress =
+        typeof cachedAddress !== "undefined" ? cachedAddress : await web3Provider.resolveName(ensName);
       if (!resolveCache.has(ensName)) {
         resolveCache.set(ensName, resolvedAddress);
       }
