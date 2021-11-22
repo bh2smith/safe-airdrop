@@ -16,20 +16,22 @@ export const AssetTransferTable = (props: TransferTableProps) => {
     <div style={{ flex: "1" }}>
       <Table
         headers={[
+          { id: "position", label: "#" },
           { id: "token", label: "Token" },
           { id: "receiver", label: "Receiver" },
-          { id: "amount", label: "Amount" },
+          { id: "value", label: "Value" },
         ]}
         rows={transferContent.map((row, index) => {
           return {
             id: "" + index,
             cells: [
+              { id: "position", content: row.position },
               { id: "token", content: <ERC20Token tokenAddress={row.tokenAddress} symbol={row.symbol} /> },
               {
                 id: "receiver",
                 content: <Receiver receiverAddress={row.receiver} receiverEnsName={row.receiverEnsName} />,
               },
-              { id: "amount", content: <Text size="md">{row.amount.toString()}</Text> },
+              { id: "value", content: <Text size="md">{row.amount.toString()}</Text> },
             ],
           };
         })}

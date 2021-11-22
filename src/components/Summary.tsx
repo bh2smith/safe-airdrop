@@ -1,12 +1,4 @@
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Dot,
-  Icon,
-  Text,
-  Title,
-} from "@gnosis.pm/safe-react-components";
+import { Accordion, AccordionDetails, AccordionSummary, Icon, Text, Title } from "@gnosis.pm/safe-react-components";
 
 import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
 
@@ -25,7 +17,7 @@ export const Summary = (props: SummaryProps): JSX.Element => {
   return (
     <>
       <Title size="md">Summary of transfers</Title>
-      <Accordion compact style={{ maxWidth: 1400 }}>
+      <Accordion disabled={assetTxCount === 0} compact style={{ maxWidth: 1400 }}>
         <AccordionSummary>
           <div
             style={{
@@ -38,16 +30,16 @@ export const Summary = (props: SummaryProps): JSX.Element => {
             }}
           >
             <Icon size="md" type="assets" />
-            <Text size="xl" className="navLabel">
+            <Text size="xl" strong className="navLabel">
               Assets
             </Text>
 
             <div style={{ flex: 4 }}>
-              {assetTxCount > 0 && (
-                <Text size="lg">
-                  {assetTxCount} {`transfer${assetTxCount > 1 ? "s" : ""}`}
-                </Text>
-              )}
+              <Text size="lg" strong>
+                {`${assetTxCount > 0 ? assetTxCount : "no"} transfer${
+                  assetTxCount > 1 || assetTxCount === 0 ? "s" : ""
+                }`}
+              </Text>
             </div>
           </div>
         </AccordionSummary>
@@ -55,21 +47,21 @@ export const Summary = (props: SummaryProps): JSX.Element => {
           <AssetTransferTable transferContent={assetTransfers} />
         </AccordionDetails>
       </Accordion>
-      <Accordion compact style={{ maxWidth: 1400 }}>
+      <Accordion disabled={collectibleTxCount === 0} compact style={{ maxWidth: 1400 }}>
         <AccordionSummary>
           <div
             style={{ display: "flex", gap: "8px", width: "100%", alignItems: "center", justifyContent: "flex-start" }}
           >
             <Icon size="md" type="collectibles" />
-            <Text size="xl" className="navLabel">
+            <Text size="xl" strong className="navLabel">
               Collectibles
             </Text>
             <div style={{ flex: 4 }}>
-              {collectibleTxCount > 0 && (
-                <Text size="lg">
-                  {collectibleTxCount} {`transfer${collectibleTxCount > 1 ? "s" : ""}`}
-                </Text>
-              )}
+              <Text size="lg" strong>
+                {`${collectibleTxCount > 0 ? collectibleTxCount : "no"} transfer${
+                  collectibleTxCount > 1 || collectibleTxCount === 0 ? "s" : ""
+                }`}
+              </Text>
             </div>
           </div>
         </AccordionSummary>

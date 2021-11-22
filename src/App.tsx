@@ -10,7 +10,7 @@ import { Summary } from "./components/Summary";
 import { AssetCSVForm } from "./components/assets/CSVForm";
 import { useTokenList, networkMap } from "./hooks/token";
 import { AssetTransfer, CollectibleTransfer, Transfer } from "./parser/csvParser";
-import { buildAssetTransfers, buildERC721Transfers } from "./transfers/transfers";
+import { buildAssetTransfers, buildCollectibleTransfers } from "./transfers/transfers";
 
 setUseWhatChange(process.env.NODE_ENV === "development");
 
@@ -36,7 +36,7 @@ const App: React.FC = () => {
     try {
       const txs: BaseTransaction[] = [];
       txs.push(...buildAssetTransfers(assetTransfers));
-      txs.push(...buildERC721Transfers(collectibleTransfers));
+      txs.push(...buildCollectibleTransfers(collectibleTransfers));
 
       console.log(`Encoded ${txs.length} ERC20 transfers.`);
       const sendTxResponse = await sdk.txs.send({ txs });

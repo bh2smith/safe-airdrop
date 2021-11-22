@@ -73,6 +73,7 @@ export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
                 ),
               );
             }
+            transfers = transfers.map((transfer, idx) => ({ ...transfer, position: idx + 1 }));
             const summary = transfersToSummary(
               transfers.filter(
                 (value) => value.token_type === "erc20" || value.token_type === "native",

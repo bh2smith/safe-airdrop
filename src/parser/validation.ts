@@ -27,7 +27,12 @@ export const validateAssetRow = (row: AssetTransfer, callback: RowValidateCallba
 };
 
 export const validateCollectibleRow = (row: CollectibleTransfer, callback: RowValidateCallback) => {
-  const warnings = [...areAddressesValid(row), ...isTokenIdPositive(row), ...isCollectibleTokenValid(row)];
+  const warnings = [
+    ...areAddressesValid(row),
+    ...isTokenIdPositive(row),
+    ...isCollectibleTokenValid(row),
+    ...isTokenValueValid(row),
+  ];
   callback(null, warnings.length === 0, warnings.join(";"));
 };
 
@@ -53,3 +58,8 @@ const isCollectibleTokenValid = (row: CollectibleTransfer): string[] =>
 
 const isTokenIdPositive = (row: CollectibleTransfer): string[] =>
   row.tokenId.isGreaterThan(0) ? [] : ["Only positive tokenIds possible: " + row.tokenId.toFixed()];
+
+const isTokenValueValid = (row: CollectibleTransfer): string[] =>
+  row.token_type === "erc721" || (typeof row.value !== "undefined" && row.value.isGreaterThan(0))
+    ? []
+    : ["ERC1155 Tokens need a defined value > 0: " + row.value?.toFixed()];

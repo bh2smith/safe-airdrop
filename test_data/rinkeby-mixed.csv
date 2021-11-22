@@ -1,0 +1,6 @@
+token_type,token_address,receiver,value,id
+native,,schmanu.eth,2
+erc20,0x4dbcdf9b62e891a7cec5a2568c3f4faf9e8abe2b,vitalik.eth,2
+erc1155,0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656,schmanu.eth,5,1
+erc1155,0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656,schmanu.eth,5,5
+erc20,0xd0dab4e640d95e9e8a47545598c33e31bdb53c7c,0x9ed3822542BA9D38a36767e6536769296c106C47,2

@@ -26,6 +26,7 @@ export interface AssetTransfer {
   decimals: number;
   symbol?: string;
   receiverEnsName: string | null;
+  position?: number;
 }
 
 export interface CollectibleTransfer {
@@ -33,9 +34,11 @@ export interface CollectibleTransfer {
   from: string;
   receiver: string;
   tokenAddress: string;
-  tokenName: string;
+  tokenName?: string;
   tokenId: BigNumber;
+  value?: BigNumber;
   receiverEnsName: string | null;
+  position?: number;
 }
 
 export interface UnknownTransfer {

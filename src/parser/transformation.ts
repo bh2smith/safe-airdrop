@@ -22,7 +22,7 @@ interface PreCollectibleTransfer {
   tokenId: BigNumber;
   tokenAddress: string;
   tokenType: string;
-  value?: string;
+  value?: BigNumber;
 }
 
 export const transform = (
@@ -38,9 +38,12 @@ export const transform = (
       transformAsset(row, tokenInfoProvider, ensResolver, callback);
       break;
     case "erc721":
+    case "erc1155":
       transformCollectible(row, erc721InfoProvider, ensResolver, callback);
       break;
     default:
+      callback(null, { token_type: "unknown" });
+
       break;
   }
 };
@@ -132,7 +135,7 @@ export const transformCollectible = (
     tokenId: new BigNumber(row.id ?? ""),
     receiver: normalizeAddress(row.receiver),
     tokenType: row.token_type.toLowerCase(),
-    value: row.value,
+    value: new BigNumber(row.value ?? ""),
   };
 
   toCollectibleTransfer(prePayment, erc721InfoProvider, ensResolver)
@@ -155,11 +158,8 @@ const toCollectibleTransfer = async (
       ];
 
   console.log("TokenType:" + prePayment.tokenType);
+  resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver;
   if (prePayment.tokenType === "erc721") {
-    // depending on whether there is an ens name or an address provided we either resolve or lookup
-    // For performance reasons the lookup will be done after the parsing.
-
-    resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver;
     const tokenInfo =
       prePayment.tokenAddress === null ? undefined : await erc721InfoProvider.getTokenInfo(prePayment.tokenAddress);
     if (typeof tokenInfo !== "undefined") {
@@ -183,6 +183,16 @@ const toCollectibleTransfer = async (
         token_type: prePayment.tokenType,
       };
     }
+  } else if (prePayment.tokenType === "erc1155") {
+    return {
+      from: fromAddress,
+      receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver,
+      tokenId: prePayment.tokenId,
+      tokenAddress: prePayment.tokenAddress,
+      receiverEnsName,
+      value: prePayment.value,
+      token_type: "erc1155",
+    };
   } else {
     return {
       from: fromAddress,
