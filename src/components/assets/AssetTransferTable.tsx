@@ -15,6 +15,8 @@ export const AssetTransferTable = (props: TransferTableProps) => {
   return (
     <div style={{ flex: "1" }}>
       <Table
+        isStickyHeader={true}
+        maxHeight={750}
         headers={[
           { id: "position", label: "#" },
           { id: "token", label: "Token" },
