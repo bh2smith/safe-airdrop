@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",
-    "@testing-library/jest-dom": "^5.15.0",
+    "@testing-library/jest-dom": "^5.15.1",
     "@testing-library/react": "^12.1.2",
     "@typechain/ethers-v5": "^7.1.2",
     "@types/chai": "^4.2.22",
