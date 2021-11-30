@@ -8,7 +8,7 @@ import styled from "styled-components";
 import { FAQModal } from "./components/FAQModal";
 import { Header } from "./components/Header";
 import { Summary } from "./components/Summary";
-import { AssetCSVForm } from "./components/assets/CSVForm";
+import { CSVForm } from "./components/assets/CSVForm";
 import { useTokenList, networkMap } from "./hooks/token";
 import { AssetTransfer, CollectibleTransfer, Transfer } from "./parser/csvParser";
 import { buildAssetTransfers, buildCollectibleTransfers } from "./transfers/transfers";
@@ -39,7 +39,7 @@ const App: React.FC = () => {
       txs.push(...buildAssetTransfers(assetTransfers));
       txs.push(...buildCollectibleTransfers(collectibleTransfers));
 
-      console.log(`Encoded ${txs.length} ERC20 transfers.`);
+      console.log(`Encoded ${txs.length} transfers.`);
       const sendTxResponse = await sdk.txs.send({ txs });
       const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
       console.log({ safeTx });
@@ -61,7 +61,7 @@ const App: React.FC = () => {
             </>
           ) : (
             <Card className="cardWithCustomShadow">
-              <AssetCSVForm
+              <CSVForm
                 updateCsvContent={setCsvText}
                 csvContent={csvText}
                 updateTransferTable={setTokenTransfers}

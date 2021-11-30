@@ -29,7 +29,7 @@ export interface CSVFormProps {
   setParsing: (parsing: boolean) => void;
 }
 
-export const AssetCSVForm = (props: CSVFormProps): JSX.Element => {
+export const CSVForm = (props: CSVFormProps): JSX.Element => {
   const { csvContent, updateCsvContent, updateTransferTable, setParsing } = props;
   const [csvText, setCsvText] = useState<string>(csvContent);
 

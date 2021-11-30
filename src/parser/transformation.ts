@@ -1,5 +1,3 @@
-import { prependListener } from "process";
-
 import { RowTransformCallback } from "@fast-csv/parse";
 import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
@@ -14,14 +12,14 @@ interface PrePayment {
   receiver: string;
   amount: BigNumber;
   tokenAddress: string | null;
-  tokenType: string;
+  tokenType: "erc20" | "native";
 }
 
 interface PreCollectibleTransfer {
   receiver: string;
   tokenId: BigNumber;
   tokenAddress: string;
-  tokenType: string;
+  tokenType: "erc721" | "erc1155";
   value?: BigNumber;
 }
 
@@ -34,22 +32,25 @@ export const transform = (
 ): void => {
   switch (row.token_type.toLowerCase()) {
     case "erc20":
+      transformAsset({ ...row, token_type: "erc20" }, tokenInfoProvider, ensResolver, callback);
+      break;
     case "native":
-      transformAsset(row, tokenInfoProvider, ensResolver, callback);
+      transformAsset({ ...row, token_type: "native" }, tokenInfoProvider, ensResolver, callback);
       break;
     case "erc721":
+      transformCollectible({ ...row, token_type: "erc721" }, erc721InfoProvider, ensResolver, callback);
+      break;
     case "erc1155":
-      transformCollectible(row, erc721InfoProvider, ensResolver, callback);
+      transformCollectible({ ...row, token_type: "erc1155" }, erc721InfoProvider, ensResolver, callback);
       break;
     default:
       callback(null, { token_type: "unknown" });
-
       break;
   }
 };
 
 export const transformAsset = (
-  row: CSVRow,
+  row: Omit<CSVRow, "token_type"> & { token_type: "erc20" | "native" },
   tokenInfoProvider: TokenInfoProvider,
   ensResolver: EnsResolver,
   callback: RowTransformCallback<Transfer>,
@@ -59,7 +60,7 @@ export const transformAsset = (
     tokenAddress: transformERC20TokenAddress(row.token_address),
     amount: new BigNumber(row.value ?? ""),
     receiver: normalizeAddress(row.receiver),
-    tokenType: row.token_type.toLowerCase(),
+    tokenType: row.token_type,
   };
 
   toPayment(prePayment, tokenInfoProvider, ensResolver)
@@ -124,7 +125,7 @@ const toPayment = async (
  * Transforms each row into a payment object.
  */
 export const transformCollectible = (
-  row: CSVRow,
+  row: Omit<CSVRow, "token_type"> & { token_type: "erc721" | "erc1155" },
   erc721InfoProvider: ERC721InfoProvider,
   ensResolver: EnsResolver,
   callback: RowTransformCallback<Transfer>,
@@ -134,7 +135,7 @@ export const transformCollectible = (
     tokenAddress: normalizeAddress(row.token_address),
     tokenId: new BigNumber(row.id ?? ""),
     receiver: normalizeAddress(row.receiver),
-    tokenType: row.token_type.toLowerCase(),
+    tokenType: row.token_type,
     value: new BigNumber(row.value ?? ""),
   };
 
@@ -157,7 +158,6 @@ const toCollectibleTransfer = async (
         prePayment.receiver,
       ];
 
-  console.log("TokenType:" + prePayment.tokenType);
   resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver;
   if (prePayment.tokenType === "erc721") {
     const tokenInfo =
@@ -183,7 +183,7 @@ const toCollectibleTransfer = async (
         token_type: prePayment.tokenType,
       };
     }
-  } else if (prePayment.tokenType === "erc1155") {
+  } else {
     return {
       from: fromAddress,
       receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver,
@@ -191,16 +191,6 @@ const toCollectibleTransfer = async (
       tokenAddress: prePayment.tokenAddress,
       receiverEnsName,
       value: prePayment.value,
-      token_type: "erc1155",
-    };
-  } else {
-    return {
-      from: fromAddress,
-      receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver,
-      tokenId: prePayment.tokenId,
-      tokenAddress: prePayment.tokenAddress,
-      receiverEnsName: "",
-      tokenName: "TOKEN_NOT_SUPPORTED_YET",
       token_type: "erc1155",
     };
   }

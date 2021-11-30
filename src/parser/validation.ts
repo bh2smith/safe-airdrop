@@ -32,6 +32,7 @@ export const validateCollectibleRow = (row: CollectibleTransfer, callback: RowVa
     ...isTokenIdPositive(row),
     ...isCollectibleTokenValid(row),
     ...isTokenValueValid(row),
+    ...isTokenIdInteger(row),
   ];
   callback(null, warnings.length === 0, warnings.join(";"));
 };
@@ -39,10 +40,10 @@ export const validateCollectibleRow = (row: CollectibleTransfer, callback: RowVa
 const areAddressesValid = (row: Transfer): string[] => {
   const warnings: string[] = [];
   if (!(row.tokenAddress === null || utils.isAddress(row.tokenAddress))) {
-    warnings.push("Invalid Token Address: " + row.tokenAddress);
+    warnings.push(`Invalid Token Address: ${row.tokenAddress}`);
   }
   if (!utils.isAddress(row.receiver)) {
-    warnings.push("Invalid Receiver Address: " + row.receiver);
+    warnings.push(`Invalid Receiver Address: ${row.receiver}`);
   }
   return warnings;
 };
@@ -57,9 +58,12 @@ const isCollectibleTokenValid = (row: CollectibleTransfer): string[] =>
   row.tokenName === "TOKEN_NOT_FOUND" ? [`No token contract was found at ${row.tokenAddress}`] : [];
 
 const isTokenIdPositive = (row: CollectibleTransfer): string[] =>
-  row.tokenId.isGreaterThan(0) ? [] : ["Only positive tokenIds possible: " + row.tokenId.toFixed()];
+  row.tokenId.isGreaterThan(0) ? [] : [`Only positive Token IDs possible: ${row.tokenId.toFixed()}`];
+
+const isTokenIdInteger = (row: CollectibleTransfer): string[] =>
+  row.tokenId.isInteger() ? [] : [`Token IDs must be integer numbers: ${row.tokenId.toFixed()}`];
 
 const isTokenValueValid = (row: CollectibleTransfer): string[] =>
   row.token_type === "erc721" || (typeof row.value !== "undefined" && row.value.isGreaterThan(0))
     ? []
-    : ["ERC1155 Tokens need a defined value > 0: " + row.value?.toFixed()];
+    : [`ERC1155 Tokens need a defined value > 0: ${row.value?.toFixed()}`];
