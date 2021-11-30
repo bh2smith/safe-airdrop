@@ -1,11 +1,14 @@
 import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
+import { ethers } from "ethers";
 
 import { fetchTokenList, MinimalTokenInfo } from "../hooks/token";
-import { AssetTransfer } from "../parser/csvParser";
+import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
 import { testData } from "../test/util";
+import { erc1155Interface } from "../transfers/erc1155";
 import { erc20Interface } from "../transfers/erc20";
-import { buildAssetTransfers } from "../transfers/transfers";
+import { erc721Interface } from "../transfers/erc721";
+import { buildAssetTransfers, buildCollectibleTransfers } from "../transfers/transfers";
 import { toWei, fromWei, MAX_U256, TokenInfo } from "../utils";
 
 const dummySafeInfo = testData.dummySafeInfo;
@@ -219,5 +222,49 @@ describe("Build Transfers:", () => {
         erc20Interface.encodeFunctionData("transfer", [receiver, toWei(amount, crappyToken.decimals).toFixed()]),
       );
     });
+  });
+
+  describe("Collectibles", () => {
+    const transfers: CollectibleTransfer[] = [
+      {
+        token_type: "erc721",
+        receiver,
+        from: testData.dummySafeInfo.safeAddress,
+        receiverEnsName: null,
+        tokenAddress: testData.addresses.dummyErc721Address,
+        tokenName: "Test NFT",
+        tokenId: new BigNumber("69"),
+      },
+      {
+        token_type: "erc1155",
+        receiver,
+        from: testData.dummySafeInfo.safeAddress,
+        receiverEnsName: null,
+        tokenAddress: testData.addresses.dummyErc1155Address,
+        tokenName: "Test MultiToken",
+        value: new BigNumber("69"),
+        tokenId: new BigNumber("420"),
+      },
+    ];
+
+    const [firstTransfer, secondTransfer] = buildCollectibleTransfers(transfers);
+
+    expect(firstTransfer.value).to.be.equal("0");
+    expect(firstTransfer.to).to.be.equal(testData.addresses.dummyErc721Address);
+    expect(firstTransfer.data).to.be.equal(
+      erc721Interface.encodeFunctionData("safeTransferFrom", [testData.dummySafeInfo.safeAddress, receiver, 69]),
+    );
+
+    expect(secondTransfer.value).to.be.equal("0");
+    expect(secondTransfer.to).to.be.equal(testData.addresses.dummyErc1155Address);
+    expect(secondTransfer.data).to.be.equal(
+      erc1155Interface.encodeFunctionData("safeTransferFrom", [
+        testData.dummySafeInfo.safeAddress,
+        receiver,
+        420,
+        69,
+        ethers.utils.hexlify("0x00"),
+      ]),
+    );
   });
 });

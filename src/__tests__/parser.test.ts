@@ -301,6 +301,14 @@ describe("Parsing CSVs ", () => {
       "5",
     ];
 
+    const rowErc1155WithDecimalValue = [
+      "erc1155",
+      testData.addresses.dummyErc1155Address,
+      validReceiverAddress,
+      "1.5",
+      "5",
+    ];
+
     const rowErc1155WithMissingValue = [
       "erc1155",
       testData.addresses.dummyErc1155Address,
@@ -340,6 +348,7 @@ describe("Parsing CSVs ", () => {
     const [payment, warnings] = await CSVParser.parseCSV(
       csvStringFromRows(
         rowErc1155WithNegativeValue,
+        rowErc1155WithDecimalValue,
         rowErc1155WithMissingValue,
         rowErc1155WithMissingId,
         rowErc1155WithInvalidTokenAddress,
@@ -354,9 +363,10 @@ describe("Parsing CSVs ", () => {
       mockERC721InfoProvider,
       mockEnsResolver,
     );
-    expect(warnings).to.have.lengthOf(13);
+    expect(warnings).to.have.lengthOf(14);
     const [
       warningErc1155WithNegativeValue,
+      warningErc1155WithDecimalValue,
       warningErc1155WithMissingValue,
       warningErc1155WithMissingId,
       warningErc1155WithMissingId2,
@@ -375,40 +385,43 @@ describe("Parsing CSVs ", () => {
     expect(warningErc1155WithNegativeValue.lineNo).to.equal(1);
     expect(warningErc1155WithNegativeValue.message).to.equal("ERC1155 Tokens need a defined value > 0: -1");
 
-    expect(warningErc1155WithMissingValue.lineNo).to.equal(2);
+    expect(warningErc1155WithDecimalValue.lineNo).to.equal(2);
+    expect(warningErc1155WithDecimalValue.message).to.equal("Value of ERC1155 must be an integer: 1.5");
+
+    expect(warningErc1155WithMissingValue.lineNo).to.equal(3);
     expect(warningErc1155WithMissingValue.message).to.equal("ERC1155 Tokens need a defined value > 0: NaN");
 
-    expect(warningErc1155WithMissingId.lineNo).to.equal(3);
+    expect(warningErc1155WithMissingId.lineNo).to.equal(4);
     expect(warningErc1155WithMissingId.message).to.equal("Only positive Token IDs possible: NaN");
 
-    expect(warningErc1155WithMissingId2.lineNo).to.equal(3);
+    expect(warningErc1155WithMissingId2.lineNo).to.equal(4);
     expect(warningErc1155WithMissingId2.message).to.equal("Token IDs must be integer numbers: NaN");
 
-    expect(warningErc1155WithInvalidTokenAddress.lineNo).to.equal(4);
+    expect(warningErc1155WithInvalidTokenAddress.lineNo).to.equal(5);
     expect(warningErc1155WithInvalidTokenAddress.message).to.equal("Invalid Token Address: 0xwhoopsie");
 
-    expect(warningErc1155WithInvalidReceiverAddress.lineNo).to.equal(5);
+    expect(warningErc1155WithInvalidReceiverAddress.lineNo).to.equal(6);
     expect(warningErc1155WithInvalidReceiverAddress.message).to.equal("Invalid Receiver Address: 0xwhoopsie");
 
-    expect(warningErc721WithNegativeId.lineNo).to.equal(6);
+    expect(warningErc721WithNegativeId.lineNo).to.equal(7);
     expect(warningErc721WithNegativeId.message).to.equal("Only positive Token IDs possible: -20");
 
-    expect(warningErc721WithDecimalId.lineNo).to.equal(7);
+    expect(warningErc721WithDecimalId.lineNo).to.equal(8);
     expect(warningErc721WithDecimalId.message).to.equal("Token IDs must be integer numbers: 69.42");
 
-    expect(warningErc721WithMissingId.lineNo).to.equal(8);
+    expect(warningErc721WithMissingId.lineNo).to.equal(9);
     expect(warningErc721WithMissingId.message).to.equal("Only positive Token IDs possible: NaN");
 
-    expect(warningErc721WithMissingId2.lineNo).to.equal(8);
+    expect(warningErc721WithMissingId2.lineNo).to.equal(9);
     expect(warningErc721WithMissingId2.message).to.equal("Token IDs must be integer numbers: NaN");
 
-    expect(warningErc721WithInvalidToken.lineNo).to.equal(9);
+    expect(warningErc721WithInvalidToken.lineNo).to.equal(10);
     expect(warningErc721WithInvalidToken.message).to.equal("Invalid Token Address: 0xwhoopsie");
 
-    expect(warningErc721WithInvalidToken2.lineNo).to.equal(9);
+    expect(warningErc721WithInvalidToken2.lineNo).to.equal(10);
     expect(warningErc721WithInvalidToken2.message).to.equal("No token contract was found at 0xwhoopsie");
 
-    expect(warningErc721WithInvalidReceiver.lineNo).to.equal(10);
+    expect(warningErc721WithInvalidReceiver.lineNo).to.equal(11);
     expect(warningErc721WithInvalidReceiver.message).to.equal("Invalid Receiver Address: 0xwhoopsie");
   });
 

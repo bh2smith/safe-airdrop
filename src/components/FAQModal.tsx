@@ -17,10 +17,26 @@ export const FAQModal: () => JSX.Element = () => {
       </Fab>
       {showHelp && (
         <GenericModal
+          withoutBodyPadding={false}
           onClose={() => setShowHelp(false)}
-          title={<Title size="lg">How to use the CSV Airdrop Gnosis App</Title>}
+          title={<Title size="lg">How to use the CSV Airdrop App</Title>}
           body={
             <div>
+              <Title size="md" strong>
+                Overview
+              </Title>
+              <Text size="lg">
+                <p>
+                  This app can batch multiple transfers of ERC20, ERC721, ERC1155 and native tokens into a single
+                  transaction. It's as simple as uploading / copy & pasting a single CSV transfer file and hitting the
+                  submit button.
+                </p>
+                <p>
+                  {" "}
+                  This safes gas ⛽ and a substantial amount of time ⌚ by requiring less signatures and transactions.
+                </p>
+              </Text>
+              <Divider />
               <Title size="md" strong>
                 Preparing a Transfer File
               </Title>
@@ -28,13 +44,37 @@ export const FAQModal: () => JSX.Element = () => {
                 Transfer files are expected to be in CSV format with the following required columns:
                 <ul>
                   <li>
-                    <code>receiver</code>: Ethereum address of transfer receiver.
+                    <code>
+                      <b>token_type</b>
+                    </code>
+                    : The type of token that is being transferred. One of <code>erc20,erc721,erc1155</code> or{" "}
+                    <code>native</code>.
                   </li>
                   <li>
-                    <code>token_address</code>: Ethereum address of ERC20 token to be transferred.
+                    <code>
+                      <b>token_address</b>
+                    </code>
+                    : Ethereum address of ERC20 token to be transferred. This has to be left blank for native (ETH)
+                    transfers.
                   </li>
                   <li>
-                    <code>amount</code>: the amount of token to be transferred.
+                    <code>
+                      <b>receiver</b>
+                    </code>
+                    : Ethereum address of transfer receiver.
+                  </li>
+                  <li>
+                    <code>
+                      <b>value</b>
+                    </code>
+                    : the amount of token to be transferred. This can be left blank for erc721 transfers.
+                  </li>
+                  <li>
+                    <code>
+                      <b>id</b>
+                    </code>
+                    : The id of the collectible token (erc721 or erc1155) to transfer. This can be left blank for native
+                    and erc20 transfers.
                   </li>
                 </ul>
                 <p>

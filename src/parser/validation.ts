@@ -32,6 +32,7 @@ export const validateCollectibleRow = (row: CollectibleTransfer, callback: RowVa
     ...isTokenIdPositive(row),
     ...isCollectibleTokenValid(row),
     ...isTokenValueValid(row),
+    ...isTokenValueInteger(row),
     ...isTokenIdInteger(row),
   ];
   callback(null, warnings.length === 0, warnings.join(";"));
@@ -62,6 +63,11 @@ const isTokenIdPositive = (row: CollectibleTransfer): string[] =>
 
 const isTokenIdInteger = (row: CollectibleTransfer): string[] =>
   row.tokenId.isInteger() ? [] : [`Token IDs must be integer numbers: ${row.tokenId.toFixed()}`];
+
+const isTokenValueInteger = (row: CollectibleTransfer): string[] =>
+  !row.value || row.value.isNaN() || row.value.isInteger()
+    ? []
+    : [`Value of ERC1155 must be an integer: ${row.value.toFixed()}`];
 
 const isTokenValueValid = (row: CollectibleTransfer): string[] =>
   row.token_type === "erc721" || (typeof row.value !== "undefined" && row.value.isGreaterThan(0))
