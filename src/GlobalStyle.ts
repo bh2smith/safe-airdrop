@@ -62,16 +62,6 @@ const GlobalStyle = createGlobalStyle`
         flex: 1;
     }
 
-    .navDot {
-        width: 24px;
-        height: 24px;
-        top: -8px;
-    }
-
-    .navDot p {
-        color: white !important;
-    }
-
     .tableContainer {
         display: flex;
         flex-direction: horizontal;
