@@ -45,6 +45,7 @@ describe("transferToSummary()", () => {
   it("works for integer native currency", () => {
     const transfers: AssetTransfer[] = [
       {
+        token_type: "native",
         tokenAddress: null,
         amount: new BigNumber(1),
         receiver: testData.addresses.receiver1,
@@ -53,6 +54,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
+        token_type: "native",
         tokenAddress: null,
         amount: new BigNumber(2),
         receiver: testData.addresses.receiver2,
@@ -61,6 +63,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
+        token_type: "native",
         tokenAddress: null,
         amount: new BigNumber(3),
         receiver: testData.addresses.receiver3,
@@ -76,6 +79,7 @@ describe("transferToSummary()", () => {
   it("works for decimals in native currency", () => {
     const transfers: AssetTransfer[] = [
       {
+        token_type: "native",
         tokenAddress: null,
         amount: new BigNumber(0.1),
         receiver: testData.addresses.receiver1,
@@ -84,6 +88,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
+        token_type: "native",
         tokenAddress: null,
         amount: new BigNumber(0.01),
         receiver: testData.addresses.receiver2,
@@ -92,6 +97,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
+        token_type: "native",
         tokenAddress: null,
         amount: new BigNumber(0.001),
         receiver: testData.addresses.receiver3,
@@ -107,7 +113,8 @@ describe("transferToSummary()", () => {
   it("works for decimals in erc20", () => {
     const transfers: AssetTransfer[] = [
       {
-        tokenAddress: testData.unlistedToken.address,
+        token_type: "erc20",
+        tokenAddress: testData.unlistedERC20Token.address,
         amount: new BigNumber(0.1),
         receiver: testData.addresses.receiver1,
         decimals: 18,
@@ -115,7 +122,8 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
-        tokenAddress: testData.unlistedToken.address,
+        token_type: "erc20",
+        tokenAddress: testData.unlistedERC20Token.address,
         amount: new BigNumber(0.01),
         receiver: testData.addresses.receiver2,
         decimals: 18,
@@ -123,7 +131,8 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
-        tokenAddress: testData.unlistedToken.address,
+        token_type: "erc20",
+        tokenAddress: testData.unlistedERC20Token.address,
         amount: new BigNumber(0.001),
         receiver: testData.addresses.receiver3,
         decimals: 18,
@@ -132,13 +141,14 @@ describe("transferToSummary()", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(summary.get(testData.unlistedToken.address)?.amount.toFixed()).to.equal("0.111");
+    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("0.111");
   });
 
   it("works for integer in erc20", () => {
     const transfers: AssetTransfer[] = [
       {
-        tokenAddress: testData.unlistedToken.address,
+        token_type: "erc20",
+        tokenAddress: testData.unlistedERC20Token.address,
         amount: new BigNumber(1),
         receiver: testData.addresses.receiver1,
         decimals: 18,
@@ -146,7 +156,8 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
-        tokenAddress: testData.unlistedToken.address,
+        token_type: "erc20",
+        tokenAddress: testData.unlistedERC20Token.address,
         amount: new BigNumber(2),
         receiver: testData.addresses.receiver2,
         decimals: 18,
@@ -154,7 +165,8 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
-        tokenAddress: testData.unlistedToken.address,
+        token_type: "erc20",
+        tokenAddress: testData.unlistedERC20Token.address,
         amount: new BigNumber(3),
         receiver: testData.addresses.receiver3,
         decimals: 18,
@@ -163,13 +175,14 @@ describe("transferToSummary()", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(summary.get(testData.unlistedToken.address)?.amount.toFixed()).to.equal("6");
+    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("6");
   });
 
   it("works for mixed payments", () => {
     const transfers: AssetTransfer[] = [
       {
-        tokenAddress: testData.unlistedToken.address,
+        token_type: "erc20",
+        tokenAddress: testData.unlistedERC20Token.address,
         amount: new BigNumber(1.1),
         receiver: testData.addresses.receiver1,
         decimals: 18,
@@ -177,7 +190,8 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
-        tokenAddress: testData.unlistedToken.address,
+        token_type: "erc20",
+        tokenAddress: testData.unlistedERC20Token.address,
         amount: new BigNumber(2),
         receiver: testData.addresses.receiver2,
         decimals: 18,
@@ -185,7 +199,8 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
-        tokenAddress: testData.unlistedToken.address,
+        token_type: "erc20",
+        tokenAddress: testData.unlistedERC20Token.address,
         amount: new BigNumber(3.3),
         receiver: testData.addresses.receiver3,
         decimals: 18,
@@ -193,6 +208,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
+        token_type: "native",
         tokenAddress: null,
         amount: new BigNumber(3),
         receiver: testData.addresses.receiver1,
@@ -201,6 +217,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
       {
+        token_type: "native",
         tokenAddress: null,
         amount: new BigNumber(0.33),
         receiver: testData.addresses.receiver1,
@@ -210,7 +227,7 @@ describe("transferToSummary()", () => {
       },
     ];
     const summary = transfersToSummary(transfers);
-    expect(summary.get(testData.unlistedToken.address)?.amount.toFixed()).to.equal("6.4");
+    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("6.4");
     expect(summary.get(null)?.amount.toFixed()).to.equal("3.33");
   });
 });

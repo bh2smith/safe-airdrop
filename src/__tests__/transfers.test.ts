@@ -27,6 +27,7 @@ describe("Build Transfers:", () => {
       const largePayments: AssetTransfer[] = [
         // Listed ERC20
         {
+          token_type: "erc20",
           receiver,
           amount: fromWei(MAX_U256, listedToken.decimals),
           tokenAddress: listedToken.address,
@@ -36,15 +37,17 @@ describe("Build Transfers:", () => {
         },
         // Unlisted ERC20
         {
+          token_type: "erc20",
           receiver,
-          amount: fromWei(MAX_U256, testData.unlistedToken.decimals),
-          tokenAddress: testData.unlistedToken.address,
-          decimals: testData.unlistedToken.decimals,
+          amount: fromWei(MAX_U256, testData.unlistedERC20Token.decimals),
+          tokenAddress: testData.unlistedERC20Token.address,
+          decimals: testData.unlistedERC20Token.decimals,
           symbol: "ULT",
           receiverEnsName: null,
         },
         // Native Asset
         {
+          token_type: "native",
           receiver,
           amount: fromWei(MAX_U256, 18),
           tokenAddress: null,
@@ -62,7 +65,7 @@ describe("Build Transfers:", () => {
       );
 
       expect(unlistedTransfer.value).to.be.equal("0");
-      expect(unlistedTransfer.to).to.be.equal(testData.unlistedToken.address);
+      expect(unlistedTransfer.to).to.be.equal(testData.unlistedERC20Token.address);
       expect(unlistedTransfer.data).to.be.equal(
         erc20Interface.encodeFunctionData("transfer", [receiver, MAX_U256.toFixed()]),
       );
@@ -79,6 +82,7 @@ describe("Build Transfers:", () => {
       const smallPayments: AssetTransfer[] = [
         // Listed ERC20
         {
+          token_type: "erc20",
           receiver,
           amount: tinyAmount,
           tokenAddress: listedToken.address,
@@ -88,15 +92,17 @@ describe("Build Transfers:", () => {
         },
         // Unlisted ERC20
         {
+          token_type: "erc20",
           receiver,
           amount: tinyAmount,
-          tokenAddress: testData.unlistedToken.address,
-          decimals: testData.unlistedToken.decimals,
+          tokenAddress: testData.unlistedERC20Token.address,
+          decimals: testData.unlistedERC20Token.decimals,
           symbol: "ULT",
           receiverEnsName: null,
         },
         // Native Asset
         {
+          token_type: "native",
           receiver,
           amount: tinyAmount,
           tokenAddress: null,
@@ -114,11 +120,11 @@ describe("Build Transfers:", () => {
       );
 
       expect(unlisted.value).to.be.equal("0");
-      expect(unlisted.to).to.be.equal(testData.unlistedToken.address);
+      expect(unlisted.to).to.be.equal(testData.unlistedERC20Token.address);
       expect(unlisted.data).to.be.equal(
         erc20Interface.encodeFunctionData("transfer", [
           receiver,
-          toWei(tinyAmount, testData.unlistedToken.decimals).toFixed(),
+          toWei(tinyAmount, testData.unlistedERC20Token.decimals).toFixed(),
         ]),
       );
 
@@ -134,6 +140,7 @@ describe("Build Transfers:", () => {
       const mixedPayments: AssetTransfer[] = [
         // Listed ERC20
         {
+          token_type: "erc20",
           receiver,
           amount: mixedAmount,
           tokenAddress: listedToken.address,
@@ -143,15 +150,17 @@ describe("Build Transfers:", () => {
         },
         // Unlisted ERC20
         {
+          token_type: "erc20",
           receiver,
           amount: mixedAmount,
-          tokenAddress: testData.unlistedToken.address,
-          decimals: testData.unlistedToken.decimals,
+          tokenAddress: testData.unlistedERC20Token.address,
+          decimals: testData.unlistedERC20Token.decimals,
           symbol: "ULT",
           receiverEnsName: null,
         },
         // Native Asset
         {
+          token_type: "native",
           receiver,
           amount: mixedAmount,
           tokenAddress: null,
@@ -169,11 +178,11 @@ describe("Build Transfers:", () => {
       );
 
       expect(unlisted.value).to.be.equal("0");
-      expect(unlisted.to).to.be.equal(testData.unlistedToken.address);
+      expect(unlisted.to).to.be.equal(testData.unlistedERC20Token.address);
       expect(unlisted.data).to.be.equal(
         erc20Interface.encodeFunctionData("transfer", [
           receiver,
-          toWei(mixedAmount, testData.unlistedToken.decimals).toFixed(),
+          toWei(mixedAmount, testData.unlistedERC20Token.decimals).toFixed(),
         ]),
       );
 
@@ -195,6 +204,7 @@ describe("Build Transfers:", () => {
       };
 
       const payment: AssetTransfer = {
+        token_type: "erc20",
         receiver,
         amount: amount,
         tokenAddress: crappyToken.address,
