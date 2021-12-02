@@ -63,7 +63,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
     () =>
       debounce((csvText: string) => {
         setParsing(true);
-        const parsePromise = parseCSV(csvText, tokenInfoProvider, ensResolver);
+        const parsePromise = parseCSV(csvText, tokenInfoProvider, ensResolver, safe);
         parsePromise
           .then(async ([transfers, warnings]) => {
             const uniqueReceiversWithoutEnsName = transfers.reduce(

@@ -1,4 +1,5 @@
 import { parseString, RowTransformCallback, RowValidateCallback } from "@fast-csv/parse";
+import type { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
 
@@ -50,12 +51,13 @@ export const parseCSV = (
   csvText: string,
   tokenInfoProvider: TokenInfoProvider,
   ensResolver: EnsResolver,
+  safeInfo?: SafeInfo,
 ): Promise<[Payment[], CodeWarning[]]> => {
   return new Promise<[Payment[], CodeWarning[]]>((resolve, reject) => {
     const results: Payment[] = [];
     const resultingWarnings: CodeWarning[] = [];
     parseString<CSVRow, Payment>(csvText, { headers: true })
-      .transform((row: CSVRow, callback) => transformRow(row, tokenInfoProvider, ensResolver, callback))
+      .transform((row: CSVRow, callback) => transformRow(row, tokenInfoProvider, ensResolver, callback, safeInfo))
       .validate((row: Payment, callback: RowValidateCallback) => validateRow(row, callback))
       .on("data", (data: Payment) => results.push(data))
       .on("end", () => resolve([results, resultingWarnings]))
@@ -74,7 +76,19 @@ const transformRow = (
   tokenInfoProvider: TokenInfoProvider,
   ensResolver: EnsResolver,
   callback: RowTransformCallback<Payment>,
+  safeInfo?: SafeInfo,
 ): void => {
+  // Checksum checks fails for RSK network wallets so we lowercase them
+  if (safeInfo && [30, 31].includes(safeInfo.chainId)) {
+    if (typeof row.token_address === "string") {
+      row.token_address = row.token_address.toLowerCase();
+    }
+
+    if (typeof row.receiver === "string") {
+      row.receiver = row.receiver.toLowerCase();
+    }
+  }
+
   const prePayment: PrePayment = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
     tokenAddress:

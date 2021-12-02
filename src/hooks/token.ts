@@ -16,6 +16,15 @@ export const networkMap = new Map([
   [100, "xdai"],
   [137, "polygon"],
   [56, "bsc"],
+  [30, "rsk"],
+  [31, "trsk"],
+]);
+
+const customNativeTokens = new Map([
+  [56, "BNB"],
+  [100, "xDai"],
+  [30, "RBTC"],
+  [31, "tRBTC"],
 ]);
 
 function tokenMap(tokenList: TokenInfo[]): TokenMap {
@@ -115,7 +124,7 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
           }
         }
       },
-      getNativeTokenSymbol: () => (safe.chainId === 100 ? "xDai" : "ETH"),
+      getNativeTokenSymbol: () => customNativeTokens.get(safe.chainId) || "ETH",
     }),
     [safe.chainId, tokenList, web3Provider],
   );
