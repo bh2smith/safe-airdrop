@@ -12,7 +12,7 @@
     "fmt": "prettier --check '**/*.ts'",
     "fmt:write": "prettier --write '**/*.ts'",
     "prepare": "husky install",
-    "generate-types": "typechain --target=ethers-v5 --out-dir src/contracts './node_modules/@openzeppelin/contracts/build/contracts/ERC20.json' './customabis/ERC721.json' './node_modules/@openzeppelin/contracts/build/contracts/ERC1155.json'",
+    "generate-types": "typechain --target=ethers-v5 --out-dir src/contracts './node_modules/@openzeppelin/contracts/build/contracts/ERC20.json' './customabis/ERC721.json' './node_modules/@openzeppelin/contracts/build/contracts/ERC1155.json' './node_modules/@openzeppelin/contracts/build/contracts/ERC165.json'",
     "postinstall": "yarn generate-types"
   },
   "dependencies": {

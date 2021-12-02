@@ -47,8 +47,8 @@ export const FAQModal: () => JSX.Element = () => {
                     <code>
                       <b>token_type</b>
                     </code>
-                    : The type of token that is being transferred. One of <code>erc20,erc721,erc1155</code> or{" "}
-                    <code>native</code>.
+                    : The type of token that is being transferred. One of <code>erc20,nft</code> or <code>native</code>.
+                    NFT Tokens can be either ERC721 or ERC1155.
                   </li>
                   <li>
                     <code>

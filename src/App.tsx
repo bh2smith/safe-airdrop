@@ -18,7 +18,6 @@ setUseWhatChange(process.env.NODE_ENV === "development");
 const App: React.FC = () => {
   const { isLoading } = useTokenList();
   const { safe } = useSafeAppsSDK();
-  const [csvText, setCsvText] = useState<string>("token_type,token_address,receiver,value,id");
   const [tokenTransfers, setTokenTransfers] = useState<Transfer[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
@@ -61,12 +60,7 @@ const App: React.FC = () => {
             </>
           ) : (
             <Card className="cardWithCustomShadow">
-              <CSVForm
-                updateCsvContent={setCsvText}
-                csvContent={csvText}
-                updateTransferTable={setTokenTransfers}
-                setParsing={setParsing}
-              />
+              <CSVForm updateTransferTable={setTokenTransfers} setParsing={setParsing} />
               <Divider />
               <Summary assetTransfers={assetTransfers} collectibleTransfers={collectibleTransfers} />
               {submitting ? (

@@ -234,6 +234,7 @@ describe("Build Transfers:", () => {
         tokenAddress: testData.addresses.dummyErc721Address,
         tokenName: "Test NFT",
         tokenId: new BigNumber("69"),
+        hasMetaData: false,
       },
       {
         token_type: "erc1155",
@@ -244,6 +245,7 @@ describe("Build Transfers:", () => {
         tokenName: "Test MultiToken",
         value: new BigNumber("69"),
         tokenId: new BigNumber("420"),
+        hasMetaData: false,
       },
     ];
 

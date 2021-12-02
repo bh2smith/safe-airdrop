@@ -2,8 +2,8 @@ import { RowTransformCallback } from "@fast-csv/parse";
 import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
 
+import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import { EnsResolver } from "../hooks/ens";
-import { ERC721InfoProvider } from "../hooks/erc721InfoProvider";
 import { TokenInfoProvider } from "../hooks/token";
 
 import { AssetTransfer, CollectibleTransfer, CSVRow, Transfer, UnknownTransfer } from "./csvParser";
@@ -19,14 +19,14 @@ interface PreCollectibleTransfer {
   receiver: string;
   tokenId: BigNumber;
   tokenAddress: string;
-  tokenType: "erc721" | "erc1155";
+  tokenType: "nft";
   value?: BigNumber;
 }
 
 export const transform = (
   row: CSVRow,
   tokenInfoProvider: TokenInfoProvider,
-  erc721InfoProvider: ERC721InfoProvider,
+  erc721InfoProvider: CollectibleTokenInfoProvider,
   ensResolver: EnsResolver,
   callback: RowTransformCallback<Transfer | UnknownTransfer>,
 ): void => {
@@ -37,11 +37,8 @@ export const transform = (
     case "native":
       transformAsset({ ...row, token_type: "native" }, tokenInfoProvider, ensResolver, callback);
       break;
-    case "erc721":
-      transformCollectible({ ...row, token_type: "erc721" }, erc721InfoProvider, ensResolver, callback);
-      break;
-    case "erc1155":
-      transformCollectible({ ...row, token_type: "erc1155" }, erc721InfoProvider, ensResolver, callback);
+    case "nft":
+      transformCollectible({ ...row, token_type: "nft" }, erc721InfoProvider, ensResolver, callback);
       break;
     default:
       callback(null, { token_type: "unknown" });
@@ -125,8 +122,8 @@ const toPayment = async (
  * Transforms each row into a payment object.
  */
 export const transformCollectible = (
-  row: Omit<CSVRow, "token_type"> & { token_type: "erc721" | "erc1155" },
-  erc721InfoProvider: ERC721InfoProvider,
+  row: Omit<CSVRow, "token_type"> & { token_type: "nft" },
+  erc721InfoProvider: CollectibleTokenInfoProvider,
   ensResolver: EnsResolver,
   callback: RowTransformCallback<Transfer>,
 ): void => {
@@ -145,53 +142,57 @@ export const transformCollectible = (
 };
 
 const toCollectibleTransfer = async (
-  prePayment: PreCollectibleTransfer,
-  erc721InfoProvider: ERC721InfoProvider,
+  preCollectible: PreCollectibleTransfer,
+  collectibleTokenInfoProvider: CollectibleTokenInfoProvider,
   ensResolver: EnsResolver,
 ): Promise<CollectibleTransfer> => {
-  const fromAddress = erc721InfoProvider.getFromAddress();
+  const fromAddress = collectibleTokenInfoProvider.getFromAddress();
 
-  let [resolvedReceiverAddress, receiverEnsName] = utils.isAddress(prePayment.receiver)
-    ? [prePayment.receiver, null]
+  let [resolvedReceiverAddress, receiverEnsName] = utils.isAddress(preCollectible.receiver)
+    ? [preCollectible.receiver, null]
     : [
-        (await ensResolver.isEnsEnabled()) ? await ensResolver.resolveName(prePayment.receiver) : null,
-        prePayment.receiver,
+        (await ensResolver.isEnsEnabled()) ? await ensResolver.resolveName(preCollectible.receiver) : null,
+        preCollectible.receiver,
       ];
+  resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : preCollectible.receiver;
 
-  resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver;
-  if (prePayment.tokenType === "erc721") {
-    const tokenInfo =
-      prePayment.tokenAddress === null ? undefined : await erc721InfoProvider.getTokenInfo(prePayment.tokenAddress);
-    if (typeof tokenInfo !== "undefined") {
-      return {
-        from: fromAddress,
-        receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver,
-        tokenId: prePayment.tokenId,
-        tokenAddress: prePayment.tokenAddress,
-        tokenName: tokenInfo.name,
-        receiverEnsName,
-        token_type: prePayment.tokenType,
-      };
-    } else {
-      return {
-        from: fromAddress,
-        receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver,
-        tokenId: prePayment.tokenId,
-        tokenAddress: prePayment.tokenAddress,
-        tokenName: "TOKEN_NOT_FOUND",
-        receiverEnsName,
-        token_type: prePayment.tokenType,
-      };
-    }
-  } else {
+  const tokenInfo = await collectibleTokenInfoProvider.getTokenInfo(
+    preCollectible.tokenAddress,
+    preCollectible.tokenId,
+  );
+
+  if (tokenInfo?.token_type === "erc721") {
     return {
       from: fromAddress,
-      receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : prePayment.receiver,
-      tokenId: prePayment.tokenId,
-      tokenAddress: prePayment.tokenAddress,
+      receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : preCollectible.receiver,
+      tokenId: preCollectible.tokenId,
+      tokenAddress: preCollectible.tokenAddress,
       receiverEnsName,
-      value: prePayment.value,
+      token_type: "erc721",
+      hasMetaData: tokenInfo.hasMetaInfo,
+    };
+  } else if (tokenInfo?.token_type === "erc1155") {
+    return {
+      from: fromAddress,
+      receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : preCollectible.receiver,
+      tokenId: preCollectible.tokenId,
+      tokenAddress: preCollectible.tokenAddress,
+      receiverEnsName,
+      value: preCollectible.value,
       token_type: "erc1155",
+      hasMetaData: tokenInfo.hasMetaInfo,
+    };
+  } else {
+    // return a fake token which will fail validation.
+    return {
+      from: fromAddress,
+      receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : preCollectible.receiver,
+      tokenId: preCollectible.tokenId,
+      tokenAddress: preCollectible.tokenAddress,
+      tokenName: "TOKEN_NOT_FOUND",
+      receiverEnsName,
+      token_type: "erc721",
+      hasMetaData: false,
     };
   }
 };

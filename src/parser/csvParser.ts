@@ -2,8 +2,8 @@ import { parseString, RowValidateCallback } from "@fast-csv/parse";
 import { BigNumber } from "bignumber.js";
 
 import { CodeWarning } from "../contexts/MessageContextProvider";
+import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import { EnsResolver } from "../hooks/ens";
-import { ERC721InfoProvider } from "../hooks/erc721InfoProvider";
 import { TokenInfoProvider } from "../hooks/token";
 
 import { transform } from "./transformation";
@@ -38,7 +38,7 @@ export interface CollectibleTransfer {
   tokenId: BigNumber;
   value?: BigNumber;
   receiverEnsName: string | null;
-  position?: number;
+  hasMetaData: boolean;
 }
 
 export interface UnknownTransfer {
@@ -71,7 +71,7 @@ export class CSVParser {
   public static parseCSV = (
     csvText: string,
     tokenInfoProvider: TokenInfoProvider,
-    erc721TokenInfoProvider: ERC721InfoProvider,
+    erc721TokenInfoProvider: CollectibleTokenInfoProvider,
     ensResolver: EnsResolver,
   ): Promise<[Transfer[], CodeWarning[]]> => {
     return new Promise<[Transfer[], CodeWarning[]]>((resolve, reject) => {

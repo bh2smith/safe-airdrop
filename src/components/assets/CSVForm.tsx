@@ -7,8 +7,8 @@ import React, { useContext, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import { MessageContext } from "../../contexts/MessageContextProvider";
+import { useCollectibleTokenInfoProvider } from "../../hooks/collectibleTokenInfoProvider";
 import { useEnsResolver } from "../../hooks/ens";
-import { useERC721InfoProvider } from "../../hooks/erc721InfoProvider";
 import { useTokenInfoProvider } from "../../hooks/token";
 import { AssetTransfer, CSVParser, Transfer } from "../../parser/csvParser";
 import { checkAllBalances, transfersToSummary } from "../../utils";
@@ -23,15 +23,13 @@ const Form = styled.div`
   gap: 8px;
 `;
 export interface CSVFormProps {
-  updateCsvContent: (count: string) => void;
-  csvContent: string;
   updateTransferTable: (transfers: Transfer[]) => void;
   setParsing: (parsing: boolean) => void;
 }
 
 export const CSVForm = (props: CSVFormProps): JSX.Element => {
-  const { csvContent, updateCsvContent, updateTransferTable, setParsing } = props;
-  const [csvText, setCsvText] = useState<string>(csvContent);
+  const { updateTransferTable, setParsing } = props;
+  const [csvText, setCsvText] = useState<string>("token_type,token_address,receiver,value,id");
 
   const { setCodeWarnings, setMessages } = useContext(MessageContext);
 
@@ -39,11 +37,10 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
   const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [safe, sdk]);
   const tokenInfoProvider = useTokenInfoProvider();
   const ensResolver = useEnsResolver();
-  const erc721TokenInfoProvider = useERC721InfoProvider();
+  const erc721TokenInfoProvider = useCollectibleTokenInfoProvider();
 
   const onChangeTextHandler = (csvText: string) => {
     setCsvText(csvText);
-    updateCsvContent(csvText);
     parseAndValidateCSV(csvText);
   };
 
@@ -93,7 +90,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
             setParsing(false);
           })
           .catch((reason: any) => setMessages([{ severity: "error", message: reason.message }]));
-      }, 1000),
+      }, 750),
     [
       ensResolver,
       erc721TokenInfoProvider,
