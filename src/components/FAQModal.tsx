@@ -33,7 +33,7 @@ export const FAQModal: () => JSX.Element = () => {
                 </p>
                 <p>
                   {" "}
-                  This safes gas ⛽ and a substantial amount of time ⌚ by requiring less signatures and transactions.
+                  This saves gas ⛽ and a substantial amount of time ⌚ by requiring less signatures and transactions.
                 </p>
               </Text>
               <Divider />
