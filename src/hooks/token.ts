@@ -6,6 +6,8 @@ import { useState, useEffect, useMemo } from "react";
 
 import { erc20Instance } from "../erc20";
 import rinkeby from "../static/rinkebyTokens.json";
+import rskTestnet from "../static/rskTestnetTokens.json";
+import rsk from "../static/rskTokens.json";
 import { TokenInfo } from "../utils";
 
 export type TokenMap = Map<string | null, MinimalTokenInfo>;
@@ -21,8 +23,11 @@ export const networkMap = new Map([
 ]);
 
 const customNativeTokens = new Map([
+  [1, "ETH"],
+  [4, "ETH"],
   [56, "BNB"],
   [100, "xDai"],
+  [137, "MATIC"],
   [30, "RBTC"],
   [31, "tRBTC"],
 ]);
@@ -47,6 +52,12 @@ export const fetchTokenList = async (chainId: number): Promise<TokenMap> => {
       // https://github.com/Uniswap/default-token-list/blob/master/src/tokens/rinkeby.json
       // Doesn't have GNO or OWL and/or many others.
       tokens = rinkeby;
+      break;
+    case 30:
+      tokens = rsk;
+      break;
+    case 31:
+      tokens = rskTestnet;
       break;
     case 100:
       tokens = xdaiTokens.tokens;

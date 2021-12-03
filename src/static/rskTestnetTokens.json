@@ -1,0 +1,26 @@
+[
+  {
+    "name": "RIF",
+    "address": "0x19f64674d8a5b4e652319f5e239efd3bc969a1fe",
+    "symbol": "RIF",
+    "decimals": 18,
+    "chainId": 31,
+    "logoURI": "https://raw.githubusercontent.com/DistributedCollective/Sovryn-frontend/master/src/assets/images/tokens/rif.svg"
+  },
+  {
+    "name": "Wrapped RBTC",
+    "address": "0x69fe5cec81d5ef92600c1a0db1f11986ab3758ab",
+    "symbol": "WRBTC",
+    "decimals": 18,
+    "chainId": 31,
+    "logoURI": "https://raw.githubusercontent.com/DistributedCollective/Sovryn-frontend/master/src/assets/images/tokens/rbtc.svg"
+  },
+  {
+    "name": "SOV",
+    "address": "0x6a9a07972d07e58f0daf5122d11e069288a375fb",
+    "symbol": "SOV",
+    "decimals": 18,
+    "chainId": 31,
+    "logoURI": "https://raw.githubusercontent.com/DistributedCollective/Sovryn-frontend/master/src/assets/images/tokens/sov.svg"
+  }
+]
