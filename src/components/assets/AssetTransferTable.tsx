@@ -1,37 +1,39 @@
 import { Table, Text } from "@gnosis.pm/safe-react-components";
 import React from "react";
 
-import { Payment } from "../parser";
+import { AssetTransfer } from "../../parser/csvParser";
+import { Receiver } from "../Receiver";
 
-import { Receiver } from "./Receiver";
-import { Token } from "./Token";
+import { ERC20Token } from "./ERC20Token";
 
 type TransferTableProps = {
-  transferContent: Payment[];
+  transferContent: AssetTransfer[];
 };
 
-export const TransferTable = (props: TransferTableProps) => {
+export const AssetTransferTable = (props: TransferTableProps) => {
   const { transferContent } = props;
   return (
-    <div>
+    <div style={{ flex: "1" }}>
       <Table
         isStickyHeader={true}
-        maxHeight={750}
+        maxHeight={500}
         headers={[
+          { id: "position", label: "#" },
           { id: "token", label: "Token" },
           { id: "receiver", label: "Receiver" },
-          { id: "amount", label: "Amount" },
+          { id: "value", label: "Value" },
         ]}
         rows={transferContent.map((row, index) => {
           return {
             id: "" + index,
             cells: [
-              { id: "token", content: <Token tokenAddress={row.tokenAddress} symbol={row.symbol} /> },
+              { id: "position", content: row.position },
+              { id: "token", content: <ERC20Token tokenAddress={row.tokenAddress} symbol={row.symbol} /> },
               {
                 id: "receiver",
                 content: <Receiver receiverAddress={row.receiver} receiverEnsName={row.receiverEnsName} />,
               },
-              { id: "amount", content: <Text size="md">{row.amount.toString()}</Text> },
+              { id: "value", content: <Text size="md">{row.amount.toString()}</Text> },
             ],
           };
         })}

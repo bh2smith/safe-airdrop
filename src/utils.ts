@@ -2,8 +2,8 @@ import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { BigNumber } from "bignumber.js";
 import { ethers, utils } from "ethers";
 
-import { erc20Instance } from "./erc20";
-import { Payment } from "./parser";
+import { AssetTransfer } from "./parser/csvParser";
+import { erc20Instance } from "./transfers/erc20";
 
 export const ZERO = new BigNumber(0);
 export const ONE = new BigNumber(1);
@@ -49,7 +49,7 @@ export type SummaryEntry = {
   symbol?: string;
 };
 
-export const transfersToSummary = (transfers: Payment[]) => {
+export const transfersToSummary = (transfers: AssetTransfer[]) => {
   return transfers.reduce((previousValue, currentValue): Map<string | null, SummaryEntry> => {
     let tokenSummary = previousValue.get(currentValue.tokenAddress);
     if (typeof tokenSummary === "undefined") {

@@ -1,5 +1,6 @@
 import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 
+import { CollectibleTokenInfo } from "../hooks/collectibleTokenInfoProvider";
 import { TokenInfo } from "../utils";
 
 const dummySafeInfo: SafeInfo = {
@@ -9,7 +10,7 @@ const dummySafeInfo: SafeInfo = {
   owners: [],
 };
 
-const unlistedToken: TokenInfo = {
+const unlistedERC20Token: TokenInfo = {
   address: "0x6b175474e89094c44da98b954eedeac495271d0f",
   decimals: 18,
   symbol: "UNL",
@@ -17,14 +18,30 @@ const unlistedToken: TokenInfo = {
   chainId: -1,
 };
 
+const dummyERC721Token: CollectibleTokenInfo = {
+  token_type: "erc721",
+  address: "0x5500000000000000000000000000000000000000",
+  hasMetaInfo: false,
+};
+
+const dummyERC1155Token: CollectibleTokenInfo = {
+  token_type: "erc1155",
+  address: "0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656",
+  hasMetaInfo: false,
+};
+
 const addresses = {
   receiver1: "0x1000000000000000000000000000000000000000",
   receiver2: "0x2000000000000000000000000000000000000000",
   receiver3: "0x3000000000000000000000000000000000000000",
+  dummyErc721Address: "0x5500000000000000000000000000000000000000",
+  dummyErc1155Address: "0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656",
 };
 
 export const testData = {
   dummySafeInfo,
-  unlistedToken,
+  unlistedERC20Token,
   addresses,
+  dummyERC721Token,
+  dummyERC1155Token,
 };

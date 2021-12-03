@@ -57,6 +57,17 @@ const GlobalStyle = createGlobalStyle`
     .MuiPaper-elevation3 {
         box-shadow: 0px 3px 3px -2px #F7F5F5,0px 3px 4px 0px #F7F5F5,0px 1px 8px 0px #F7F5F5 !important;
     }
+
+    .navLabel {
+        flex: 1;
+    }
+
+    .tableContainer {
+        display: flex;
+        flex-direction: horizontal;
+        gap: 16px;
+        width: 100%;
+    }
 `;
 
 export default GlobalStyle;

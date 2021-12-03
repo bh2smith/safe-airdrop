@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-import { ERC20, ERC20__factory } from "./contracts";
+import { ERC20, ERC20__factory } from "../contracts";
 
 export const erc20Interface = ERC20__factory.createInterface();
 

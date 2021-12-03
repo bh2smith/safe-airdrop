@@ -4,9 +4,10 @@ import * as chai from "chai";
 import { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
+import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import { EnsResolver } from "../hooks/ens";
 import { TokenMap, MinimalTokenInfo, fetchTokenList, TokenInfoProvider } from "../hooks/token";
-import { parseCSV } from "../parser";
+import { AssetTransfer, CollectibleTransfer, CSVParser } from "../parser/csvParser";
 import { testData } from "../test/util";
 
 let tokenList: TokenMap;
@@ -22,12 +23,13 @@ chai.use(chaiAsPromised);
  * @param rows array of row-arrays
  */
 const csvStringFromRows = (...rows: string[][]): string => {
-  const headerRow = "token_address,receiver,amount";
+  const headerRow = "token_type,token_address,receiver,value,id";
   return [headerRow, ...rows.map((row) => row.join(","))].join("\n");
 };
 
 describe("Parsing CSVs ", () => {
   let mockTokenInfoProvider: TokenInfoProvider;
+  let mockCollectibleTokenInfoProvider: CollectibleTokenInfoProvider;
   let mockEnsResolver: EnsResolver;
 
   beforeAll(async () => {
@@ -43,6 +45,21 @@ describe("Parsing CSVs ", () => {
     mockTokenInfoProvider = {
       getTokenInfo: fetchTokenFromList,
       getNativeTokenSymbol: () => "ETH",
+    };
+
+    mockCollectibleTokenInfoProvider = {
+      getFromAddress: () => testData.dummySafeInfo.safeAddress,
+      getTokenInfo: async (tokenAddress) => {
+        switch (tokenAddress.toLowerCase()) {
+          case testData.addresses.dummyErc721Address:
+            return testData.dummyERC721Token;
+          case testData.addresses.dummyErc1155Address:
+            return testData.dummyERC1155Token;
+          default:
+            return undefined;
+        }
+      },
+      fetchMetaInfo: jest.fn(),
     };
 
     mockEnsResolver = {
@@ -86,32 +103,38 @@ describe("Parsing CSVs ", () => {
   it("should throw errors for invalid CSVs", async () => {
     // this csv contains more values than headers in row1
     const invalidCSV = "head1,header2\nvalue1,value2,value3";
-    expect(parseCSV(invalidCSV, mockTokenInfoProvider, mockEnsResolver)).to.be.rejectedWith(
-      "column header mismatch expected: 2 columns got: 3",
-    );
+    expect(
+      CSVParser.parseCSV(invalidCSV, mockTokenInfoProvider, mockCollectibleTokenInfoProvider, mockEnsResolver),
+    ).to.be.rejectedWith("column header mismatch expected: 2 columns got: 3");
   });
 
   it("should throw errors for unexpected errors while parsing", async () => {
     // we hard coded in our mock that a ens of "error.eth" throws an error.
-    const rowWithErrorReceiver = [listedToken.address, "error.eth", "1"];
+    const rowWithErrorReceiver = ["erc20", listedToken.address, "error.eth", "1"];
     expect(
-      parseCSV(csvStringFromRows(rowWithErrorReceiver), mockTokenInfoProvider, mockEnsResolver),
+      CSVParser.parseCSV(
+        csvStringFromRows(rowWithErrorReceiver),
+        mockTokenInfoProvider,
+        mockCollectibleTokenInfoProvider,
+        mockEnsResolver,
+      ),
     ).to.be.rejectedWith("unexpected error!");
   });
 
   it("should transform simple, valid CSVs correctly", async () => {
-    const rowWithoutDecimal = [listedToken.address, validReceiverAddress, "1"];
-    const rowWithDecimalAmount = [listedToken.address, validReceiverAddress, "69.420"];
-    const rowWithoutTokenAddress = ["", validReceiverAddress, "1"];
+    const rowWithoutDecimal = ["erc20", listedToken.address, validReceiverAddress, "1"];
+    const rowWithDecimalAmount = ["erc20", listedToken.address, validReceiverAddress, "69.420"];
+    const rowWithoutTokenAddress = ["native", "", validReceiverAddress, "1"];
 
-    const [payment, warnings] = await parseCSV(
+    const [payment, warnings] = await CSVParser.parseCSV(
       csvStringFromRows(rowWithoutDecimal, rowWithDecimalAmount, rowWithoutTokenAddress),
       mockTokenInfoProvider,
+      mockCollectibleTokenInfoProvider,
       mockEnsResolver,
     );
     expect(warnings).to.be.empty;
     expect(payment).to.have.lengthOf(3);
-    const [paymentWithoutDecimal, paymentWithDecimal, paymentWithoutTokenAddress] = payment;
+    const [paymentWithoutDecimal, paymentWithDecimal, paymentWithoutTokenAddress] = payment as AssetTransfer[];
     expect(paymentWithoutDecimal.decimals).to.be.equal(18);
     expect(paymentWithoutDecimal.receiver).to.equal(validReceiverAddress);
     expect(paymentWithoutDecimal.tokenAddress).to.equal(listedToken.address);
@@ -131,14 +154,19 @@ describe("Parsing CSVs ", () => {
     expect(paymentWithoutTokenAddress.receiverEnsName).to.be.null;
   });
 
-  it("should generate validation warnings", async () => {
-    const rowWithNegativeAmount = [listedToken.address, validReceiverAddress, "-1"];
+  it("should generate erc20 validation warnings", async () => {
+    const rowWithNegativeAmount = ["erc20", listedToken.address, validReceiverAddress, "-1"];
 
-    const unlistedTokenWithoutDecimalInContract = [testData.unlistedToken.address, validReceiverAddress, "1"];
-    const rowWithInvalidTokenAddress = ["0x420", validReceiverAddress, "1"];
-    const rowWithInvalidReceiverAddress = [listedToken.address, "0x420", "1"];
+    const unlistedTokenWithoutDecimalInContract = [
+      "erc20",
+      testData.unlistedERC20Token.address,
+      validReceiverAddress,
+      "1",
+    ];
+    const rowWithInvalidTokenAddress = ["erc20", "0x420", validReceiverAddress, "1"];
+    const rowWithInvalidReceiverAddress = ["erc20", listedToken.address, "0x420", "1"];
 
-    const [payment, warnings] = await parseCSV(
+    const [payment, warnings] = await CSVParser.parseCSV(
       csvStringFromRows(
         rowWithNegativeAmount,
         unlistedTokenWithoutDecimalInContract,
@@ -146,6 +174,7 @@ describe("Parsing CSVs ", () => {
         rowWithInvalidReceiverAddress,
       ),
       mockTokenInfoProvider,
+      mockCollectibleTokenInfoProvider,
       mockEnsResolver,
     );
     expect(warnings).to.have.lengthOf(5);
@@ -162,7 +191,7 @@ describe("Parsing CSVs ", () => {
     expect(warningNegativeAmount.lineNo).to.equal(1);
 
     expect(warningTokenNotFound.message.toLowerCase()).to.equal(
-      `no token contract was found at ${testData.unlistedToken.address.toLowerCase()}`,
+      `no token contract was found at ${testData.unlistedERC20Token.address.toLowerCase()}`,
     );
     expect(warningTokenNotFound.lineNo).to.equal(2);
 
@@ -175,20 +204,21 @@ describe("Parsing CSVs ", () => {
     expect(warningInvalidReceiverAddress.lineNo).to.equal(4);
   });
 
-  it("tries to resolved ens names", async () => {
-    const receiverEnsName = [listedToken.address, "receiver1.eth", "1"];
-    const tokenEnsName = ["token.eth", validReceiverAddress, "69.420"];
-    const unknownReceiverEnsName = [listedToken.address, "unknown.eth", "1"];
-    const unknownTokenEnsName = ["unknown.eth", "receiver1.eth", "1"];
+  it("tries to resolve ens names", async () => {
+    const receiverEnsName = ["erc20", listedToken.address, "receiver1.eth", "1"];
+    const tokenEnsName = ["erc20", "token.eth", validReceiverAddress, "69.420"];
+    const unknownReceiverEnsName = ["erc20", listedToken.address, "unknown.eth", "1"];
+    const unknownTokenEnsName = ["erc20", "unknown.eth", "receiver1.eth", "1"];
 
-    const [payment, warnings] = await parseCSV(
+    const [payment, warnings] = await CSVParser.parseCSV(
       csvStringFromRows(receiverEnsName, tokenEnsName, unknownReceiverEnsName, unknownTokenEnsName),
       mockTokenInfoProvider,
+      mockCollectibleTokenInfoProvider,
       mockEnsResolver,
     );
     expect(warnings).to.have.lengthOf(3);
     expect(payment).to.have.lengthOf(2);
-    const [paymentReceiverEnsName, paymentTokenEnsName] = payment;
+    const [paymentReceiverEnsName, paymentTokenEnsName] = payment as AssetTransfer[];
     const [warningUnknownReceiverEnsName, warningInvalidTokenAddress, warningInvalidContract] = warnings;
     expect(paymentReceiverEnsName.decimals).to.be.equal(18);
     expect(paymentReceiverEnsName.receiver).to.equal(testData.addresses.receiver1);
@@ -210,5 +240,208 @@ describe("Parsing CSVs ", () => {
 
     expect(warningInvalidContract.lineNo).to.equal(4);
     expect(warningInvalidContract.message).to.equal("No token contract was found at unknown.eth");
+  });
+
+  it("parses valid collectible transfers", async () => {
+    const rowWithErc721AndAddress = ["nft", testData.addresses.dummyErc721Address, validReceiverAddress, "", "1"];
+    const rowWithErc721AndENS = ["nft", testData.addresses.dummyErc721Address, "receiver2.eth", "", "69"];
+    const rowWithErc1155AndAddress = ["nft", testData.addresses.dummyErc1155Address, validReceiverAddress, "69", "420"];
+    const rowWithErc1155AndENS = ["nft", testData.addresses.dummyErc1155Address, "receiver3.eth", "9", "99"];
+
+    const [payment, warnings] = await CSVParser.parseCSV(
+      csvStringFromRows(rowWithErc721AndAddress, rowWithErc721AndENS, rowWithErc1155AndAddress, rowWithErc1155AndENS),
+      mockTokenInfoProvider,
+      mockCollectibleTokenInfoProvider,
+      mockEnsResolver,
+    );
+    expect(warnings).to.be.empty;
+    expect(payment).to.have.lengthOf(4);
+    const [transferErc721AndAddress, transferErc721AndENS, transferErc1155AndAddress, transferErc1155AndENS] =
+      payment as CollectibleTransfer[];
+    expect(transferErc721AndAddress.receiver).to.equal(validReceiverAddress);
+    expect(transferErc721AndAddress.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
+    expect(transferErc721AndAddress.value).to.be.undefined;
+    expect(transferErc721AndAddress.tokenId.isEqualTo(new BigNumber(1))).to.be.true;
+    expect(transferErc721AndAddress.receiverEnsName).to.be.null;
+
+    expect(transferErc721AndENS.receiver).to.equal(testData.addresses.receiver2);
+    expect(transferErc721AndENS.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
+    expect(transferErc721AndENS.tokenId.isEqualTo(new BigNumber(69))).to.be.true;
+    expect(transferErc721AndENS.value).to.be.undefined;
+    expect(transferErc721AndENS.receiverEnsName).to.equal("receiver2.eth");
+
+    expect(transferErc1155AndAddress.receiver).to.equal(validReceiverAddress);
+    expect(transferErc1155AndAddress.tokenAddress.toLowerCase()).to.equal(
+      testData.addresses.dummyErc1155Address.toLowerCase(),
+    );
+    expect(transferErc1155AndAddress.value).not.to.be.undefined;
+    expect(transferErc1155AndAddress.value?.isEqualTo(new BigNumber(69))).to.be.true;
+    expect(transferErc1155AndAddress.tokenId.isEqualTo(new BigNumber(420))).to.be.true;
+    expect(transferErc1155AndAddress.receiverEnsName).to.be.null;
+
+    expect(transferErc1155AndENS.receiver).to.equal(testData.addresses.receiver3);
+    expect(transferErc1155AndENS.tokenAddress.toLowerCase()).to.equal(
+      testData.addresses.dummyErc1155Address.toLowerCase(),
+    );
+    expect(transferErc1155AndENS.value).not.to.be.undefined;
+    expect(transferErc1155AndENS.value?.isEqualTo(new BigNumber(9))).to.be.true;
+    expect(transferErc1155AndENS.tokenId.isEqualTo(new BigNumber(99))).to.be.true;
+    expect(transferErc1155AndENS.receiverEnsName).to.equal("receiver3.eth");
+  });
+
+  it("should generate erc721/erc1155 validation warnings", async () => {
+    const rowErc1155WithNegativeValue = [
+      "nft",
+      testData.addresses.dummyErc1155Address,
+      validReceiverAddress,
+      "-1",
+      "5",
+    ];
+
+    const rowErc1155WithDecimalValue = [
+      "nft",
+      testData.addresses.dummyErc1155Address,
+      validReceiverAddress,
+      "1.5",
+      "5",
+    ];
+
+    const rowErc1155WithMissingValue = ["nft", testData.addresses.dummyErc1155Address, validReceiverAddress, "", "5"];
+
+    const rowErc1155WithMissingId = ["nft", testData.addresses.dummyErc1155Address, validReceiverAddress, "5", ""];
+
+    const rowErc1155WithInvalidTokenAddress = ["nft", "0xwhoopsie", validReceiverAddress, "5", "5"];
+
+    const rowErc1155WithInvalidReceiverAddress = [
+      "nft",
+      testData.addresses.dummyErc1155Address,
+      "0xwhoopsie",
+      "5",
+      "5",
+    ];
+
+    const rowErc721WithNegativeId = ["nft", testData.addresses.dummyErc721Address, validReceiverAddress, "", "-20"];
+
+    const rowErc721WithMissingId = ["nft", testData.addresses.dummyErc721Address, validReceiverAddress, "", ""];
+
+    const rowErc721WithDecimalId = ["nft", testData.addresses.dummyErc721Address, validReceiverAddress, "", "69.420"];
+
+    const rowErc721WithInvalidToken = ["nft", "0xwhoopsie", validReceiverAddress, "", "69"];
+
+    const rowErc721WithInvalidReceiver = ["nft", testData.addresses.dummyErc721Address, "0xwhoopsie", "", "69"];
+
+    const [payment, warnings] = await CSVParser.parseCSV(
+      csvStringFromRows(
+        rowErc1155WithNegativeValue,
+        rowErc1155WithDecimalValue,
+        rowErc1155WithMissingValue,
+        rowErc1155WithMissingId,
+        rowErc1155WithInvalidTokenAddress,
+        rowErc1155WithInvalidReceiverAddress,
+        rowErc721WithNegativeId,
+        rowErc721WithDecimalId,
+        rowErc721WithMissingId,
+        rowErc721WithInvalidToken,
+        rowErc721WithInvalidReceiver,
+      ),
+      mockTokenInfoProvider,
+      mockCollectibleTokenInfoProvider,
+      mockEnsResolver,
+    );
+    expect(warnings).to.have.lengthOf(15);
+    const [
+      warningErc1155WithNegativeValue,
+      warningErc1155WithDecimalValue,
+      warningErc1155WithMissingValue,
+      warningErc1155WithMissingId,
+      warningErc1155WithMissingId2,
+      warningErc1155WithInvalidTokenAddress,
+      warningErc1155WithInvalidTokenAddress2,
+      warningErc1155WithInvalidReceiverAddress,
+      warningErc721WithNegativeId,
+      warningErc721WithDecimalId,
+      warningErc721WithMissingId,
+      warningErc721WithMissingId2,
+      warningErc721WithInvalidToken,
+      warningErc721WithInvalidToken2,
+      warningErc721WithInvalidReceiver,
+    ] = warnings;
+    expect(payment).to.be.empty;
+
+    expect(warningErc1155WithNegativeValue.lineNo).to.equal(1);
+    expect(warningErc1155WithNegativeValue.message).to.equal("ERC1155 Tokens need a defined value > 0: -1");
+
+    expect(warningErc1155WithDecimalValue.lineNo).to.equal(2);
+    expect(warningErc1155WithDecimalValue.message).to.equal("Value of ERC1155 must be an integer: 1.5");
+
+    expect(warningErc1155WithMissingValue.lineNo).to.equal(3);
+    expect(warningErc1155WithMissingValue.message).to.equal("ERC1155 Tokens need a defined value > 0: NaN");
+
+    expect(warningErc1155WithMissingId.lineNo).to.equal(4);
+    expect(warningErc1155WithMissingId.message).to.equal("Only positive Token IDs possible: NaN");
+
+    expect(warningErc1155WithMissingId2.lineNo).to.equal(4);
+    expect(warningErc1155WithMissingId2.message).to.equal("Token IDs must be integer numbers: NaN");
+
+    expect(warningErc1155WithInvalidTokenAddress.lineNo).to.equal(5);
+    expect(warningErc1155WithInvalidTokenAddress.message).to.equal("Invalid Token Address: 0xwhoopsie");
+
+    expect(warningErc1155WithInvalidTokenAddress2.lineNo).to.equal(5);
+    expect(warningErc1155WithInvalidTokenAddress2.message).to.equal("No token contract was found at 0xwhoopsie");
+
+    expect(warningErc1155WithInvalidReceiverAddress.lineNo).to.equal(6);
+    expect(warningErc1155WithInvalidReceiverAddress.message).to.equal("Invalid Receiver Address: 0xwhoopsie");
+
+    expect(warningErc721WithNegativeId.lineNo).to.equal(7);
+    expect(warningErc721WithNegativeId.message).to.equal("Only positive Token IDs possible: -20");
+
+    expect(warningErc721WithDecimalId.lineNo).to.equal(8);
+    expect(warningErc721WithDecimalId.message).to.equal("Token IDs must be integer numbers: 69.42");
+
+    expect(warningErc721WithMissingId.lineNo).to.equal(9);
+    expect(warningErc721WithMissingId.message).to.equal("Only positive Token IDs possible: NaN");
+
+    expect(warningErc721WithMissingId2.lineNo).to.equal(9);
+    expect(warningErc721WithMissingId2.message).to.equal("Token IDs must be integer numbers: NaN");
+
+    expect(warningErc721WithInvalidToken.lineNo).to.equal(10);
+    expect(warningErc721WithInvalidToken.message).to.equal("Invalid Token Address: 0xwhoopsie");
+
+    expect(warningErc721WithInvalidToken2.lineNo).to.equal(10);
+    expect(warningErc721WithInvalidToken2.message).to.equal("No token contract was found at 0xwhoopsie");
+
+    expect(warningErc721WithInvalidReceiver.lineNo).to.equal(11);
+    expect(warningErc721WithInvalidReceiver.message).to.equal("Invalid Receiver Address: 0xwhoopsie");
+  });
+
+  it("invalid or missing token types", async () => {
+    const rowWithInvalidTokenType = [
+      "invalidTokenType",
+      testData.unlistedERC20Token.address,
+      validReceiverAddress,
+      "15",
+    ];
+
+    const missingTokenType = ["", testData.unlistedERC20Token.address, validReceiverAddress, "15"];
+
+    const [payment, warnings] = await CSVParser.parseCSV(
+      csvStringFromRows(rowWithInvalidTokenType, missingTokenType),
+      mockTokenInfoProvider,
+      mockCollectibleTokenInfoProvider,
+      mockEnsResolver,
+    );
+    expect(warnings).to.have.lengthOf(2);
+    const [warningWithInvalidTokenType, warningWithMissingTokenType] = warnings;
+    expect(payment).to.be.empty;
+
+    expect(warningWithInvalidTokenType.lineNo).to.equal(1);
+    expect(warningWithInvalidTokenType.message).to.equal(
+      "Unknown token_type: Must be one of erc20, native, erc721, erc1155",
+    );
+
+    expect(warningWithMissingTokenType.lineNo).to.equal(2);
+    expect(warningWithMissingTokenType.message).to.equal(
+      "Unknown token_type: Must be one of erc20, native, erc721, erc1155",
+    );
   });
 });
