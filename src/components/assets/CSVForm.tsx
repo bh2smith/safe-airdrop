@@ -3,7 +3,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Text } from "@gnosis.pm/safe-react-components";
 import { ethers } from "ethers";
 import debounce from "lodash.debounce";
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import { MessageContext } from "../../contexts/MessageContextProvider";
@@ -41,7 +41,6 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
 
   const onChangeTextHandler = (csvText: string) => {
     setCsvText(csvText);
-    parseAndValidateCSV(csvText);
   };
 
   const parseAndValidateCSV = useMemo(
@@ -103,6 +102,10 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
       web3Provider,
     ],
   );
+
+  useEffect(() => {
+    parseAndValidateCSV(csvText);
+  }, [csvText, parseAndValidateCSV]);
 
   return (
     <Form>

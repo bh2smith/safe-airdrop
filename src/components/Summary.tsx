@@ -44,7 +44,7 @@ export const Summary = (props: SummaryProps): JSX.Element => {
           </div>
         </AccordionSummary>
         <AccordionDetails>
-          <AssetTransferTable transferContent={assetTransfers} />
+          {assetTransfers.length > 0 && <AssetTransferTable transferContent={assetTransfers} />}
         </AccordionDetails>
       </Accordion>
       <Accordion disabled={collectibleTxCount === 0} compact style={{ maxWidth: 1400 }}>
@@ -66,7 +66,7 @@ export const Summary = (props: SummaryProps): JSX.Element => {
           </div>
         </AccordionSummary>
         <AccordionDetails>
-          <CollectiblesTransferTable transferContent={collectibleTransfers} />
+          {collectibleTransfers.length > 0 && <CollectiblesTransferTable transferContent={collectibleTransfers} />}
         </AccordionDetails>
       </Accordion>
     </>
