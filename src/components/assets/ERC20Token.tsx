@@ -15,6 +15,8 @@ const Container = styled.div`
   justify-content: start;
   align-items: center;
   gap: 8px;
+  padding: 16px;
+  min-width: 285px;
 `;
 
 export const ERC20Token = (props: TokenProps) => {
@@ -23,7 +25,7 @@ export const ERC20Token = (props: TokenProps) => {
   return (
     <Container>
       {tokenList.get(tokenAddress) && (
-        <img /* TODO - alt doesn't really work here */
+        <img
           alt={""}
           src={tokenList.get(tokenAddress)?.logoURI}
           style={{

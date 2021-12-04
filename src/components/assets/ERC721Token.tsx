@@ -6,6 +6,13 @@ import styled from "styled-components";
 
 import { CollectibleTokenMetaInfo, useCollectibleTokenInfoProvider } from "../../hooks/collectibleTokenInfoProvider";
 
+type TokenProps = {
+  tokenAddress: string;
+  id: BigNumber;
+  token_type: "erc721" | "erc1155";
+  hasMetaData: boolean;
+};
+
 const Container = styled.div`
   flex: 1;
   flex-direction: row;
@@ -13,14 +20,9 @@ const Container = styled.div`
   justify-content: start;
   align-items: center;
   gap: 8px;
+  padding: 16px;
+  min-width: 285px;
 `;
-
-type TokenProps = {
-  tokenAddress: string;
-  id: BigNumber;
-  token_type: "erc721" | "erc1155";
-  hasMetaData: boolean;
-};
 
 export const ERC721Token = (props: TokenProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLImageElement | null>(null);
@@ -55,44 +57,47 @@ export const ERC721Token = (props: TokenProps) => {
       {isMetaDataLoading ? (
         <Loader size="sm" />
       ) : (
-        <>
-          <img
-            alt={""}
-            src={tokenMetaData?.imageURI}
-            onClick={(event) => {
-              setAnchorEl(event.currentTarget);
-            }}
-            style={{
-              maxWidth: 20,
-              marginRight: 3,
-              verticalAlign: "middle",
-            }}
-          />{" "}
-          <Popover
-            style={{ padding: 8 }}
-            anchorEl={anchorEl}
-            open={imageZoomedIn}
-            onClose={() => setAnchorEl(null)}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "center",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-          >
-            <img /* TODO - alt doesn't really work here */
+        tokenMetaData?.imageURI && (
+          <>
+            <img
               alt={""}
               src={tokenMetaData?.imageURI}
+              onClick={(event) => {
+                setAnchorEl(event.currentTarget);
+              }}
               style={{
-                maxWidth: 320,
+                maxWidth: 20,
                 marginRight: 3,
                 verticalAlign: "middle",
+                cursor: "pointer",
               }}
             />{" "}
-          </Popover>
-        </>
+            <Popover
+              style={{ padding: 8 }}
+              anchorEl={anchorEl}
+              open={imageZoomedIn}
+              onClose={() => setAnchorEl(null)}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+            >
+              <img
+                alt={""}
+                src={tokenMetaData?.imageURI}
+                style={{
+                  maxWidth: 320,
+                  marginRight: 3,
+                  verticalAlign: "middle",
+                }}
+              />{" "}
+            </Popover>
+          </>
+        )
       )}
       <Text size="md">{tokenMetaData?.name || tokenAddress}</Text>
     </Container>

@@ -14,6 +14,8 @@ const Container = styled.div`
   justify-content: start;
   align-items: center;
   gap: 8px;
+  padding: 16px;
+  min-width: 285px;
 `;
 
 export const Receiver = (props: ReceiverProps) => {
@@ -28,6 +30,8 @@ export const Receiver = (props: ReceiverProps) => {
       </Tooltip>
     </Container>
   ) : (
-    <Text size="md">{receiverAddress}</Text>
+    <Container>
+      <Text size="md">{receiverAddress}</Text>
+    </Container>
   );
 };
