@@ -51,7 +51,7 @@ const App: React.FC = () => {
   return (
     <Container>
       <Header />
-      {networkMap.has(safe.chainId) ? (
+      {
         <>
           {isLoading ? (
             <>
@@ -85,9 +85,7 @@ const App: React.FC = () => {
             </Card>
           )}
         </>
-      ) : (
-        <Text size={"xl"}>Network with chainId {safe.chainId} not yet supported.</Text>
-      )}
+      }
       <FAQModal />
     </Container>
   );
