@@ -9,7 +9,7 @@ import { FAQModal } from "./components/FAQModal";
 import { Header } from "./components/Header";
 import { Summary } from "./components/Summary";
 import { CSVForm } from "./components/assets/CSVForm";
-import { useTokenList, networkMap } from "./hooks/token";
+import { useTokenList } from "./hooks/token";
 import { AssetTransfer, CollectibleTransfer, Transfer } from "./parser/csvParser";
 import { buildAssetTransfers, buildCollectibleTransfers } from "./transfers/transfers";
 
@@ -17,7 +17,6 @@ setUseWhatChange(process.env.NODE_ENV === "development");
 
 const App: React.FC = () => {
   const { isLoading } = useTokenList();
-  const { safe } = useSafeAppsSDK();
   const [tokenTransfers, setTokenTransfers] = useState<Transfer[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
@@ -51,7 +50,7 @@ const App: React.FC = () => {
   return (
     <Container>
       <Header />
-      {networkMap.has(safe.chainId) ? (
+      {
         <>
           {isLoading ? (
             <>
@@ -85,9 +84,7 @@ const App: React.FC = () => {
             </Card>
           )}
         </>
-      ) : (
-        <Text size={"xl"}>Network with chainId {safe.chainId} not yet supported.</Text>
-      )}
+      }
       <FAQModal />
     </Container>
   );
