@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 import { AssetTransfer } from "../parser/csvParser";
 import { testData } from "../test/util";
-import { fromWei, toWei, TEN, ONE, ZERO, transfersToSummary } from "../utils";
+import { fromWei, toWei, TEN, ONE, ZERO, assetTransfersToSummary } from "../utils";
 
 // TODO - this is super ugly at the moment and is probably missing some stuff.
 describe("toWei()", () => {
@@ -72,7 +72,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
     ];
-    const summary = transfersToSummary(transfers);
+    const summary = assetTransfersToSummary(transfers);
     expect(summary.get(null)?.amount.toFixed()).to.equal("6");
   });
 
@@ -106,7 +106,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
     ];
-    const summary = transfersToSummary(transfers);
+    const summary = assetTransfersToSummary(transfers);
     expect(summary.get(null)?.amount.toFixed()).to.equal("0.111");
   });
 
@@ -140,7 +140,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
     ];
-    const summary = transfersToSummary(transfers);
+    const summary = assetTransfersToSummary(transfers);
     expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("0.111");
   });
 
@@ -174,7 +174,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
     ];
-    const summary = transfersToSummary(transfers);
+    const summary = assetTransfersToSummary(transfers);
     expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("6");
   });
 
@@ -226,7 +226,7 @@ describe("transferToSummary()", () => {
         receiverEnsName: null,
       },
     ];
-    const summary = transfersToSummary(transfers);
+    const summary = assetTransfersToSummary(transfers);
     expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("6.4");
     expect(summary.get(null)?.amount.toFixed()).to.equal("3.33");
   });

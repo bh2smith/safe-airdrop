@@ -435,13 +435,9 @@ describe("Parsing CSVs ", () => {
     expect(payment).to.be.empty;
 
     expect(warningWithInvalidTokenType.lineNo).to.equal(1);
-    expect(warningWithInvalidTokenType.message).to.equal(
-      "Unknown token_type: Must be one of erc20, native, erc721, erc1155",
-    );
+    expect(warningWithInvalidTokenType.message).to.equal("Unknown token_type: Must be one of erc20, native or nft");
 
     expect(warningWithMissingTokenType.lineNo).to.equal(2);
-    expect(warningWithMissingTokenType.message).to.equal(
-      "Unknown token_type: Must be one of erc20, native, erc721, erc1155",
-    );
+    expect(warningWithMissingTokenType.message).to.equal("Unknown token_type: Must be one of erc20, native or nft");
   });
 });

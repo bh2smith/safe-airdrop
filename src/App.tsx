@@ -9,6 +9,7 @@ import { FAQModal } from "./components/FAQModal";
 import { Header } from "./components/Header";
 import { Summary } from "./components/Summary";
 import { CSVForm } from "./components/assets/CSVForm";
+import { useBalances } from "./hooks/balances";
 import { useTokenList } from "./hooks/token";
 import { AssetTransfer, CollectibleTransfer, Transfer } from "./parser/csvParser";
 import { buildAssetTransfers, buildCollectibleTransfers } from "./transfers/transfers";
@@ -17,6 +18,7 @@ setUseWhatChange(process.env.NODE_ENV === "development");
 
 const App: React.FC = () => {
   const { isLoading } = useTokenList();
+  const balanceLoader = useBalances();
   const [tokenTransfers, setTokenTransfers] = useState<Transfer[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
@@ -52,10 +54,22 @@ const App: React.FC = () => {
       <Header />
       {
         <>
-          {isLoading ? (
+          {isLoading || balanceLoader.isLoading ? (
             <>
-              <Loader size={"lg"} />
-              <Text size={"lg"}>Loading Tokenlist...</Text>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  width: "100%",
+                  height: "100vh",
+                }}
+              >
+                <Text size={"xl"} strong>
+                  Loading tokenlist and balances...
+                </Text>
+                <Loader size={"md"} />
+              </div>
             </>
           ) : (
             <Card className="cardWithCustomShadow">

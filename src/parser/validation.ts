@@ -14,7 +14,7 @@ export const validateRow = (row: Transfer | UnknownTransfer, callback: RowValida
       validateCollectibleRow(row, callback);
       break;
     default:
-      callback(null, false, "Unknown token_type: Must be one of erc20, native, erc721, erc1155");
+      callback(null, false, "Unknown token_type: Must be one of erc20, native or nft");
   }
 };
 

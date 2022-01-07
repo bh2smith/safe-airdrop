@@ -1,9 +1,7 @@
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { BigNumber } from "bignumber.js";
-import { ethers, utils } from "ethers";
 
-import { AssetTransfer } from "./parser/csvParser";
-import { erc20Instance } from "./transfers/erc20";
+import { AssetBalance, CollectibleBalance } from "./hooks/balances";
+import { AssetTransfer, CollectibleTransfer, Transfer } from "./parser/csvParser";
 
 export const ZERO = new BigNumber(0);
 export const ONE = new BigNumber(1);
@@ -42,15 +40,15 @@ export function fromWei(amount: BigNumber, decimals: number): BigNumber {
   return amount.dividedBy(TEN.pow(decimals));
 }
 
-export type SummaryEntry = {
+export type AssetSummaryEntry = {
   tokenAddress: string | null;
   amount: BigNumber;
   decimals: number;
   symbol?: string;
 };
 
-export const transfersToSummary = (transfers: AssetTransfer[]) => {
-  return transfers.reduce((previousValue, currentValue): Map<string | null, SummaryEntry> => {
+export const assetTransfersToSummary = (transfers: AssetTransfer[]) => {
+  return transfers.reduce((previousValue, currentValue): Map<string | null, AssetSummaryEntry> => {
     let tokenSummary = previousValue.get(currentValue.tokenAddress);
     if (typeof tokenSummary === "undefined") {
       tokenSummary = {
@@ -64,49 +62,116 @@ export const transfersToSummary = (transfers: AssetTransfer[]) => {
     tokenSummary.amount = tokenSummary.amount.plus(currentValue.amount);
 
     return previousValue;
-  }, new Map<string | null, SummaryEntry>());
+  }, new Map<string | null, AssetSummaryEntry>());
+};
+
+export type CollectibleSummaryEntry = {
+  tokenAddress: string;
+  id: BigNumber;
+  amount: number;
+  name?: string;
+};
+
+export const collectibleTransfersToSummary = (transfers: CollectibleTransfer[]) => {
+  return transfers.reduce((previousValue, currentValue): Map<string | null, CollectibleSummaryEntry> => {
+    const entryKey = `${currentValue.tokenAddress}:${currentValue.tokenId.toFixed()}`;
+    let tokenSummary = previousValue.get(entryKey);
+    if (typeof tokenSummary === "undefined") {
+      tokenSummary = {
+        tokenAddress: currentValue.tokenAddress,
+        amount: 0, // We track the amount to detect duplicate ids
+        name: currentValue.tokenName,
+        id: currentValue.tokenId,
+      };
+      previousValue.set(entryKey, tokenSummary);
+    }
+    tokenSummary.amount = tokenSummary.amount + 1;
+
+    return previousValue;
+  }, new Map<string | null, CollectibleSummaryEntry>());
 };
 
 export type InsufficientBalanceInfo = {
   token: string;
   transferAmount: string;
+  token_type: "erc20" | "native" | "erc721";
+  id?: BigNumber;
 };
 
-export const checkAllBalances = async (
-  summary: Map<string | null, SummaryEntry>,
-  web3Provider: ethers.providers.Web3Provider,
-  safe: SafeInfo,
-): Promise<InsufficientBalanceInfo[]> => {
+export const checkAllBalances = (
+  assetBalance: AssetBalance | undefined,
+  collectibleBalance: CollectibleBalance | undefined,
+  transfers: Transfer[],
+): InsufficientBalanceInfo[] => {
   const insufficientTokens: InsufficientBalanceInfo[] = [];
-  for (const { tokenAddress, amount, decimals, symbol } of summary.values()) {
+
+  const assetSummary = assetTransfersToSummary(
+    transfers.filter(
+      (transfer) => transfer.token_type === "erc20" || transfer.token_type === "native",
+    ) as AssetTransfer[],
+  );
+
+  // erc1155 balance checks are not possible yet through the safe api
+  const collectibleSummary = collectibleTransfersToSummary(
+    transfers.filter((transfer) => transfer.token_type === "erc721") as CollectibleTransfer[],
+  );
+
+  for (const { tokenAddress, amount, decimals, symbol } of assetSummary.values()) {
     if (tokenAddress === null) {
       // Check ETH Balance
-      const tokenBalance = await web3Provider.getBalance(safe.safeAddress, "latest");
-      if (!isSufficientBalance(tokenBalance, amount, 18)) {
+      const tokenBalance = assetBalance?.find((balanceEntry) => balanceEntry.tokenAddress === null);
+
+      if (
+        typeof tokenBalance === "undefined" ||
+        !isSufficientBalance(new BigNumber(tokenBalance.balance), amount, 18)
+      ) {
         insufficientTokens.push({
           token: "ETH",
+          token_type: "native",
           transferAmount: amount.toFixed(),
         });
       }
     } else {
-      const erc20Contract = erc20Instance(utils.getAddress(tokenAddress), web3Provider);
-      const tokenBalance = await erc20Contract.balanceOf(safe.safeAddress).catch((reason) => {
-        console.error(reason);
-        return ethers.BigNumber.from(-1);
-      });
-      if (!isSufficientBalance(tokenBalance, amount, decimals)) {
+      const tokenBalance = assetBalance?.find(
+        (balanceEntry) => balanceEntry.tokenAddress?.toLowerCase() === tokenAddress.toLowerCase(),
+      );
+      if (
+        typeof tokenBalance === "undefined" ||
+        !isSufficientBalance(new BigNumber(tokenBalance.balance), amount, decimals)
+      ) {
         insufficientTokens.push({
           token: symbol || tokenAddress,
+          token_type: "erc20",
           transferAmount: amount.toFixed(),
         });
       }
     }
   }
+
+  for (const { tokenAddress, amount, name, id } of collectibleSummary.values()) {
+    const tokenBalance = collectibleBalance?.find(
+      (balanceEntry) =>
+        balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase() && balanceEntry.id === id.toFixed(),
+    );
+    if (typeof tokenBalance === "undefined" || amount > 1) {
+      const tokenName =
+        name ??
+        tokenBalance?.tokenName ??
+        collectibleBalance?.find((balanceEntry) => balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase())
+          ?.tokenName;
+      insufficientTokens.push({
+        token: tokenName ?? tokenAddress,
+        token_type: "erc721",
+        transferAmount: amount.toFixed(),
+        id: id,
+      });
+    }
+  }
+
   return insufficientTokens;
 };
 
-const isSufficientBalance = (tokenBalance: ethers.BigNumber, transferAmount: BigNumber, decimals: number) => {
-  const tokenBalanceNumber = new BigNumber(tokenBalance.toString());
+const isSufficientBalance = (tokenBalance: BigNumber, transferAmount: BigNumber, decimals: number) => {
   const transferAmountInWei = toWei(transferAmount, decimals);
-  return tokenBalanceNumber.gte(transferAmountInWei);
+  return tokenBalance.gte(transferAmountInWei);
 };
