@@ -1,14 +1,14 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { Button, Card, Divider, Loader, Text } from "@gnosis.pm/safe-react-components";
+import { Breadcrumb, BreadcrumbElement, Button, Card, Divider, Loader, Text } from "@gnosis.pm/safe-react-components";
 import { setUseWhatChange } from "@simbathesailor/use-what-changed";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
+import { CSVForm } from "./components/CSVForm";
 import { FAQModal } from "./components/FAQModal";
 import { Header } from "./components/Header";
 import { Summary } from "./components/Summary";
-import { CSVForm } from "./components/assets/CSVForm";
 import { useBalances } from "./hooks/balances";
 import { useTokenList } from "./hooks/token";
 import { AssetTransfer, CollectibleTransfer, Transfer } from "./parser/csvParser";
@@ -73,8 +73,15 @@ const App: React.FC = () => {
             </>
           ) : (
             <Card className="cardWithCustomShadow">
+              <Breadcrumb>
+                <BreadcrumbElement text="CSV Transfer File" iconType="paste" />
+              </Breadcrumb>
               <CSVForm updateTransferTable={setTokenTransfers} setParsing={setParsing} />
               <Divider />
+              <Breadcrumb>
+                <BreadcrumbElement text="Summary" iconType="transactionsInactive" />
+                <BreadcrumbElement text="Transfers" color="placeHolder" />
+              </Breadcrumb>
               <Summary assetTransfers={assetTransfers} collectibleTransfers={collectibleTransfers} />
               {submitting ? (
                 <>

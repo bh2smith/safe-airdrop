@@ -1,4 +1,4 @@
-import { Button, Link, Text, theme as GnosisTheme } from "@gnosis.pm/safe-react-components";
+import { Button, Text, theme as GnosisTheme } from "@gnosis.pm/safe-react-components";
 import { createStyles } from "@material-ui/core";
 import React, { useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
@@ -61,11 +61,6 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
             or drop file here
           </Text>
         </div>
-      </div>
-      <div>
-        <Link href="./sample.csv" download>
-          Sample Transfer File
-        </Link>
       </div>
     </div>
   );

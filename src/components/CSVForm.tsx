@@ -3,15 +3,17 @@ import debounce from "lodash.debounce";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import { MessageContext } from "../../contexts/MessageContextProvider";
-import { useBalances } from "../../hooks/balances";
-import { useCollectibleTokenInfoProvider } from "../../hooks/collectibleTokenInfoProvider";
-import { useEnsResolver } from "../../hooks/ens";
-import { useTokenInfoProvider } from "../../hooks/token";
-import { CSVParser, Transfer } from "../../parser/csvParser";
-import { checkAllBalances } from "../../utils";
-import { CSVEditor } from "../CSVEditor";
-import { CSVUpload } from "../CSVUpload";
+import { MessageContext } from "../contexts/MessageContextProvider";
+import { useBalances } from "../hooks/balances";
+import { useCollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
+import { useEnsResolver } from "../hooks/ens";
+import { useTokenInfoProvider } from "../hooks/token";
+import { CSVParser, Transfer } from "../parser/csvParser";
+import { checkAllBalances } from "../utils";
+
+import { CSVEditor } from "./CSVEditor";
+import { CSVUpload } from "./CSVUpload";
+import { GenerateTransfersMenu } from "./GenerateTransfersMenu";
 
 const Form = styled.div`
   flex: 1;
@@ -148,6 +150,11 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
       <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />
 
       <CSVUpload onChange={onChangeTextHandler} />
+      <GenerateTransfersMenu
+        assetBalance={assetBalance}
+        collectibleBalance={collectibleBalance}
+        setCsvText={setCsvText}
+      />
     </Form>
   );
 };

@@ -19,6 +19,7 @@ type AssetBalanceEntry = {
   tokenAddress: string | null;
   token: Token | null;
   balance: string;
+  decimals: number;
 };
 
 type CollectibleBalanceEntry = {

@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Icon, Text, Title } from "@gnosis.pm/safe-react-components";
+import { Accordion, AccordionDetails, AccordionSummary, Icon, Text } from "@gnosis.pm/safe-react-components";
 
 import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
 
@@ -16,7 +16,6 @@ export const Summary = (props: SummaryProps): JSX.Element => {
   const collectibleTxCount = collectibleTransfers.length;
   return (
     <>
-      <Title size="md">Summary of transfers</Title>
       <Accordion disabled={assetTxCount === 0} compact style={{ maxWidth: 1400 }}>
         <AccordionSummary>
           <div

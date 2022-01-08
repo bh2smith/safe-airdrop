@@ -79,6 +79,7 @@ export const AssetTransferTable = (props: TransferTableProps) => {
         flex: 1,
         boxShadow:
           "rgb(247, 245, 245) 0px 3px 3px -2px, rgb(247, 245, 245) 0px 3px 4px 0px, rgb(247, 245, 245) 0px 1px 8px 0px",
+        borderRadius: 8,
       }}
     >
       <AutoSizer disableHeight>

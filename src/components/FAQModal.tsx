@@ -1,4 +1,4 @@
-import { Icon, Text, Title, Divider, Button, GenericModal } from "@gnosis.pm/safe-react-components";
+import { Icon, Text, Title, Divider, Button, GenericModal, Link } from "@gnosis.pm/safe-react-components";
 import { Fab } from "@material-ui/core";
 import { useState } from "react";
 
@@ -84,6 +84,11 @@ export const FAQModal: () => JSX.Element = () => {
                   </b>
                 </p>
               </Text>
+              <div>
+                <Link href="./sample.csv" download>
+                  Sample Transfer File
+                </Link>
+              </div>
               <Divider />
               <Title size="md" strong>
                 Native Token Transfers
