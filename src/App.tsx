@@ -62,7 +62,7 @@ const App: React.FC = () => {
                   flexDirection: "column",
                   alignItems: "center",
                   width: "100%",
-                  height: "100vh",
+                  paddingTop: "36px",
                 }}
               >
                 <Text size={"xl"} strong>
