@@ -8,8 +8,8 @@ import { useBalances } from "../hooks/balances";
 import { useCollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import { useEnsResolver } from "../hooks/ens";
 import { useTokenInfoProvider } from "../hooks/token";
+import { checkAllBalances } from "../parser/balanceCheck";
 import { CSVParser, Transfer } from "../parser/csvParser";
-import { checkAllBalances } from "../utils";
 
 import { CSVEditor } from "./CSVEditor";
 import { CSVUpload } from "./CSVUpload";
@@ -42,24 +42,10 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
     setCsvText(csvText);
   };
 
-  const countLines = (text: string) => text.split(/\r\n|\r|\n/).length;
-
   const parseAndValidateCSV = useMemo(
     () =>
       debounce((csvText: string) => {
         setParsing(true);
-        const noLines = countLines(csvText);
-        // Hard limit at 400 lines of txs
-        if (noLines > 401) {
-          setMessages([
-            {
-              message:
-                "Max number of lines exceeded. Due to the block gas limit transactions are limited to 400 lines.",
-              severity: "error",
-            },
-          ]);
-          return;
-        }
 
         CSVParser.parseCSV(csvText, tokenInfoProvider, erc721TokenInfoProvider, ensResolver)
           .then(async ([transfers, warnings]) => {

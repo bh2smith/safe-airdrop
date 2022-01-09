@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { expect } from "chai";
 
 import { AssetBalance, CollectibleBalance } from "../hooks/balances";
-import { assetTransfersToSummary, checkAllBalances, collectibleTransfersToSummary } from "../parser/balanceCheck";
+import { assetTransfersToSummary, checkAllBalances } from "../parser/balanceCheck";
 import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
 import { testData } from "../test/util";
 import { toWei } from "../utils";

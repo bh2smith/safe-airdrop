@@ -1,8 +1,5 @@
 import { BigNumber } from "bignumber.js";
 
-import { AssetBalance, CollectibleBalance } from "./hooks/balances";
-import { AssetTransfer, CollectibleTransfer, Transfer } from "./parser/csvParser";
-
 export const ZERO = new BigNumber(0);
 export const ONE = new BigNumber(1);
 export const TWO = new BigNumber(2);

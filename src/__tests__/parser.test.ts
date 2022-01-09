@@ -108,6 +108,15 @@ describe("Parsing CSVs ", () => {
     ).to.be.rejectedWith("column header mismatch expected: 2 columns got: 3");
   });
 
+  it("should skip files with >400 lines of transfers", async () => {
+    let largeCSV = csvStringFromRows(...Array(401).fill(["erc20", listedToken.address, validReceiverAddress, "1"]));
+    expect(
+      CSVParser.parseCSV(largeCSV, mockTokenInfoProvider, mockCollectibleTokenInfoProvider, mockEnsResolver),
+    ).to.be.rejectedWith(
+      "Max number of lines exceeded. Due to the block gas limit transactions are limited to 400 lines.",
+    );
+  });
+
   it("should throw errors for unexpected errors while parsing", async () => {
     // we hard coded in our mock that a ens of "error.eth" throws an error.
     const rowWithErrorReceiver = ["erc20", listedToken.address, "error.eth", "1"];
