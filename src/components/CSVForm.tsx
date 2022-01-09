@@ -85,7 +85,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
                       severity: "warning",
                     };
                   } else {
-                    if (parseInt(insufficientBalanceInfo.transferAmount) > 1) {
+                    if (insufficientBalanceInfo.isDuplicate) {
                       return {
                         message: `Duplicate transfer for ERC721 token ${insufficientBalanceInfo.token} with ID ${insufficientBalanceInfo.id}`,
                         severity: "warning",

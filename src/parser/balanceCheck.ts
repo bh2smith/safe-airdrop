@@ -33,7 +33,7 @@ export const assetTransfersToSummary = (transfers: AssetTransfer[]) => {
 export type CollectibleSummaryEntry = {
   tokenAddress: string;
   id: BigNumber;
-  amount: number;
+  count: number;
   name?: string;
 };
 
@@ -44,13 +44,13 @@ export const collectibleTransfersToSummary = (transfers: CollectibleTransfer[]) 
     if (typeof tokenSummary === "undefined") {
       tokenSummary = {
         tokenAddress: currentValue.tokenAddress,
-        amount: 0, // We track the amount to detect duplicate ids
+        count: 0,
         name: currentValue.tokenName,
         id: currentValue.tokenId,
       };
       previousValue.set(entryKey, tokenSummary);
     }
-    tokenSummary.amount = tokenSummary.amount + 1;
+    tokenSummary.count = tokenSummary.count + 1;
 
     return previousValue;
   }, new Map<string | null, CollectibleSummaryEntry>());
@@ -58,7 +58,8 @@ export const collectibleTransfersToSummary = (transfers: CollectibleTransfer[]) 
 
 export type InsufficientBalanceInfo = {
   token: string;
-  transferAmount: string;
+  transferAmount?: string;
+  isDuplicate: boolean;
   token_type: "erc20" | "native" | "erc721";
   id?: BigNumber;
 };
@@ -94,6 +95,7 @@ export const checkAllBalances = (
           token: "ETH",
           token_type: "native",
           transferAmount: amount.toFixed(),
+          isDuplicate: false, // For Erc20 / Coin Transfers duplicates are never an issue
         });
       }
     } else {
@@ -108,17 +110,18 @@ export const checkAllBalances = (
           token: symbol || tokenAddress,
           token_type: "erc20",
           transferAmount: amount.toFixed(),
+          isDuplicate: false, // For Erc20 / Coin Transfers duplicates are never an issue
         });
       }
     }
   }
 
-  for (const { tokenAddress, amount, name, id } of collectibleSummary.values()) {
+  for (const { tokenAddress, count, name, id } of collectibleSummary.values()) {
     const tokenBalance = collectibleBalance?.find(
       (balanceEntry) =>
         balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase() && balanceEntry.id === id.toFixed(),
     );
-    if (typeof tokenBalance === "undefined" || amount > 1) {
+    if (typeof tokenBalance === "undefined" || count > 1) {
       const tokenName =
         name ??
         tokenBalance?.tokenName ??
@@ -127,7 +130,7 @@ export const checkAllBalances = (
       insufficientTokens.push({
         token: tokenName ?? tokenAddress,
         token_type: "erc721",
-        transferAmount: amount.toFixed(),
+        isDuplicate: count > 1,
         id: id,
       });
     }

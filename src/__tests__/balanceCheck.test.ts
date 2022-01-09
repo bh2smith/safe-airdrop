@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import BigNumber from "bignumber.js";
 import { expect } from "chai";
 
@@ -66,9 +67,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(exactBalance, undefined, transfers)).to.be.empty;
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(biggerBalance, undefined, transfers)).to.be.empty;
     const smallBalanceCheckResult = checkAllBalances(smallerBalance, undefined, transfers);
     expect(smallBalanceCheckResult).to.have.length(1);
@@ -135,9 +134,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(exactBalance, undefined, transfers)).to.be.empty;
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(biggerBalance, undefined, transfers)).to.be.empty;
     const smallBalanceCheckResult = checkAllBalances(smallerBalance, undefined, transfers);
     expect(smallBalanceCheckResult).to.have.length(1);
@@ -216,9 +213,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(exactBalance, undefined, transfers)).to.be.empty;
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(biggerBalance, undefined, transfers)).to.be.empty;
     const smallBalanceCheckResult = checkAllBalances(smallerBalance, undefined, transfers);
     expect(smallBalanceCheckResult).to.have.length(1);
@@ -297,9 +292,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(exactBalance, undefined, transfers)).to.be.empty;
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(biggerBalance, undefined, transfers)).to.be.empty;
     const smallBalanceCheckResult = checkAllBalances(smallerBalance, undefined, transfers);
     expect(smallBalanceCheckResult).to.have.length(1);
@@ -434,24 +427,26 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(exactBalance, undefined, transfers)).to.be.empty;
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(biggerBalance, undefined, transfers)).to.be.empty;
     const smallBalanceCheckResult = checkAllBalances(smallerBalance, undefined, transfers);
     expect(smallBalanceCheckResult).to.have.length(2);
     expect(smallBalanceCheckResult[0].token).to.equal("ULT");
     expect(smallBalanceCheckResult[0].token_type).to.equal("erc20");
     expect(smallBalanceCheckResult[0].transferAmount).to.equal("6.4");
+    expect(smallBalanceCheckResult[0].isDuplicate).to.be.false;
+
     expect(smallBalanceCheckResult[1].token).to.equal("ETH");
     expect(smallBalanceCheckResult[1].token_type).to.equal("native");
     expect(smallBalanceCheckResult[1].transferAmount).to.equal("3.33");
+    expect(smallBalanceCheckResult[1].isDuplicate).to.be.false;
 
     const lessNativeMoreErc20CheckResult = checkAllBalances(lessNativeMoreErc20, undefined, transfers);
     expect(lessNativeMoreErc20CheckResult).to.have.length(1);
     expect(lessNativeMoreErc20CheckResult[0].token).to.equal("ETH");
     expect(lessNativeMoreErc20CheckResult[0].token_type).to.equal("native");
     expect(lessNativeMoreErc20CheckResult[0].transferAmount).to.equal("3.33");
+    expect(lessNativeMoreErc20CheckResult[0].isDuplicate).to.be.false;
   });
 
   it("balance check works for erc721 tokens", () => {
@@ -521,15 +516,54 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(undefined, exactBalance, transfers)).to.be.empty;
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(checkAllBalances(undefined, biggerBalance, transfers)).to.be.empty;
     const smallBalanceCheckResult = checkAllBalances(undefined, smallerBalance, transfers);
     expect(smallBalanceCheckResult).to.have.length(1);
     expect(smallBalanceCheckResult[0].token).to.equal("Test Collectible");
     expect(smallBalanceCheckResult[0].token_type).to.equal("erc721");
     expect(smallBalanceCheckResult[0].id?.toFixed()).to.equal("420");
-    expect(smallBalanceCheckResult[0].transferAmount).to.equal("1");
+    expect(smallBalanceCheckResult[0].transferAmount).to.be.undefined;
+    expect(smallBalanceCheckResult[0].isDuplicate).to.be.false;
+  });
+
+  it("detects duplicate transfers for erc721 tokens", () => {
+    const transfers: CollectibleTransfer[] = [
+      {
+        token_type: "erc721",
+        tokenAddress: testData.unlistedERC20Token.address,
+        tokenId: new BigNumber(69),
+        receiver: testData.addresses.receiver1,
+        receiverEnsName: null,
+        hasMetaData: false,
+        from: testData.addresses.receiver2,
+      },
+      {
+        token_type: "erc721",
+        tokenAddress: testData.unlistedERC20Token.address,
+        tokenId: new BigNumber(69),
+        receiver: testData.addresses.receiver2,
+        receiverEnsName: null,
+        hasMetaData: false,
+        from: testData.addresses.receiver2,
+      },
+    ];
+
+    const exactBalance: CollectibleBalance = [
+      {
+        address: testData.unlistedERC20Token.address,
+        id: "69",
+        tokenName: "Test Collectible",
+        tokenSymbol: "TC",
+      },
+    ];
+
+    const balanceCheckResult = checkAllBalances(undefined, exactBalance, transfers);
+    expect(balanceCheckResult).to.have.length(1);
+    expect(balanceCheckResult[0].token).to.equal("Test Collectible");
+    expect(balanceCheckResult[0].token_type).to.equal("erc721");
+    expect(balanceCheckResult[0].id?.toFixed()).to.equal("69");
+    expect(balanceCheckResult[0].transferAmount).to.undefined;
+    expect(balanceCheckResult[0].isDuplicate).to.be.true;
   });
 });
