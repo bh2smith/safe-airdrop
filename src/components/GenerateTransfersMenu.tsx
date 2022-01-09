@@ -30,9 +30,6 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.El
         } else {
           const tokenDecimals = asset.token?.decimals;
           if (tokenDecimals) {
-            console.log(
-              "Generating row for erc20 token with balance " + asset.balance + " and decimals " + tokenDecimals,
-            );
             drainCSV += `\nerc20,${asset.tokenAddress},${drainAddress},${fromWei(
               new BigNumber(asset.balance),
               tokenDecimals,

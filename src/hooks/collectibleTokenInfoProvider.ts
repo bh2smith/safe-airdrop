@@ -84,7 +84,6 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
         return collectibleContractCache.get(toKey(tokenAddress, tokenId));
       }
       const tokenInterfaces = await determineInterface(tokenAddress);
-      console.log("Trying to determine interface: " + tokenInterfaces);
       let fetchedTokenInfo: CollectibleTokenInfo | undefined = undefined;
       if (tokenInterfaces.includes("erc721")) {
         fetchedTokenInfo = {

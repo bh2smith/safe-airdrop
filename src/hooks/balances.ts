@@ -84,7 +84,6 @@ export const useBalances: () => BalanceLoader = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Loading Balances...");
     let isMounted = true;
     setIsAssetBalanceLoading(true);
     setIsCollectibleBalanceLoading(true);
