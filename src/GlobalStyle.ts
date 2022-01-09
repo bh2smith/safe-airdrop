@@ -68,6 +68,31 @@ const GlobalStyle = createGlobalStyle`
         gap: 16px;
         width: 100%;
     }
+
+    .leftAlignedMenu {
+        padding-top: 4px;
+        justify-content: flex-start;
+        padding-bottom: 4px;
+    }
+
+    .openedGenerateMenu {
+        padding-left: 12px;
+    }
+
+    .generateMenu {
+        width: 160px;
+        border-color: rgb(247, 245, 245);
+        border-radius: 8px;
+    }
+
+    .generateMenu button {
+        padding: 4px;
+    }
+
+    .generateMenu button:hover {
+        background-color: rgb(247, 245, 245);
+        border-radius: 8px; 
+    }
 `;
 
 export default GlobalStyle;

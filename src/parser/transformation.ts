@@ -38,6 +38,8 @@ export const transform = (
       transformAsset({ ...row, token_type: "native" }, tokenInfoProvider, ensResolver, callback);
       break;
     case "nft":
+    case "erc721":
+    case "erc1155":
       transformCollectible({ ...row, token_type: "nft" }, erc721InfoProvider, ensResolver, callback);
       break;
     default:

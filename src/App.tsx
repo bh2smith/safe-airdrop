@@ -1,14 +1,15 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { Button, Card, Divider, Loader, Text } from "@gnosis.pm/safe-react-components";
+import { Breadcrumb, BreadcrumbElement, Button, Card, Divider, Loader, Text } from "@gnosis.pm/safe-react-components";
 import { setUseWhatChange } from "@simbathesailor/use-what-changed";
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
 
+import { CSVForm } from "./components/CSVForm";
 import { FAQModal } from "./components/FAQModal";
 import { Header } from "./components/Header";
 import { Summary } from "./components/Summary";
-import { CSVForm } from "./components/assets/CSVForm";
+import { useBalances } from "./hooks/balances";
 import { useTokenList } from "./hooks/token";
 import { AssetTransfer, CollectibleTransfer, Transfer } from "./parser/csvParser";
 import { buildAssetTransfers, buildCollectibleTransfers } from "./transfers/transfers";
@@ -17,6 +18,7 @@ setUseWhatChange(process.env.NODE_ENV === "development");
 
 const App: React.FC = () => {
   const { isLoading } = useTokenList();
+  const balanceLoader = useBalances();
   const [tokenTransfers, setTokenTransfers] = useState<Transfer[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
@@ -52,15 +54,34 @@ const App: React.FC = () => {
       <Header />
       {
         <>
-          {isLoading ? (
+          {isLoading || balanceLoader.isLoading ? (
             <>
-              <Loader size={"lg"} />
-              <Text size={"lg"}>Loading Tokenlist...</Text>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  width: "100%",
+                  paddingTop: "36px",
+                }}
+              >
+                <Text size={"xl"} strong>
+                  Loading tokenlist and balances...
+                </Text>
+                <Loader size={"md"} />
+              </div>
             </>
           ) : (
             <Card className="cardWithCustomShadow">
+              <Breadcrumb>
+                <BreadcrumbElement text="CSV Transfer File" iconType="paste" />
+              </Breadcrumb>
               <CSVForm updateTransferTable={setTokenTransfers} setParsing={setParsing} />
               <Divider />
+              <Breadcrumb>
+                <BreadcrumbElement text="Summary" iconType="transactionsInactive" />
+                <BreadcrumbElement text="Transfers" color="placeHolder" />
+              </Breadcrumb>
               <Summary assetTransfers={assetTransfers} collectibleTransfers={collectibleTransfers} />
               {submitting ? (
                 <>

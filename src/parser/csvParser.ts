@@ -67,6 +67,8 @@ const generateWarnings = (
   return messages;
 };
 
+const countLines = (text: string) => text.split(/\r\n|\r|\n/).length;
+
 export class CSVParser {
   public static parseCSV = (
     csvText: string,
@@ -74,6 +76,16 @@ export class CSVParser {
     erc721TokenInfoProvider: CollectibleTokenInfoProvider,
     ensResolver: EnsResolver,
   ): Promise<[Transfer[], CodeWarning[]]> => {
+    const noLines = countLines(csvText);
+    // Hard limit at 400 lines of txs
+    if (noLines > 401) {
+      return new Promise<[Transfer[], CodeWarning[]]>((resolve, reject) => {
+        reject({
+          message: "Max number of lines exceeded. Due to the block gas limit transactions are limited to 400 lines.",
+        });
+      });
+    }
+
     return new Promise<[Transfer[], CodeWarning[]]>((resolve, reject) => {
       const results: Transfer[] = [];
       const resultingWarnings: CodeWarning[] = [];

@@ -108,6 +108,15 @@ describe("Parsing CSVs ", () => {
     ).to.be.rejectedWith("column header mismatch expected: 2 columns got: 3");
   });
 
+  it("should skip files with >400 lines of transfers", async () => {
+    let largeCSV = csvStringFromRows(...Array(401).fill(["erc20", listedToken.address, validReceiverAddress, "1"]));
+    expect(
+      CSVParser.parseCSV(largeCSV, mockTokenInfoProvider, mockCollectibleTokenInfoProvider, mockEnsResolver),
+    ).to.be.rejectedWith(
+      "Max number of lines exceeded. Due to the block gas limit transactions are limited to 400 lines.",
+    );
+  });
+
   it("should throw errors for unexpected errors while parsing", async () => {
     // we hard coded in our mock that a ens of "error.eth" throws an error.
     const rowWithErrorReceiver = ["erc20", listedToken.address, "error.eth", "1"];
@@ -435,13 +444,9 @@ describe("Parsing CSVs ", () => {
     expect(payment).to.be.empty;
 
     expect(warningWithInvalidTokenType.lineNo).to.equal(1);
-    expect(warningWithInvalidTokenType.message).to.equal(
-      "Unknown token_type: Must be one of erc20, native, erc721, erc1155",
-    );
+    expect(warningWithInvalidTokenType.message).to.equal("Unknown token_type: Must be one of erc20, native or nft");
 
     expect(warningWithMissingTokenType.lineNo).to.equal(2);
-    expect(warningWithMissingTokenType.message).to.equal(
-      "Unknown token_type: Must be one of erc20, native, erc721, erc1155",
-    );
+    expect(warningWithMissingTokenType.message).to.equal("Unknown token_type: Must be one of erc20, native or nft");
   });
 });

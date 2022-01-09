@@ -1,19 +1,19 @@
-import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Text } from "@gnosis.pm/safe-react-components";
-import { ethers } from "ethers";
 import debounce from "lodash.debounce";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
-import { MessageContext } from "../../contexts/MessageContextProvider";
-import { useCollectibleTokenInfoProvider } from "../../hooks/collectibleTokenInfoProvider";
-import { useEnsResolver } from "../../hooks/ens";
-import { useTokenInfoProvider } from "../../hooks/token";
-import { AssetTransfer, CSVParser, Transfer } from "../../parser/csvParser";
-import { checkAllBalances, transfersToSummary } from "../../utils";
-import { CSVEditor } from "../CSVEditor";
-import { CSVUpload } from "../CSVUpload";
+import { MessageContext } from "../contexts/MessageContextProvider";
+import { useBalances } from "../hooks/balances";
+import { useCollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
+import { useEnsResolver } from "../hooks/ens";
+import { useTokenInfoProvider } from "../hooks/token";
+import { checkAllBalances } from "../parser/balanceCheck";
+import { CSVParser, Transfer } from "../parser/csvParser";
+
+import { CSVEditor } from "./CSVEditor";
+import { CSVUpload } from "./CSVUpload";
+import { GenerateTransfersMenu } from "./GenerateTransfersMenu";
 
 const Form = styled.div`
   flex: 1;
@@ -33,8 +33,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
 
   const { setCodeWarnings, setMessages } = useContext(MessageContext);
 
-  const { safe, sdk } = useSafeAppsSDK();
-  const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [safe, sdk]);
+  const { assetBalance, collectibleBalance } = useBalances();
   const tokenInfoProvider = useTokenInfoProvider();
   const ensResolver = useEnsResolver();
   const erc721TokenInfoProvider = useCollectibleTokenInfoProvider();
@@ -47,6 +46,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
     () =>
       debounce((csvText: string) => {
         setParsing(true);
+
         CSVParser.parseCSV(csvText, tokenInfoProvider, erc721TokenInfoProvider, ensResolver)
           .then(async ([transfers, warnings]) => {
             const uniqueReceiversWithoutEnsName = transfers.reduce(
@@ -70,21 +70,37 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
               );
             }
             transfers = transfers.map((transfer, idx) => ({ ...transfer, position: idx + 1 }));
-            const summary = transfersToSummary(
-              transfers.filter(
-                (value) => value.token_type === "erc20" || value.token_type === "native",
-              ) as AssetTransfer[],
-            );
             updateTransferTable(transfers);
-
-            checkAllBalances(summary, web3Provider, safe).then((insufficientBalances) =>
+            // If we have no balances we dont need to check them.
+            if (assetBalance || collectibleBalance) {
+              const insufficientBalances = checkAllBalances(assetBalance, collectibleBalance, transfers);
               setMessages(
-                insufficientBalances.map((insufficientBalanceInfo) => ({
-                  message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
-                  severity: "warning",
-                })),
-              ),
-            );
+                insufficientBalances.map((insufficientBalanceInfo) => {
+                  if (
+                    insufficientBalanceInfo.token_type === "erc20" ||
+                    insufficientBalanceInfo.token_type === "native"
+                  ) {
+                    return {
+                      message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
+                      severity: "warning",
+                    };
+                  } else {
+                    if (insufficientBalanceInfo.isDuplicate) {
+                      return {
+                        message: `Duplicate transfer for ERC721 token ${insufficientBalanceInfo.token} with ID ${insufficientBalanceInfo.id}`,
+                        severity: "warning",
+                      };
+                    } else {
+                      return {
+                        message: `Collectible ERC721 token ${insufficientBalanceInfo.token} with ID ${insufficientBalanceInfo.id} is not held by this safe`,
+                        severity: "warning",
+                      };
+                    }
+                  }
+                }),
+              );
+            }
+
             setCodeWarnings(warnings);
             setParsing(false);
           })
@@ -93,13 +109,13 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
     [
       ensResolver,
       erc721TokenInfoProvider,
-      safe,
+      assetBalance,
+      collectibleBalance,
       setCodeWarnings,
       setMessages,
       setParsing,
       tokenInfoProvider,
       updateTransferTable,
-      web3Provider,
     ],
   );
 
@@ -120,6 +136,11 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
       <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />
 
       <CSVUpload onChange={onChangeTextHandler} />
+      <GenerateTransfersMenu
+        assetBalance={assetBalance}
+        collectibleBalance={collectibleBalance}
+        setCsvText={setCsvText}
+      />
     </Form>
   );
 };
