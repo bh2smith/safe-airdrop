@@ -93,6 +93,25 @@ const GlobalStyle = createGlobalStyle`
         background-color: rgb(247, 245, 245);
         border-radius: 8px; 
     }
+
+    .MuiFab-root.statusDotButtonEmpty {
+        background-color: #4caf50;
+    }
+
+    .MuiFab-root.statusDotButtonEmpty:hover {
+        background-color: #2e7d32;
+        cursor: pointer;
+    }
+
+    .MuiFab-root.statusDotButtonErrors {
+        background-color: #ef5350;
+    }
+
+    .MuiFab-root.statusDotButtonErrors:hover {
+        background-color: #d32f2f;
+        cursor: pointer;
+    }
+
 `;
 
 export default GlobalStyle;

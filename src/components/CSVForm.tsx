@@ -82,7 +82,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
                   ) {
                     return {
                       message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
-                      severity: "warning",
+                      severity: "error",
                     };
                   } else {
                     if (insufficientBalanceInfo.isDuplicate) {
@@ -93,7 +93,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
                     } else {
                       return {
                         message: `Collectible ERC721 token ${insufficientBalanceInfo.token} with ID ${insufficientBalanceInfo.id} is not held by this safe`,
-                        severity: "warning",
+                        severity: "error",
                       };
                     }
                   }

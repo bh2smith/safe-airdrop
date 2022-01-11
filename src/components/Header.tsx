@@ -1,9 +1,12 @@
-import { Snackbar } from "@material-ui/core";
+import { Icon, Text } from "@gnosis.pm/safe-react-components";
+import { Fab, Snackbar } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import React, { useContext } from "react";
 import styled from "styled-components";
 
 import { MessageContext, Message } from "../contexts/MessageContextProvider";
+
+import { FAQModal } from "./FAQModal";
 
 export function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -11,6 +14,13 @@ export function Alert(props) {
 const HeaderContainer = styled.div`
   flex: 1;
   width: 100%;
+  position: absolute;
+  justify-content: flex-end;
+  display: flex;
+  top: 24px;
+  right: 24px;
+  z-index: 2;
+  gap: 8px;
 `;
 
 const AlertWrapper = styled.div`
@@ -22,31 +32,54 @@ const AlertWrapper = styled.div`
 `;
 
 export const Header = (): JSX.Element => {
-  const messageContext = useContext(MessageContext);
-  const messages = messageContext.messages;
+  const { messages, showMessages, hideMessages, toggleMessages, removeMessage } = useContext(MessageContext);
+
+  const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    hideMessages();
+  };
+
   return (
     <HeaderContainer>
-      {messages?.length > 0 && (
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          open={messages?.length > 0}
-          onClose={() => messageContext.setMessages([])}
-          autoHideDuration={6000}
-          style={{ gap: "4px" }}
-        >
-          <AlertWrapper>
-            {messages.map((message: Message, index: number) => (
-              <Alert
-                severity={message.severity}
-                key={"message" + index}
-                onClose={() => messageContext.removeMessage(message)}
-              >
-                {message.message}
-              </Alert>
-            ))}
-          </AlertWrapper>
-        </Snackbar>
-      )}
+      <Fab
+        variant="circular"
+        size="small"
+        className={messages.length === 0 ? "statusDotButtonEmpty" : "statusDotButtonErrors"}
+        style={{ textTransform: "none", width: "34px", height: "34px" }}
+        onClick={toggleMessages}
+      >
+        {messages.length === 0 ? (
+          <Icon color="white" type="check" size="sm" />
+        ) : (
+          <Text size="xl" color="white">
+            {messages.length}
+          </Text>
+        )}
+      </Fab>
+      <FAQModal />
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={showMessages}
+        onClose={handleClose}
+        autoHideDuration={6000}
+        style={{ gap: "4px", top: "64px" }}
+      >
+        <AlertWrapper>
+          {messages.length === 0 && (
+            <Alert secerity="success" key="successMessage">
+              No warnings or errors.
+            </Alert>
+          )}
+          {messages.map((message: Message, index: number) => (
+            <Alert severity={message.severity} key={"message" + index} onClose={() => removeMessage(message)}>
+              {message.message}
+            </Alert>
+          ))}
+        </AlertWrapper>
+      </Snackbar>
     </HeaderContainer>
   );
 };
