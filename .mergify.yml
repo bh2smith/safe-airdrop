@@ -1,3 +1,9 @@
+queue_rules:
+  - name: default
+    conditions:
+      # Conditions to get out of the queue (= merged)
+      - check-success=^test \([0-9]+\.x, ubuntu-latest\)$
+
 pull_request_rules:
   - name: Merge approved and green PRs with `merge when green` label
     conditions:
