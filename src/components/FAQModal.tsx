@@ -6,12 +6,7 @@ export const FAQModal: () => JSX.Element = () => {
   const [showHelp, setShowHelp] = useState(false);
   return (
     <>
-      <Fab
-        variant="extended"
-        size="small"
-        style={{ position: "absolute", top: 24, right: 24, textTransform: "none" }}
-        onClick={() => setShowHelp(true)}
-      >
+      <Fab variant="extended" size="small" style={{ textTransform: "none" }} onClick={() => setShowHelp(true)}>
         <Icon size="md" type="question" />
         <Text size="xl">Help</Text>
       </Fab>

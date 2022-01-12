@@ -1,4 +1,4 @@
-import React, { useState, ReactElement } from "react";
+import React, { useState, ReactElement, useCallback } from "react";
 
 export type CodeWarning = {
   message: string;
@@ -18,6 +18,9 @@ type MessageContextType = {
   addMessage: (message: Message) => void;
   codeWarnings: CodeWarning[];
   setCodeWarnings: (messages: CodeWarning[]) => void;
+  showMessages: boolean;
+  hideMessages: () => void;
+  toggleMessages: () => void;
 };
 
 export const MessageContext = React.createContext<MessageContextType>({
@@ -27,6 +30,9 @@ export const MessageContext = React.createContext<MessageContextType>({
   addMessage: (message: Message | CodeWarning) => {},
   codeWarnings: [],
   setCodeWarnings: (messages: CodeWarning[]) => {},
+  showMessages: false,
+  hideMessages: () => {},
+  toggleMessages: () => {},
 });
 
 type MessageContextProviderProps = {
@@ -34,11 +40,21 @@ type MessageContextProviderProps = {
 };
 
 export const MessageContextProvider = (props: MessageContextProviderProps) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, internalSetMessages] = useState<Message[]>([]);
   const [codeWarnings, setCodeWarnings] = useState<CodeWarning[]>([]);
+  const [showMessages, setShowMessages] = useState(false);
 
-  const removeMessage = (messageToRemove: Message | CodeWarning) =>
+  const removeMessage = (messageToRemove: Message | CodeWarning) => {
+    console.log("Removing Message");
     setMessages(messages.filter((message) => message.message !== messageToRemove.message));
+  };
+
+  const setMessages = useCallback((newMessages: Message[]) => {
+    internalSetMessages(newMessages);
+    if (newMessages.length > 0) {
+      setShowMessages(true);
+    }
+  }, []);
 
   const addMessage = (messageToAdd: Message | CodeWarning) => {
     // Do not add equal message
@@ -47,6 +63,10 @@ export const MessageContextProvider = (props: MessageContextProviderProps) => {
     }
   };
 
+  const hideMessages = () => setShowMessages(false);
+
+  const toggleMessages = () => setShowMessages(!showMessages);
+
   const contextValue = {
     messages,
     setMessages,
@@ -54,6 +74,9 @@ export const MessageContextProvider = (props: MessageContextProviderProps) => {
     addMessage,
     codeWarnings,
     setCodeWarnings,
+    showMessages,
+    hideMessages,
+    toggleMessages,
   };
 
   return <MessageContext.Provider value={contextValue}>{props.children}</MessageContext.Provider>;

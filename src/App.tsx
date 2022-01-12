@@ -2,13 +2,13 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { Breadcrumb, BreadcrumbElement, Button, Card, Divider, Loader, Text } from "@gnosis.pm/safe-react-components";
 import { setUseWhatChange } from "@simbathesailor/use-what-changed";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useContext } from "react";
 import styled from "styled-components";
 
 import { CSVForm } from "./components/CSVForm";
-import { FAQModal } from "./components/FAQModal";
 import { Header } from "./components/Header";
 import { Summary } from "./components/Summary";
+import { MessageContext } from "./contexts/MessageContextProvider";
 import { useBalances } from "./hooks/balances";
 import { useTokenList } from "./hooks/token";
 import { AssetTransfer, CollectibleTransfer, Transfer } from "./parser/csvParser";
@@ -20,6 +20,7 @@ const App: React.FC = () => {
   const { isLoading } = useTokenList();
   const balanceLoader = useBalances();
   const [tokenTransfers, setTokenTransfers] = useState<Transfer[]>([]);
+  const { messages } = useContext(MessageContext);
 
   const [submitting, setSubmitting] = useState(false);
   const [parsing, setParsing] = useState(false);
@@ -95,18 +96,23 @@ const App: React.FC = () => {
                 <Button
                   style={{ alignSelf: "flex-start", marginTop: 16, marginBottom: 16 }}
                   size="lg"
-                  color="primary"
+                  color={messages.length === 0 ? "primary" : "error"}
                   onClick={submitTx}
                   disabled={parsing || tokenTransfers.length + collectibleTransfers.length === 0}
                 >
-                  {parsing ? <Loader size="sm" color="primaryLight" /> : "Submit"}
+                  {parsing ? (
+                    <Loader size="sm" color="primaryLight" />
+                  ) : messages.length === 0 ? (
+                    "Submit"
+                  ) : (
+                    "Submit with errors"
+                  )}
                 </Button>
               )}
             </Card>
           )}
         </>
       }
-      <FAQModal />
     </Container>
   );
 };
