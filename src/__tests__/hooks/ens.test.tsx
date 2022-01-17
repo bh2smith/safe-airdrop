@@ -194,9 +194,10 @@ test("resolving an address and lookups are cached", async () => {
 });
 
 /**
- * we render the test component twice with the same props and check, that the web3Provider functions get called only once.
+ * we render the test component twice with the same props and check, that the web3Provider functions get called twice
+ * We want null lookups to not be cached because they can appear when there are some network errors and shouldn't cache that.
  */
-test("null lookups / resolved addresses are cached", async () => {
+test("null lookups are cached/ resolved addresses are not cached", async () => {
   const resolveName = jest.fn(async (name) => {
     return Promise.resolve(null);
   });
@@ -232,5 +233,5 @@ test("null lookups / resolved addresses are cached", async () => {
   expect(lookedUpAddressElement.map((value) => value.innerHTML)).toEqual(["", ""]);
 
   expect(lookupAddress).toHaveBeenCalledTimes(1);
-  expect(resolveName).toHaveBeenCalledTimes(1);
+  expect(resolveName).toHaveBeenCalledTimes(2);
 });
