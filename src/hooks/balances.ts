@@ -1,13 +1,7 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-const baseAPIMap = new Map([
-  [1, "https://safe-transaction.gnosis.io/api/v1"],
-  [4, "https://safe-transaction.rinkeby.gnosis.io/api/v1"],
-  [100, "https://safe-transaction.xdai.gnosis.io/api/v1"],
-  [137, "https://safe-transaction.polygon.gnosis.io/api/v1"],
-  [56, "https://safe-transaction.bsc.gnosis.io/api/v1"],
-]);
+import { networkInfo } from "../networks";
 
 type Token = {
   name: string;
@@ -50,8 +44,10 @@ export const useBalances: () => BalanceLoader = () => {
   const [collectibleBalance, setCollectibleBalance] = useState<CollectibleBalance | undefined>(undefined);
 
   const fetchAssetBalance = useCallback(async (chainId: number, safeAddress: string) => {
-    if (baseAPIMap.has(chainId)) {
-      return await fetch(`${baseAPIMap.get(chainId)}/safes/${safeAddress}/balances?trusted=false&exclude_spam=false`)
+    if (networkInfo.has(chainId) && networkInfo.get(chainId)?.baseAPI) {
+      return await fetch(
+        `${networkInfo.get(chainId)?.baseAPI}/safes/${safeAddress}/balances?trusted=false&exclude_spam=true`,
+      )
         .then((response) => {
           if (response.ok) {
             return response.json() as Promise<AssetBalanceEntry[]>;
@@ -66,9 +62,9 @@ export const useBalances: () => BalanceLoader = () => {
   }, []);
 
   const fetchCollectibleBalance = useCallback(async (chainId: number, safeAddress: string) => {
-    if (baseAPIMap.has(chainId)) {
+    if (networkInfo.has(chainId) && networkInfo.get(chainId)?.baseAPI) {
       return await fetch(
-        `${baseAPIMap.get(chainId)}/safes/${safeAddress}/collectibles?trusted=false&exclude_spam=false`,
+        `${networkInfo.get(chainId)?.baseAPI}/safes/${safeAddress}/collectibles?trusted=false&exclude_spam=true`,
       )
         .then((response) => {
           if (response.ok) {

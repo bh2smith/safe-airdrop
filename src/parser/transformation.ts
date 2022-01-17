@@ -30,20 +30,45 @@ export const transform = (
   ensResolver: EnsResolver,
   callback: RowTransformCallback<Transfer | UnknownTransfer>,
 ): void => {
-  switch (row.token_type.toLowerCase()) {
+  const selectedChainShortname = tokenInfoProvider.getSelectedNetworkShortname();
+
+  const trimmedReceiver = trimMatchingNetwork(row.receiver, selectedChainShortname);
+
+  switch (row.token_type?.toLowerCase()) {
     case "erc20":
-      transformAsset({ ...row, token_type: "erc20" }, tokenInfoProvider, ensResolver, callback);
+      transformAsset(
+        { ...row, token_type: "erc20", receiver: trimmedReceiver },
+        tokenInfoProvider,
+        ensResolver,
+        callback,
+      );
       break;
     case "native":
-      transformAsset({ ...row, token_type: "native" }, tokenInfoProvider, ensResolver, callback);
+      transformAsset(
+        { ...row, token_type: "native", receiver: trimmedReceiver },
+        tokenInfoProvider,
+        ensResolver,
+        callback,
+      );
       break;
     case "nft":
     case "erc721":
     case "erc1155":
-      transformCollectible({ ...row, token_type: "nft" }, erc721InfoProvider, ensResolver, callback);
+      transformCollectible(
+        { ...row, token_type: "nft", receiver: trimmedReceiver },
+        erc721InfoProvider,
+        ensResolver,
+        callback,
+      );
       break;
     default:
-      callback(null, { token_type: "unknown" });
+      // Fallback so people can still use the old csv file format
+      transformAsset(
+        { ...row, token_type: "erc20", receiver: trimmedReceiver },
+        tokenInfoProvider,
+        ensResolver,
+        callback,
+      );
       break;
   }
 };
@@ -54,11 +79,12 @@ export const transformAsset = (
   ensResolver: EnsResolver,
   callback: RowTransformCallback<Transfer>,
 ): void => {
+  const selectedChainShortname = tokenInfoProvider.getSelectedNetworkShortname();
   const prePayment: PrePayment = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
     tokenAddress: transformERC20TokenAddress(row.token_address),
     amount: new BigNumber(row.value ?? ""),
-    receiver: normalizeAddress(row.receiver),
+    receiver: normalizeAddress(trimMatchingNetwork(row.receiver, selectedChainShortname)),
     tokenType: row.token_type,
   };
 
@@ -205,6 +231,14 @@ const toCollectibleTransfer = async (
  */
 const transformERC20TokenAddress = (tokenAddress: string | null) =>
   tokenAddress === "" || tokenAddress === null ? null : normalizeAddress(tokenAddress);
+
+const trimMatchingNetwork = (address: string, selectedPrefix?: string) => {
+  if (selectedPrefix && address && address.trim().startsWith(`${selectedPrefix}:`)) {
+    return address.substr(address.indexOf(":") + 1);
+  } else {
+    return address;
+  }
+};
 
 /*
  *  Parses and normalizes tokenAddress

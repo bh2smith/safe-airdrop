@@ -43,8 +43,12 @@ const areAddressesValid = (row: Transfer): string[] => {
   if (!(row.tokenAddress === null || utils.isAddress(row.tokenAddress))) {
     warnings.push(`Invalid Token Address: ${row.tokenAddress}`);
   }
-  if (!utils.isAddress(row.receiver)) {
-    warnings.push(`Invalid Receiver Address: ${row.receiver}`);
+  if (row.receiver.includes(":")) {
+    warnings.push(`The chain prefix must match the current network: ${row.receiver}`);
+  } else {
+    if (!utils.isAddress(row.receiver)) {
+      warnings.push(`Invalid Receiver Address: ${row.receiver}`);
+    }
   }
   return warnings;
 };

@@ -69,7 +69,9 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
           }
         }
       }
-      contractInterfaceCache.set(tokenAddress, determinedInterface);
+      if (determinedInterface) {
+        contractInterfaceCache.set(tokenAddress, determinedInterface);
+      }
       return determinedInterface;
     },
     [contractInterfaceCache, web3Provider],
@@ -98,7 +100,10 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
           hasMetaInfo: tokenInterfaces.includes("erc1155_Meta"),
         };
       }
-      collectibleContractCache.set(toKey(tokenAddress, tokenId), fetchedTokenInfo);
+      // We don't remember undefined tokenInfos in case there was a i.e. connection problem
+      if (fetchedTokenInfo) {
+        collectibleContractCache.set(toKey(tokenAddress, tokenId), fetchedTokenInfo);
+      }
       return fetchedTokenInfo;
     },
     [collectibleContractCache, determineInterface],

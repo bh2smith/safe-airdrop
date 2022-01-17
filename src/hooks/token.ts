@@ -4,19 +4,12 @@ import { ethers, utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
 import { useState, useEffect, useMemo } from "react";
 
+import { networkInfo } from "../networks";
 import rinkeby from "../static/rinkebyTokens.json";
 import { erc20Instance } from "../transfers/erc20";
 import { TokenInfo } from "../utils";
 
 export type TokenMap = Map<string | null, MinimalTokenInfo>;
-
-export const networkMap = new Map([
-  [1, "mainnet"],
-  [4, "rinkeby"],
-  [100, "xdai"],
-  [137, "polygon"],
-  [56, "bsc"],
-]);
 
 function tokenMap(tokenList: TokenInfo[]): TokenMap {
   const res: TokenMap = new Map<string, MinimalTokenInfo>();
@@ -43,7 +36,7 @@ export const fetchTokenList = async (chainId: number): Promise<TokenMap> => {
       tokens = xdaiTokens.tokens;
       break;
     default:
-      console.warn(`Unimplemented token list for ${networkMap.get(chainId)} network`);
+      console.warn(`Unimplemented token list for ${networkInfo.get(chainId)?.name} network`);
       tokens = [];
   }
   return tokenMap(tokens);
@@ -86,6 +79,7 @@ export type MinimalTokenInfo = {
 export interface TokenInfoProvider {
   getTokenInfo: (tokenAddress: string) => Promise<MinimalTokenInfo | undefined>;
   getNativeTokenSymbol: () => string;
+  getSelectedNetworkShortname: () => string | undefined;
 }
 
 export const useTokenInfoProvider: () => TokenInfoProvider = () => {
@@ -115,7 +109,8 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
           }
         }
       },
-      getNativeTokenSymbol: () => (safe.chainId === 100 ? "xDai" : "ETH"),
+      getNativeTokenSymbol: () => networkInfo.get(safe.chainId)?.currencySymbol ?? "ETH",
+      getSelectedNetworkShortname: () => networkInfo.get(safe.chainId)?.shortName,
     }),
     [safe.chainId, tokenList, web3Provider],
   );
