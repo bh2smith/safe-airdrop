@@ -46,7 +46,7 @@ export interface UnknownTransfer {
 }
 
 export type CSVRow = {
-  token_type: string;
+  token_type?: string;
   token_address: string;
   receiver: string;
   value?: string;

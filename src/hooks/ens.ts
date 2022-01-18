@@ -38,8 +38,7 @@ export const useEnsResolver: () => EnsResolver = () => {
   const cachedResolveName = useCallback(
     async (ensName: string) => {
       const cachedAddress = resolveCache.get(ensName);
-      const resolvedAddress =
-        typeof cachedAddress !== "undefined" ? cachedAddress : await web3Provider.resolveName(ensName);
+      const resolvedAddress = cachedAddress ?? (await web3Provider.resolveName(ensName));
       if (!resolveCache.has(ensName)) {
         resolveCache.set(ensName, resolvedAddress);
       }

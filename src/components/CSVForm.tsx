@@ -80,6 +80,9 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
                     insufficientBalanceInfo.token_type === "erc20" ||
                     insufficientBalanceInfo.token_type === "native"
                   ) {
+                    if (insufficientBalanceInfo.token_type === "native") {
+                      insufficientBalanceInfo.token = tokenInfoProvider.getNativeTokenSymbol();
+                    }
                     return {
                       message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
                       severity: "error",

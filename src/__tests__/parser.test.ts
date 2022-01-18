@@ -45,6 +45,7 @@ describe("Parsing CSVs ", () => {
     mockTokenInfoProvider = {
       getTokenInfo: fetchTokenFromList,
       getNativeTokenSymbol: () => "ETH",
+      getSelectedNetworkShortname: () => "eth",
     };
 
     mockCollectibleTokenInfoProvider = {
@@ -423,30 +424,19 @@ describe("Parsing CSVs ", () => {
     expect(warningErc721WithInvalidReceiver.message).to.equal("Invalid Receiver Address: 0xwhoopsie");
   });
 
-  it("invalid or missing token types", async () => {
-    const rowWithInvalidTokenType = [
-      "invalidTokenType",
-      testData.unlistedERC20Token.address,
-      validReceiverAddress,
-      "15",
-    ];
-
-    const missingTokenType = ["", testData.unlistedERC20Token.address, validReceiverAddress, "15"];
+  it("fallback to erc20 without token_type", async () => {
+    const missingTokenType = ["", listedToken.address, validReceiverAddress, "15"];
 
     const [payment, warnings] = await CSVParser.parseCSV(
-      csvStringFromRows(rowWithInvalidTokenType, missingTokenType),
+      csvStringFromRows(missingTokenType),
       mockTokenInfoProvider,
       mockCollectibleTokenInfoProvider,
       mockEnsResolver,
     );
-    expect(warnings).to.have.lengthOf(2);
-    const [warningWithInvalidTokenType, warningWithMissingTokenType] = warnings;
-    expect(payment).to.be.empty;
+    expect(warnings).to.be.empty;
+    expect(payment).to.have.length(1);
+    const [erc20Transfer] = payment as AssetTransfer[];
 
-    expect(warningWithInvalidTokenType.lineNo).to.equal(1);
-    expect(warningWithInvalidTokenType.message).to.equal("Unknown token_type: Must be one of erc20, native or nft");
-
-    expect(warningWithMissingTokenType.lineNo).to.equal(2);
-    expect(warningWithMissingTokenType.message).to.equal("Unknown token_type: Must be one of erc20, native or nft");
+    expect(erc20Transfer.token_type).to.equal("erc20");
   });
 });

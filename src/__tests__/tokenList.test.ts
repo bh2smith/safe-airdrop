@@ -1,10 +1,11 @@
 import { expect } from "chai";
 
-import { fetchTokenList, networkMap } from "../hooks/token";
+import { fetchTokenList } from "../hooks/token";
+import { networkInfo } from "../networks";
 
 describe("fetchTokenList()", () => {
-  for (const chainId of networkMap.keys()) {
-    it(`fetches tokens for ${networkMap.get(chainId)} network`, () => {
+  for (const chainId of networkInfo.keys()) {
+    it(`fetches tokens for ${networkInfo.get(chainId)?.name} network`, () => {
       expect(() => fetchTokenList(chainId)).to.not.throw();
     });
   }
