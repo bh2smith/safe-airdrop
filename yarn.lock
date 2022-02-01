@@ -2460,12 +2460,12 @@
     "@gnosis.pm/safe-apps-sdk" "6.1.0"
     events "^3.3.0"
 
-"@gnosis.pm/safe-apps-react-sdk@^4.0.7":
-  version "4.0.7"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-react-sdk/-/safe-apps-react-sdk-4.0.7.tgz#aa36bb6c618fb76323e69f5eabd7704ed53d4dd1"
-  integrity sha512-nN5QtTxCgE3BYKICernCUZuj4aGZQPuqW0iOF0AFx90kV5PsBNgERNJs1g7chwS7goJlwazOyXV2bUpt3QwkcA==
+"@gnosis.pm/safe-apps-react-sdk@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-react-sdk/-/safe-apps-react-sdk-4.1.0.tgz#52d60ba0a9e9594b1df0c7c24e520666566550af"
+  integrity sha512-nkQHLqMVRwmdmXXI2I2zK2+/U+m7yer38hWAt2es7cUeZ5QWaNoRmdNwA8v02WoMpVJDq8/7gtfesYK7dFdLQA==
   dependencies:
-    "@gnosis.pm/safe-apps-sdk" "6.1.0"
+    "@gnosis.pm/safe-apps-sdk" "6.2.0"
 
 "@gnosis.pm/safe-apps-sdk@6.1.0":
   version "6.1.0"
@@ -2476,7 +2476,7 @@
     "@gnosis.pm/safe-react-gateway-sdk" "^2.5.6"
     ethers "^5.4.7"
 
-"@gnosis.pm/safe-apps-sdk@^6.2.0":
+"@gnosis.pm/safe-apps-sdk@6.2.0", "@gnosis.pm/safe-apps-sdk@^6.2.0":
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-6.2.0.tgz#05751b4ae4c6cfa7e19839d3655e7d9b5fb72dfe"
   integrity sha512-dOpVBlu+Nv7bOrOl9llTeRriEpdUnnbXEM/RgTkS1v8Q2swT6+M+WIKTuKB/cadFXbjUsBD/nd3IsihHP24b5g==
