@@ -1,10 +1,11 @@
 {
   "name": "safe-airdrop",
   "version": "1.2.0",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && react-app-rewired build",
     "test": "react-app-rewired test --watchAll=false --verbose",
     "lint": "eslint --max-warnings 0 .",
     "coverage": "yarn test --coverage",
@@ -17,8 +18,8 @@
   },
   "dependencies": {
     "@fast-csv/parse": "^4.3.6",
-    "@gnosis.pm/safe-apps-provider": "^0.9.1",
-    "@gnosis.pm/safe-apps-react-sdk": "^4.0.7",
+    "@gnosis.pm/safe-apps-provider": "^0.9.3",
+    "@gnosis.pm/safe-apps-react-sdk": "^4.1.0",
     "@gnosis.pm/safe-apps-sdk": "^6.2.0",
     "@gnosis.pm/safe-react-components": "^0.9.1",
     "@material-ui/core": "^4.12.3",
