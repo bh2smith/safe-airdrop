@@ -21,7 +21,7 @@ export type CollectibleTokenType = "erc721" | "erc1155";
 export interface AssetTransfer {
   token_type: AssetTokenType;
   receiver: string;
-  amount: BigNumber;
+  value: BigNumber;
   tokenAddress: string | null;
   decimals: number;
   symbol?: string;
@@ -50,6 +50,7 @@ export type CSVRow = {
   token_address: string;
   receiver: string;
   value?: string;
+  amount?: string;
   id?: string;
 };
 

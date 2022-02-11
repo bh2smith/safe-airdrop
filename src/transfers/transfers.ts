@@ -14,17 +14,17 @@ export function buildAssetTransfers(transferData: AssetTransfer[]): BaseTransact
       // Native asset transfer
       return {
         to: transfer.receiver,
-        value: toWei(transfer.amount, 18).toFixed(),
+        value: toWei(transfer.value, 18).toFixed(),
         data: "0x",
       };
     } else {
       // ERC20 transfer
       const decimals = transfer.decimals;
-      const amountData = toWei(transfer.amount, decimals);
+      const valueData = toWei(transfer.value, decimals);
       return {
         to: transfer.tokenAddress,
         value: "0",
-        data: erc20Interface.encodeFunctionData("transfer", [transfer.receiver, amountData.toFixed()]),
+        data: erc20Interface.encodeFunctionData("transfer", [transfer.receiver, valueData.toFixed()]),
       };
     }
   });

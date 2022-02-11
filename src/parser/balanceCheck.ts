@@ -7,7 +7,7 @@ import { AssetTransfer, CollectibleTransfer, Transfer } from "./csvParser";
 
 export type AssetSummaryEntry = {
   tokenAddress: string | null;
-  amount: BigNumber;
+  value: BigNumber;
   decimals: number;
   symbol?: string;
 };
@@ -18,13 +18,13 @@ export const assetTransfersToSummary = (transfers: AssetTransfer[]) => {
     if (typeof tokenSummary === "undefined") {
       tokenSummary = {
         tokenAddress: currentValue.tokenAddress,
-        amount: new BigNumber(0),
+        value: new BigNumber(0),
         decimals: currentValue.decimals,
         symbol: currentValue.symbol,
       };
       previousValue.set(currentValue.tokenAddress, tokenSummary);
     }
-    tokenSummary.amount = tokenSummary.amount.plus(currentValue.amount);
+    tokenSummary.value = tokenSummary.value.plus(currentValue.value);
 
     return previousValue;
   }, new Map<string | null, AssetSummaryEntry>());
@@ -82,19 +82,16 @@ export const checkAllBalances = (
     transfers.filter((transfer) => transfer.token_type === "erc721") as CollectibleTransfer[],
   );
 
-  for (const { tokenAddress, amount, decimals, symbol } of assetSummary.values()) {
+  for (const { tokenAddress, value, decimals, symbol } of assetSummary.values()) {
     if (tokenAddress === null) {
       // Check ETH Balance
       const tokenBalance = assetBalance?.find((balanceEntry) => balanceEntry.tokenAddress === null);
 
-      if (
-        typeof tokenBalance === "undefined" ||
-        !isSufficientBalance(new BigNumber(tokenBalance.balance), amount, 18)
-      ) {
+      if (typeof tokenBalance === "undefined" || !isSufficientBalance(new BigNumber(tokenBalance.balance), value, 18)) {
         insufficientTokens.push({
           token: "ETH",
           token_type: "native",
-          transferAmount: amount.toFixed(),
+          transferAmount: value.toFixed(),
           isDuplicate: false, // For Erc20 / Coin Transfers duplicates are never an issue
         });
       }
@@ -104,12 +101,12 @@ export const checkAllBalances = (
       );
       if (
         typeof tokenBalance === "undefined" ||
-        !isSufficientBalance(new BigNumber(tokenBalance.balance), amount, decimals)
+        !isSufficientBalance(new BigNumber(tokenBalance.balance), value, decimals)
       ) {
         insufficientTokens.push({
           token: symbol || tokenAddress,
           token_type: "erc20",
-          transferAmount: amount.toFixed(),
+          transferAmount: value.toFixed(),
           isDuplicate: false, // For Erc20 / Coin Transfers duplicates are never an issue
         });
       }

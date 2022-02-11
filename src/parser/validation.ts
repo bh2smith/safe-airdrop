@@ -54,7 +54,7 @@ const areAddressesValid = (row: Transfer): string[] => {
 };
 
 const isAmountPositive = (row: AssetTransfer): string[] =>
-  row.amount.isGreaterThan(0) ? [] : ["Only positive amounts possible: " + row.amount.toFixed()];
+  row.value.isGreaterThan(0) ? [] : ["Only positive amounts/values possible: " + row.value.toFixed()];
 
 const isAssetTokenValid = (row: AssetTransfer): string[] =>
   row.decimals === -1 && row.symbol === "TOKEN_NOT_FOUND" ? [`No token contract was found at ${row.tokenAddress}`] : [];

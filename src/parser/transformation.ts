@@ -10,7 +10,7 @@ import { AssetTransfer, CollectibleTransfer, CSVRow, Transfer, UnknownTransfer }
 
 interface PrePayment {
   receiver: string;
-  amount: BigNumber;
+  value: BigNumber;
   tokenAddress: string | null;
   tokenType: "erc20" | "native";
 }
@@ -83,7 +83,7 @@ export const transformAsset = (
   const prePayment: PrePayment = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
     tokenAddress: transformERC20TokenAddress(row.token_address),
-    amount: new BigNumber(row.value ?? ""),
+    value: new BigNumber(row.value ?? row.amount ?? ""),
     receiver: normalizeAddress(trimMatchingNetwork(row.receiver, selectedChainShortname)),
     tokenType: row.token_type,
   };
@@ -108,7 +108,7 @@ const toPayment = async (
     // Native asset payment.
     return {
       receiver: resolvedReceiverAddress,
-      amount: row.amount,
+      value: row.value,
       tokenAddress: row.tokenAddress,
       decimals: 18,
       symbol: tokenInfoProvider.getNativeTokenSymbol(),
@@ -126,7 +126,7 @@ const toPayment = async (
     let symbol = tokenInfo.symbol;
     return {
       receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : row.receiver,
-      amount: row.amount,
+      value: row.value,
       tokenAddress: resolvedTokenAddress,
       decimals,
       symbol,
@@ -136,7 +136,7 @@ const toPayment = async (
   } else {
     return {
       receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : row.receiver,
-      amount: row.amount,
+      value: row.value,
       tokenAddress: row.tokenAddress,
       decimals: -1,
       symbol: "TOKEN_NOT_FOUND",
