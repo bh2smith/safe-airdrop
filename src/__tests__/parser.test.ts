@@ -23,7 +23,7 @@ chai.use(chaiAsPromised);
  * @param rows array of row-arrays
  */
 const csvStringFromRows = (...rows: string[][]): string => {
-  const headerRow = "token_type,token_address,receiver,value,id";
+  const headerRow = "token_type,token_address,receiver,amount,id";
   return [headerRow, ...rows.map((row) => row.join(","))].join("\n");
 };
 
@@ -148,19 +148,19 @@ describe("Parsing CSVs ", () => {
     expect(paymentWithoutDecimal.decimals).to.be.equal(18);
     expect(paymentWithoutDecimal.receiver).to.equal(validReceiverAddress);
     expect(paymentWithoutDecimal.tokenAddress).to.equal(listedToken.address);
-    expect(paymentWithoutDecimal.value.isEqualTo(new BigNumber(1))).to.be.true;
+    expect(paymentWithoutDecimal.amount.isEqualTo(new BigNumber(1))).to.be.true;
     expect(paymentWithoutDecimal.receiverEnsName).to.be.null;
 
     expect(paymentWithDecimal.receiver).to.equal(validReceiverAddress);
     expect(paymentWithDecimal.tokenAddress?.toLowerCase()).to.equal(listedToken.address.toLowerCase());
     expect(paymentWithDecimal.decimals).to.equal(18);
-    expect(paymentWithDecimal.value.isEqualTo(new BigNumber(69.42))).to.be.true;
+    expect(paymentWithDecimal.amount.isEqualTo(new BigNumber(69.42))).to.be.true;
     expect(paymentWithDecimal.receiverEnsName).to.be.null;
 
     expect(paymentWithoutTokenAddress.decimals).to.be.equal(18);
     expect(paymentWithoutTokenAddress.receiver).to.equal(validReceiverAddress);
     expect(paymentWithoutTokenAddress.tokenAddress).to.equal(null);
-    expect(paymentWithoutTokenAddress.value.isEqualTo(new BigNumber(1))).to.be.true;
+    expect(paymentWithoutTokenAddress.amount.isEqualTo(new BigNumber(1))).to.be.true;
     expect(paymentWithoutTokenAddress.receiverEnsName).to.be.null;
   });
 
@@ -233,13 +233,13 @@ describe("Parsing CSVs ", () => {
     expect(paymentReceiverEnsName.decimals).to.be.equal(18);
     expect(paymentReceiverEnsName.receiver).to.equal(testData.addresses.receiver1);
     expect(paymentReceiverEnsName.tokenAddress).to.equal(listedToken.address);
-    expect(paymentReceiverEnsName.value.isEqualTo(new BigNumber(1))).to.be.true;
+    expect(paymentReceiverEnsName.amount.isEqualTo(new BigNumber(1))).to.be.true;
     expect(paymentReceiverEnsName.receiverEnsName).to.equal("receiver1.eth");
 
     expect(paymentTokenEnsName.receiver).to.equal(validReceiverAddress);
     expect(paymentTokenEnsName.tokenAddress?.toLowerCase()).to.equal(listedToken.address.toLowerCase());
     expect(paymentTokenEnsName.decimals).to.equal(18);
-    expect(paymentTokenEnsName.value.isEqualTo(new BigNumber(69.42))).to.be.true;
+    expect(paymentTokenEnsName.amount.isEqualTo(new BigNumber(69.42))).to.be.true;
     expect(paymentReceiverEnsName.receiverEnsName).to.equal("receiver1.eth");
 
     expect(warningUnknownReceiverEnsName.lineNo).to.equal(3);
@@ -270,22 +270,22 @@ describe("Parsing CSVs ", () => {
       payment as CollectibleTransfer[];
     expect(transferErc721AndAddress.receiver).to.equal(validReceiverAddress);
     expect(transferErc721AndAddress.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
-    expect(transferErc721AndAddress.value).to.be.undefined;
+    expect(transferErc721AndAddress.amount).to.be.undefined;
     expect(transferErc721AndAddress.tokenId.isEqualTo(new BigNumber(1))).to.be.true;
     expect(transferErc721AndAddress.receiverEnsName).to.be.null;
 
     expect(transferErc721AndENS.receiver).to.equal(testData.addresses.receiver2);
     expect(transferErc721AndENS.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
     expect(transferErc721AndENS.tokenId.isEqualTo(new BigNumber(69))).to.be.true;
-    expect(transferErc721AndENS.value).to.be.undefined;
+    expect(transferErc721AndENS.amount).to.be.undefined;
     expect(transferErc721AndENS.receiverEnsName).to.equal("receiver2.eth");
 
     expect(transferErc1155AndAddress.receiver).to.equal(validReceiverAddress);
     expect(transferErc1155AndAddress.tokenAddress.toLowerCase()).to.equal(
       testData.addresses.dummyErc1155Address.toLowerCase(),
     );
-    expect(transferErc1155AndAddress.value).not.to.be.undefined;
-    expect(transferErc1155AndAddress.value?.isEqualTo(new BigNumber(69))).to.be.true;
+    expect(transferErc1155AndAddress.amount).not.to.be.undefined;
+    expect(transferErc1155AndAddress.amount?.isEqualTo(new BigNumber(69))).to.be.true;
     expect(transferErc1155AndAddress.tokenId.isEqualTo(new BigNumber(420))).to.be.true;
     expect(transferErc1155AndAddress.receiverEnsName).to.be.null;
 
@@ -293,8 +293,8 @@ describe("Parsing CSVs ", () => {
     expect(transferErc1155AndENS.tokenAddress.toLowerCase()).to.equal(
       testData.addresses.dummyErc1155Address.toLowerCase(),
     );
-    expect(transferErc1155AndENS.value).not.to.be.undefined;
-    expect(transferErc1155AndENS.value?.isEqualTo(new BigNumber(9))).to.be.true;
+    expect(transferErc1155AndENS.amount).not.to.be.undefined;
+    expect(transferErc1155AndENS.amount?.isEqualTo(new BigNumber(9))).to.be.true;
     expect(transferErc1155AndENS.tokenId.isEqualTo(new BigNumber(99))).to.be.true;
     expect(transferErc1155AndENS.receiverEnsName).to.equal("receiver3.eth");
   });
@@ -441,9 +441,9 @@ describe("Parsing CSVs ", () => {
       expect(erc20Transfer.token_type).to.equal("erc20");
     });
 
-    it("allow amount instead of value column", async () => {
+    it("allow value instead of amount column", async () => {
       const nativeTransfer = ["native", listedToken.address, validReceiverAddress, "15"];
-      const headerRow = "token_type,token_address,receiver,amount,id";
+      const headerRow = "token_type,token_address,receiver,value,id";
       const csvString = [headerRow, nativeTransfer.join(",")].join("\n");
 
       const [payment, warnings] = await CSVParser.parseCSV(
@@ -456,7 +456,7 @@ describe("Parsing CSVs ", () => {
       expect(payment).to.have.length(1);
       const [nativeTransferData] = payment as AssetTransfer[];
 
-      expect(nativeTransferData.value.isEqualTo(new BigNumber(15))).to.be.true;
+      expect(nativeTransferData.amount.isEqualTo(new BigNumber(15))).to.be.true;
     });
   });
 });

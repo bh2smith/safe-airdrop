@@ -14,13 +14,13 @@ export function buildAssetTransfers(transferData: AssetTransfer[]): BaseTransact
       // Native asset transfer
       return {
         to: transfer.receiver,
-        value: toWei(transfer.value, 18).toFixed(),
+        value: toWei(transfer.amount, 18).toFixed(),
         data: "0x",
       };
     } else {
       // ERC20 transfer
       const decimals = transfer.decimals;
-      const valueData = toWei(transfer.value, decimals);
+      const valueData = toWei(transfer.amount, decimals);
       return {
         to: transfer.tokenAddress,
         value: "0",
@@ -51,7 +51,7 @@ export function buildCollectibleTransfers(transferData: CollectibleTransfer[]): 
           transfer.from,
           transfer.receiver,
           transfer.tokenId.toFixed(),
-          transfer.value?.toFixed() ?? "0",
+          transfer.amount?.toFixed() ?? "0",
           ethers.utils.hexlify("0x00"),
         ]),
       };

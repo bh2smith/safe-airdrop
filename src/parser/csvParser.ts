@@ -21,7 +21,7 @@ export type CollectibleTokenType = "erc721" | "erc1155";
 export interface AssetTransfer {
   token_type: AssetTokenType;
   receiver: string;
-  value: BigNumber;
+  amount: BigNumber;
   tokenAddress: string | null;
   decimals: number;
   symbol?: string;
@@ -36,7 +36,7 @@ export interface CollectibleTransfer {
   tokenAddress: string;
   tokenName?: string;
   tokenId: BigNumber;
-  value?: BigNumber;
+  amount?: BigNumber;
   receiverEnsName: string | null;
   hasMetaData: boolean;
 }

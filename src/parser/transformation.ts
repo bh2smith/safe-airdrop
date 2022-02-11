@@ -10,7 +10,7 @@ import { AssetTransfer, CollectibleTransfer, CSVRow, Transfer, UnknownTransfer }
 
 interface PrePayment {
   receiver: string;
-  value: BigNumber;
+  amount: BigNumber;
   tokenAddress: string | null;
   tokenType: "erc20" | "native";
 }
@@ -20,7 +20,7 @@ interface PreCollectibleTransfer {
   tokenId: BigNumber;
   tokenAddress: string;
   tokenType: "nft";
-  value?: BigNumber;
+  amount?: BigNumber;
 }
 
 export const transform = (
@@ -83,7 +83,7 @@ export const transformAsset = (
   const prePayment: PrePayment = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
     tokenAddress: transformERC20TokenAddress(row.token_address),
-    value: new BigNumber(row.value ?? row.amount ?? ""),
+    amount: new BigNumber(row.amount ?? row.value ?? ""),
     receiver: normalizeAddress(trimMatchingNetwork(row.receiver, selectedChainShortname)),
     tokenType: row.token_type,
   };
@@ -108,7 +108,7 @@ const toPayment = async (
     // Native asset payment.
     return {
       receiver: resolvedReceiverAddress,
-      value: row.value,
+      amount: row.amount,
       tokenAddress: row.tokenAddress,
       decimals: 18,
       symbol: tokenInfoProvider.getNativeTokenSymbol(),
@@ -126,7 +126,7 @@ const toPayment = async (
     let symbol = tokenInfo.symbol;
     return {
       receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : row.receiver,
-      value: row.value,
+      amount: row.amount,
       tokenAddress: resolvedTokenAddress,
       decimals,
       symbol,
@@ -136,7 +136,7 @@ const toPayment = async (
   } else {
     return {
       receiver: resolvedReceiverAddress !== null ? resolvedReceiverAddress : row.receiver,
-      value: row.value,
+      amount: row.amount,
       tokenAddress: row.tokenAddress,
       decimals: -1,
       symbol: "TOKEN_NOT_FOUND",
@@ -161,7 +161,7 @@ export const transformCollectible = (
     tokenId: new BigNumber(row.id ?? ""),
     receiver: normalizeAddress(row.receiver),
     tokenType: row.token_type,
-    value: new BigNumber(row.value ?? ""),
+    amount: new BigNumber(row.amount ?? ""),
   };
 
   toCollectibleTransfer(prePayment, erc721InfoProvider, ensResolver)
@@ -206,7 +206,7 @@ const toCollectibleTransfer = async (
       tokenId: preCollectible.tokenId,
       tokenAddress: preCollectible.tokenAddress,
       receiverEnsName,
-      value: preCollectible.value,
+      amount: preCollectible.amount,
       token_type: "erc1155",
       hasMetaData: tokenInfo.hasMetaInfo,
     };

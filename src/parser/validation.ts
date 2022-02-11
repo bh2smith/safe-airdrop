@@ -54,7 +54,7 @@ const areAddressesValid = (row: Transfer): string[] => {
 };
 
 const isAmountPositive = (row: AssetTransfer): string[] =>
-  row.value.isGreaterThan(0) ? [] : ["Only positive amounts/values possible: " + row.value.toFixed()];
+  row.amount.isGreaterThan(0) ? [] : ["Only positive amounts/values possible: " + row.amount.toFixed()];
 
 const isAssetTokenValid = (row: AssetTransfer): string[] =>
   row.decimals === -1 && row.symbol === "TOKEN_NOT_FOUND" ? [`No token contract was found at ${row.tokenAddress}`] : [];
@@ -69,11 +69,11 @@ const isTokenIdInteger = (row: CollectibleTransfer): string[] =>
   row.tokenId.isInteger() ? [] : [`Token IDs must be integer numbers: ${row.tokenId.toFixed()}`];
 
 const isTokenValueInteger = (row: CollectibleTransfer): string[] =>
-  !row.value || row.value.isNaN() || row.value.isInteger()
+  !row.amount || row.amount.isNaN() || row.amount.isInteger()
     ? []
-    : [`Value of ERC1155 must be an integer: ${row.value.toFixed()}`];
+    : [`Value of ERC1155 must be an integer: ${row.amount.toFixed()}`];
 
 const isTokenValueValid = (row: CollectibleTransfer): string[] =>
-  row.token_type === "erc721" || (typeof row.value !== "undefined" && row.value.isGreaterThan(0))
+  row.token_type === "erc721" || (typeof row.amount !== "undefined" && row.amount.isGreaterThan(0))
     ? []
-    : [`ERC1155 Tokens need a defined value > 0: ${row.value?.toFixed()}`];
+    : [`ERC1155 Tokens need a defined value > 0: ${row.amount?.toFixed()}`];
