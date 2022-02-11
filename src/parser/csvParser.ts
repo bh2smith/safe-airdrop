@@ -36,7 +36,7 @@ export interface CollectibleTransfer {
   tokenAddress: string;
   tokenName?: string;
   tokenId: BigNumber;
-  value?: BigNumber;
+  amount?: BigNumber;
   receiverEnsName: string | null;
   hasMetaData: boolean;
 }
@@ -50,6 +50,7 @@ export type CSVRow = {
   token_address: string;
   receiver: string;
   value?: string;
+  amount?: string;
   id?: string;
 };
 

@@ -138,7 +138,7 @@ describe("Build Transfers:", () => {
   });
 
   describe("Mixed", () => {
-    it("works with arbitrary amount strings on listed, unlisted and native transfers", () => {
+    it("works with arbitrary value strings on listed, unlisted and native transfers", () => {
       const mixedAmount = new BigNumber("123456.000000789");
       const mixedPayments: AssetTransfer[] = [
         // Listed ERC20
@@ -209,7 +209,7 @@ describe("Build Transfers:", () => {
       const payment: AssetTransfer = {
         token_type: "erc20",
         receiver,
-        amount: amount,
+        amount,
         tokenAddress: crappyToken.address,
         decimals: crappyToken.decimals,
         symbol: "BTC",
@@ -243,7 +243,7 @@ describe("Build Transfers:", () => {
         receiverEnsName: null,
         tokenAddress: testData.addresses.dummyErc1155Address,
         tokenName: "Test MultiToken",
-        value: new BigNumber("69"),
+        amount: new BigNumber("69"),
         tokenId: new BigNumber("420"),
         hasMetaData: false,
       },

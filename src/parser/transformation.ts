@@ -20,7 +20,7 @@ interface PreCollectibleTransfer {
   tokenId: BigNumber;
   tokenAddress: string;
   tokenType: "nft";
-  value?: BigNumber;
+  amount?: BigNumber;
 }
 
 export const transform = (
@@ -83,7 +83,7 @@ export const transformAsset = (
   const prePayment: PrePayment = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
     tokenAddress: transformERC20TokenAddress(row.token_address),
-    amount: new BigNumber(row.value ?? ""),
+    amount: new BigNumber(row.amount ?? row.value ?? ""),
     receiver: normalizeAddress(trimMatchingNetwork(row.receiver, selectedChainShortname)),
     tokenType: row.token_type,
   };
@@ -161,7 +161,7 @@ export const transformCollectible = (
     tokenId: new BigNumber(row.id ?? ""),
     receiver: normalizeAddress(row.receiver),
     tokenType: row.token_type,
-    value: new BigNumber(row.value ?? ""),
+    amount: new BigNumber(row.amount ?? ""),
   };
 
   toCollectibleTransfer(prePayment, erc721InfoProvider, ensResolver)
@@ -206,7 +206,7 @@ const toCollectibleTransfer = async (
       tokenId: preCollectible.tokenId,
       tokenAddress: preCollectible.tokenAddress,
       receiverEnsName,
-      value: preCollectible.value,
+      amount: preCollectible.amount,
       token_type: "erc1155",
       hasMetaData: tokenInfo.hasMetaInfo,
     };

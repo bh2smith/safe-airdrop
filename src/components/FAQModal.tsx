@@ -60,7 +60,7 @@ export const FAQModal: () => JSX.Element = () => {
                   </li>
                   <li>
                     <code>
-                      <b>value</b>
+                      <b>amount</b>
                     </code>
                     : the amount of token to be transferred. This can be left blank for erc721 transfers.
                   </li>

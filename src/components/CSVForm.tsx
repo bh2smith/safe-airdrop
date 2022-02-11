@@ -29,7 +29,7 @@ export interface CSVFormProps {
 
 export const CSVForm = (props: CSVFormProps): JSX.Element => {
   const { updateTransferTable, setParsing } = props;
-  const [csvText, setCsvText] = useState<string>("token_type,token_address,receiver,value,id");
+  const [csvText, setCsvText] = useState<string>("token_type,token_address,receiver,amount,id");
 
   const { setCodeWarnings, setMessages } = useContext(MessageContext);
 
@@ -133,7 +133,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
         a CSV file in a single transaction.
       </Text>
       <Text size="lg">
-        Upload, edit or paste your asset transfer CSV <br /> (token_type,token_address,receiver,value,id)
+        Upload, edit or paste your asset transfer CSV <br /> (token_type,token_address,receiver,amount,id)
       </Text>
 
       <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />

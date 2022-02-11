@@ -20,11 +20,11 @@ export function buildAssetTransfers(transferData: AssetTransfer[]): BaseTransact
     } else {
       // ERC20 transfer
       const decimals = transfer.decimals;
-      const amountData = toWei(transfer.amount, decimals);
+      const valueData = toWei(transfer.amount, decimals);
       return {
         to: transfer.tokenAddress,
         value: "0",
-        data: erc20Interface.encodeFunctionData("transfer", [transfer.receiver, amountData.toFixed()]),
+        data: erc20Interface.encodeFunctionData("transfer", [transfer.receiver, valueData.toFixed()]),
       };
     }
   });
@@ -51,7 +51,7 @@ export function buildCollectibleTransfers(transferData: CollectibleTransfer[]): 
           transfer.from,
           transfer.receiver,
           transfer.tokenId.toFixed(),
-          transfer.value?.toFixed() ?? "0",
+          transfer.amount?.toFixed() ?? "0",
           ethers.utils.hexlify("0x00"),
         ]),
       };

@@ -80,7 +80,7 @@ export const Row = memo((props: RowProps) => {
         </div>
         <Receiver receiverAddress={row.receiver} receiverEnsName={row.receiverEnsName} />
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
-          <Text size="md">{row.value?.toFixed()}</Text>
+          <Text size="md">{row.amount?.toFixed()}</Text>
         </div>
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
           <Text size="md">{row.tokenId.toFixed()}</Text>

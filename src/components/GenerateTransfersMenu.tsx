@@ -32,13 +32,13 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.El
   const error = drainAddress ? invalidNetworkError || invalidAddressError : "";
 
   const generateDrainTransfers = () => {
-    let drainCSV = "token_type,token_address,receiver,value,id,";
+    let drainCSV = "token_type,token_address,receiver,amount,id,";
     if (drainAddress) {
       assetBalance?.forEach((asset) => {
         if (asset.token === null && asset.tokenAddress === null) {
           const decimalBalance = fromWei(new BigNumber(asset.balance), 18);
           // The API returns zero balances for the native token.
-          if (!decimalBalance.isZero) {
+          if (!decimalBalance.isZero()) {
             drainCSV += `\nnative,,${drainAddress},${decimalBalance},`;
           }
         } else {

@@ -23,7 +23,7 @@ chai.use(chaiAsPromised);
  * @param rows array of row-arrays
  */
 const csvStringFromRows = (...rows: string[][]): string => {
-  const headerRow = "token_type,token_address,receiver,value,id";
+  const headerRow = "token_type,token_address,receiver,amount,id";
   return [headerRow, ...rows.map((row) => row.join(","))].join("\n");
 };
 
@@ -197,7 +197,7 @@ describe("Parsing CSVs ", () => {
     ] = warnings;
     expect(payment).to.be.empty;
 
-    expect(warningNegativeAmount.message).to.equal("Only positive amounts possible: -1");
+    expect(warningNegativeAmount.message).to.equal("Only positive amounts/values possible: -1");
     expect(warningNegativeAmount.lineNo).to.equal(1);
 
     expect(warningTokenNotFound.message.toLowerCase()).to.equal(
@@ -270,22 +270,22 @@ describe("Parsing CSVs ", () => {
       payment as CollectibleTransfer[];
     expect(transferErc721AndAddress.receiver).to.equal(validReceiverAddress);
     expect(transferErc721AndAddress.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
-    expect(transferErc721AndAddress.value).to.be.undefined;
+    expect(transferErc721AndAddress.amount).to.be.undefined;
     expect(transferErc721AndAddress.tokenId.isEqualTo(new BigNumber(1))).to.be.true;
     expect(transferErc721AndAddress.receiverEnsName).to.be.null;
 
     expect(transferErc721AndENS.receiver).to.equal(testData.addresses.receiver2);
     expect(transferErc721AndENS.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
     expect(transferErc721AndENS.tokenId.isEqualTo(new BigNumber(69))).to.be.true;
-    expect(transferErc721AndENS.value).to.be.undefined;
+    expect(transferErc721AndENS.amount).to.be.undefined;
     expect(transferErc721AndENS.receiverEnsName).to.equal("receiver2.eth");
 
     expect(transferErc1155AndAddress.receiver).to.equal(validReceiverAddress);
     expect(transferErc1155AndAddress.tokenAddress.toLowerCase()).to.equal(
       testData.addresses.dummyErc1155Address.toLowerCase(),
     );
-    expect(transferErc1155AndAddress.value).not.to.be.undefined;
-    expect(transferErc1155AndAddress.value?.isEqualTo(new BigNumber(69))).to.be.true;
+    expect(transferErc1155AndAddress.amount).not.to.be.undefined;
+    expect(transferErc1155AndAddress.amount?.isEqualTo(new BigNumber(69))).to.be.true;
     expect(transferErc1155AndAddress.tokenId.isEqualTo(new BigNumber(420))).to.be.true;
     expect(transferErc1155AndAddress.receiverEnsName).to.be.null;
 
@@ -293,8 +293,8 @@ describe("Parsing CSVs ", () => {
     expect(transferErc1155AndENS.tokenAddress.toLowerCase()).to.equal(
       testData.addresses.dummyErc1155Address.toLowerCase(),
     );
-    expect(transferErc1155AndENS.value).not.to.be.undefined;
-    expect(transferErc1155AndENS.value?.isEqualTo(new BigNumber(9))).to.be.true;
+    expect(transferErc1155AndENS.amount).not.to.be.undefined;
+    expect(transferErc1155AndENS.amount?.isEqualTo(new BigNumber(9))).to.be.true;
     expect(transferErc1155AndENS.tokenId.isEqualTo(new BigNumber(99))).to.be.true;
     expect(transferErc1155AndENS.receiverEnsName).to.equal("receiver3.eth");
   });
@@ -424,19 +424,39 @@ describe("Parsing CSVs ", () => {
     expect(warningErc721WithInvalidReceiver.message).to.equal("Invalid Receiver Address: 0xwhoopsie");
   });
 
-  it("fallback to erc20 without token_type", async () => {
-    const missingTokenType = ["", listedToken.address, validReceiverAddress, "15"];
+  describe("Support backward compatibility", () => {
+    it("fallback to erc20 without token_type", async () => {
+      const missingTokenType = ["", listedToken.address, validReceiverAddress, "15"];
 
-    const [payment, warnings] = await CSVParser.parseCSV(
-      csvStringFromRows(missingTokenType),
-      mockTokenInfoProvider,
-      mockCollectibleTokenInfoProvider,
-      mockEnsResolver,
-    );
-    expect(warnings).to.be.empty;
-    expect(payment).to.have.length(1);
-    const [erc20Transfer] = payment as AssetTransfer[];
+      const [payment, warnings] = await CSVParser.parseCSV(
+        csvStringFromRows(missingTokenType),
+        mockTokenInfoProvider,
+        mockCollectibleTokenInfoProvider,
+        mockEnsResolver,
+      );
+      expect(warnings).to.be.empty;
+      expect(payment).to.have.length(1);
+      const [erc20Transfer] = payment as AssetTransfer[];
 
-    expect(erc20Transfer.token_type).to.equal("erc20");
+      expect(erc20Transfer.token_type).to.equal("erc20");
+    });
+
+    it("allow value instead of amount column", async () => {
+      const nativeTransfer = ["native", listedToken.address, validReceiverAddress, "15"];
+      const headerRow = "token_type,token_address,receiver,value,id";
+      const csvString = [headerRow, nativeTransfer.join(",")].join("\n");
+
+      const [payment, warnings] = await CSVParser.parseCSV(
+        csvString,
+        mockTokenInfoProvider,
+        mockCollectibleTokenInfoProvider,
+        mockEnsResolver,
+      );
+      expect(warnings).to.be.empty;
+      expect(payment).to.have.length(1);
+      const [nativeTransferData] = payment as AssetTransfer[];
+
+      expect(nativeTransferData.amount.isEqualTo(new BigNumber(15))).to.be.true;
+    });
   });
 });

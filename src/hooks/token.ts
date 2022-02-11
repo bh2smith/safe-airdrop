@@ -14,7 +14,9 @@ export type TokenMap = Map<string | null, MinimalTokenInfo>;
 function tokenMap(tokenList: TokenInfo[]): TokenMap {
   const res: TokenMap = new Map<string, MinimalTokenInfo>();
   for (const token of tokenList) {
-    res.set(utils.getAddress(token.address), token);
+    if (token.address) {
+      res.set(utils.getAddress(token.address), token);
+    }
   }
   return res;
 }

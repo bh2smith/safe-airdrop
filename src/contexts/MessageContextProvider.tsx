@@ -45,7 +45,6 @@ export const MessageContextProvider = (props: MessageContextProviderProps) => {
   const [showMessages, setShowMessages] = useState(false);
 
   const removeMessage = (messageToRemove: Message | CodeWarning) => {
-    console.log("Removing Message");
     setMessages(messages.filter((message) => message.message !== messageToRemove.message));
   };
 
