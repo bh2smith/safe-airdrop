@@ -42,7 +42,7 @@ const ListHeader = (props: ListHeaderProps) => {
         <Text size="lg">Receiver</Text>
       </div>
       <div style={{ flex: 1, padding: 16, minWidth: 80 }}>
-        <Text size="lg">Value</Text>
+        <Text size="lg">Amount</Text>
       </div>
     </div>
   );
