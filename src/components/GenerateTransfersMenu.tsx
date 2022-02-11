@@ -35,13 +35,8 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.El
     let drainCSV = "token_type,token_address,receiver,value,id,";
     if (drainAddress) {
       assetBalance?.forEach((asset) => {
-        console.log(assetBalance);
         if (asset.token === null && asset.tokenAddress === null) {
           const decimalBalance = fromWei(new BigNumber(asset.balance), 18);
-          console.log(asset.balance);
-
-          console.log(decimalBalance.toFixed());
-
           // The API returns zero balances for the native token.
           if (!decimalBalance.isZero()) {
             drainCSV += `\nnative,,${drainAddress},${decimalBalance},`;

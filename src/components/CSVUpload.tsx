@@ -12,7 +12,6 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       acceptedFiles.forEach((file) => {
-        console.log("Received Filename", file.name);
         const reader = new FileReader();
         reader.onload = function (evt) {
           if (!evt.target) {
