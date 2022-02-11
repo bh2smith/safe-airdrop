@@ -58,10 +58,3 @@ describe("Fetch should resolve for all networks", () => {
     });
   }
 });
-
-describe("useTokenList()", () => {
-  it("Throws on unknown networks", () => {
-    // TODO - not sure how to test this.
-    expect(1).to.equal(1);
-  });
-});
