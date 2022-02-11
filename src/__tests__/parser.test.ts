@@ -3,7 +3,6 @@ import { BigNumber } from "bignumber.js";
 import * as chai from "chai";
 import { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { toWei } from "src/utils";
 
 import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import { EnsResolver } from "../hooks/ens";
