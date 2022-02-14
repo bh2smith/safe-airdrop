@@ -6,7 +6,6 @@ import { networkInfo } from "../networks";
 
 beforeEach(() => {
   jest.spyOn(window, "fetch").mockImplementation(() => {
-    console.log("Mock fetch");
     return Promise.resolve({
       json: () =>
         Promise.resolve({
@@ -39,15 +38,35 @@ beforeEach(() => {
 describe("Mainnet tokenlist", () => {
   it("Should parse its response correctly", async () => {
     const resultingTokens = await fetchTokenList(1);
-
-    console.log(resultingTokens);
-
     const gnoAddress = ethers.utils.getAddress("0x6810e776880c02933d47db1b9fc05908e5386b96");
 
     expect(resultingTokens).to.have.lengthOf(2);
     expect(resultingTokens.get(gnoAddress)?.symbol).to.equal("GNO");
     expect(resultingTokens.get(gnoAddress)?.address.toLowerCase()).eq(gnoAddress.toLowerCase());
     expect(resultingTokens.get(gnoAddress)?.decimals).to.equal(18);
+  });
+
+  it("Should not crash on errors", async () => {
+    jest.spyOn(window, "fetch").mockImplementation(() => {
+      return Promise.reject("Unexpected error.");
+    });
+
+    const resultingTokens = await fetchTokenList(1);
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    expect(resultingTokens).to.be.empty;
+  });
+
+  it("Should not crash on unsuccessful fetches", async () => {
+    jest.spyOn(window, "fetch").mockImplementation(() => {
+      return Promise.resolve({
+        status: 404,
+        statusText: "Page not found",
+      } as any);
+    });
+
+    const resultingTokens = await fetchTokenList(1);
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    expect(resultingTokens).to.be.empty;
   });
 });
 

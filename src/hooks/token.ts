@@ -26,7 +26,10 @@ export const fetchTokenList = async (chainId: number): Promise<TokenMap> => {
   switch (chainId) {
     case 1:
       const mainnetTokenURL = "https://tokens.coingecko.com/uniswap/all.json";
-      tokens = (await (await fetch(mainnetTokenURL)).json()).tokens;
+      tokens = await fetch(mainnetTokenURL)
+        .then((response) => response.json())
+        .then((response) => response.tokens)
+        .catch(() => []);
       break;
     case 4:
       // Hardcoded this because the list provided at
