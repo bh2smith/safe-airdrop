@@ -1,7 +1,7 @@
 import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
 
-import { fromWei, toWei, TEN, ONE, ZERO } from "../utils";
+import { fromWei, toWei, TEN, ONE, ZERO, resolveIpfsUri } from "../utils";
 
 // TODO - this is super ugly at the moment and is probably missing some stuff.
 describe("toWei()", () => {
@@ -36,5 +36,17 @@ describe("fromWei()", () => {
     expect(fromWei(oneETH, 18).toFixed()).to.be.equal("1");
     expect(fromWei(oneETH, 19).toFixed()).to.be.equal("0.1");
     expect(fromWei(oneETH, 20).toFixed()).to.be.equal("0.01");
+  });
+});
+
+describe("resolveIpfsUri", () => {
+  it("returns non ipfs urls unchanged", () => {
+    const normalURI = "https://gnosis-safe.io";
+    expect(resolveIpfsUri(normalURI)).to.be.equal(normalURI);
+  });
+
+  it("returns infura url for ipfs urls", () => {
+    const ipfsURI = "ipfs://SomeHash";
+    expect(resolveIpfsUri(ipfsURI)).to.be.equal("https://ipfs.infura.io/ipfs/SomeHash");
   });
 });

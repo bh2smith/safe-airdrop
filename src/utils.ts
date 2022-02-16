@@ -36,3 +36,13 @@ export function toWei(amount: string | number | BigNumber, decimals: number): Bi
 export function fromWei(amount: BigNumber, decimals: number): BigNumber {
   return amount.dividedBy(TEN.pow(decimals));
 }
+
+/**
+ * Replaces ipfs:// part of the uri with the infura.io ipfs endpoint.
+ *
+ * @param uri URI which might be a ipfs url
+ * @returns URI resolved to the infura ipfs host or uri if it's not an ipfs uri.
+ */
+export function resolveIpfsUri(uri: string): string {
+  return uri.startsWith("ipfs://") ? uri.replace("ipfs://", "https://ipfs.infura.io/ipfs/") : uri;
+}
