@@ -1,10 +1,11 @@
 import { BaseTransaction, SafeInfo } from "@gnosis.pm/safe-apps-sdk";
-import { Text, Title, Tooltip } from "@gnosis.pm/safe-react-components";
+import { Text, Title } from "@gnosis.pm/safe-react-components";
 import BigNumber from "bignumber.js";
+import React from "react";
 import { AssetTransfer, CollectibleTransfer } from "src/parser/csvParser";
 import { buildAssetTransfers, buildCollectibleTransfers } from "src/transfers/transfers";
 
-const CIRCLE_RADIUS = 28;
+const CIRCLE_RADIUS = 34;
 const CIRCLE_DIAMETER = CIRCLE_RADIUS * 2;
 const CIRCUMFERENCE = CIRCLE_RADIUS * 2 * Math.PI;
 const STROKE_WIDTH = 4;
@@ -40,6 +41,16 @@ interface GasUsageProperties {
 export const GasUsage = (props: GasUsageProperties): JSX.Element => {
   const { assetTransfers, collectibleTransfers, blockGasLimit, safe } = props;
 
+  const [detailsOpen, setDetailsOpen] = React.useState(false);
+
+  const showDetails = (event: React.MouseEvent<HTMLElement>) => {
+    setDetailsOpen(true);
+  };
+
+  const hideDetails = (event: React.MouseEvent<HTMLElement>) => {
+    setDetailsOpen(false);
+  };
+
   const sigCheckTotal = COST_PER_OWNER.times(safe.threshold);
   const txs: BaseTransaction[] = [];
   txs.push(...buildAssetTransfers(assetTransfers));
@@ -65,13 +76,10 @@ export const GasUsage = (props: GasUsageProperties): JSX.Element => {
   const erc1155Total = ERC1155_ESTIMATION.times(
     collectibleTransfers.filter((value) => value.token_type === "erc1155").length,
   );
-  const totalGasUsed = erc20Total
-    .plus(nativeTotal)
-    .plus(erc721Total)
-    .plus(erc1155Total)
-    .plus(sigCheckTotal)
-    .plus(dataTotal)
-    .plus(BASE_COST);
+
+  const txExecutionTotal = erc20Total.plus(nativeTotal).plus(erc721Total).plus(erc1155Total);
+
+  const totalGasUsed = txExecutionTotal.plus(sigCheckTotal).plus(dataTotal).plus(BASE_COST);
 
   const percentageUsed = totalGasUsed.dividedBy(blockGasLimit).times(100);
   const percentageUsedRounded = percentageUsed.decimalPlaces(2).toNumber();
@@ -92,8 +100,10 @@ export const GasUsage = (props: GasUsageProperties): JSX.Element => {
           alignItems: "center",
         }}
       >
-        <Title size="xs">Block gas limit</Title>
-        <Tooltip title={`${totalGasUsed} / ${blockGasLimit}`}>
+        <div>
+          <Title size="xs">Block gas limit</Title>
+        </div>
+        <div onMouseEnter={showDetails} onMouseLeave={hideDetails} style={{ display: "flex", flexDirection: "row" }}>
           <div
             style={{
               border: `${STROKE_WIDTH}px solid #d2d2d1`,
@@ -107,6 +117,7 @@ export const GasUsage = (props: GasUsageProperties): JSX.Element => {
               height: CIRCLE_DIAMETER + STROKE_WIDTH,
               width: CIRCLE_DIAMETER + STROKE_WIDTH,
               boxSizing: "border-box",
+              zIndex: 4,
             }}
           >
             <svg
@@ -138,7 +149,39 @@ export const GasUsage = (props: GasUsageProperties): JSX.Element => {
             </div>
             <Text size="sm">used</Text>
           </div>
-        </Tooltip>
+          <div
+            style={{
+              backgroundColor: "#f0efee",
+              borderStartEndRadius: 999,
+              borderEndEndRadius: 999,
+              height: CIRCLE_DIAMETER + STROKE_WIDTH,
+              width: detailsOpen ? 400 : 0,
+              left: (-1 * (CIRCLE_DIAMETER + STROKE_WIDTH)) / 2,
+              paddingLeft: 16 + (CIRCLE_DIAMETER + STROKE_WIDTH) / 2,
+              position: "relative",
+              overflow: "hidden",
+              display: "grid",
+              opacity: detailsOpen ? 1 : 0,
+              gridTemplateColumns: "3fr 3fr",
+              transition: "width .35s, opacity .75s",
+            }}
+          >
+            <Text size="sm">Base tx</Text>
+            <Text size="sm">{BASE_COST.toFixed()}</Text>
+            <Text size="sm">Data costs</Text>
+            <Text size="sm">{dataTotal.toFixed()}</Text>
+            <Text size="sm">Signature check</Text>
+            <Text size="sm">{sigCheckTotal.toFixed()}</Text>
+            <Text size="sm">Estimated tx execution</Text>
+            <Text size="sm">{txExecutionTotal.toFixed()}</Text>
+            <Text size="sm" strong>
+              Total
+            </Text>
+            <Text size="sm" strong>
+              {totalGasUsed.toFixed()}
+            </Text>
+          </div>
+        </div>
       </div>
     </div>
   );
