@@ -1,7 +1,11 @@
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Accordion, AccordionDetails, AccordionSummary, Icon, Text } from "@gnosis.pm/safe-react-components";
+import BigNumber from "bignumber.js";
+import { networkInfo } from "src/networks";
 
 import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
 
+import { GasUsage } from "./GasUsage";
 import { AssetTransferTable } from "./assets/AssetTransferTable";
 import { CollectiblesTransferTable } from "./assets/CollectiblesTransferTable";
 
@@ -14,6 +18,8 @@ export const Summary = (props: SummaryProps): JSX.Element => {
   const { assetTransfers, collectibleTransfers } = props;
   const assetTxCount = assetTransfers.length;
   const collectibleTxCount = collectibleTransfers.length;
+  const { safe } = useSafeAppsSDK();
+
   return (
     <>
       <Accordion disabled={assetTxCount === 0} compact style={{ maxWidth: 1400 }}>
@@ -68,6 +74,12 @@ export const Summary = (props: SummaryProps): JSX.Element => {
           {collectibleTransfers.length > 0 && <CollectiblesTransferTable transferContent={collectibleTransfers} />}
         </AccordionDetails>
       </Accordion>
+      <GasUsage
+        assetTransfers={assetTransfers}
+        collectibleTransfers={collectibleTransfers}
+        safe={safe}
+        blockGasLimit={networkInfo.get(safe.chainId)?.blockGasLimit ?? new BigNumber(30_000_000)}
+      />
     </>
   );
 };
