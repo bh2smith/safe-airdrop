@@ -2533,20 +2533,12 @@
   dependencies:
     "@gnosis.pm/safe-apps-sdk" "7.0.0"
 
-"@gnosis.pm/safe-apps-sdk@7.0.0":
+"@gnosis.pm/safe-apps-sdk@7.0.0", "@gnosis.pm/safe-apps-sdk@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-7.0.0.tgz#e2320aca32edbb67d5b9e1e98cbfc448f1cfb2e0"
   integrity sha512-Is9H7bcdPGh7Wp5oLc17CWbpd5Hi1+KL7z33ClyVP9Sw/s23ApIR7HkXmD5b3XsAW2vSiYfcHNT/yddolvACNg==
   dependencies:
     "@gnosis.pm/safe-react-gateway-sdk" "^2.8.5"
-    ethers "^5.4.7"
-
-"@gnosis.pm/safe-apps-sdk@^6.2.0":
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-6.2.0.tgz#05751b4ae4c6cfa7e19839d3655e7d9b5fb72dfe"
-  integrity sha512-dOpVBlu+Nv7bOrOl9llTeRriEpdUnnbXEM/RgTkS1v8Q2swT6+M+WIKTuKB/cadFXbjUsBD/nd3IsihHP24b5g==
-  dependencies:
-    "@gnosis.pm/safe-react-gateway-sdk" "^2.5.6"
     ethers "^5.4.7"
 
 "@gnosis.pm/safe-react-components@^0.9.1":
@@ -2556,13 +2548,6 @@
   dependencies:
     react-media "^1.10.0"
     web3-utils "^1.6.0"
-
-"@gnosis.pm/safe-react-gateway-sdk@^2.5.6":
-  version "2.5.6"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-react-gateway-sdk/-/safe-react-gateway-sdk-2.5.6.tgz#7b8713bb16a542c4af27d6e1f2d8925a21aaeb51"
-  integrity sha512-flM/i80oFwSRlW0U8HE7QurwwPpNTUjBv7gZNAjgOpGhub51r7Uf1LtSm89Mnxnh2mtj4Whl8ZC4RMoXdV3yvw==
-  dependencies:
-    isomorphic-unfetch "^3.1.0"
 
 "@gnosis.pm/safe-react-gateway-sdk@^2.8.5":
   version "2.8.6"
