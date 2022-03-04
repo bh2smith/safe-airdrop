@@ -52,7 +52,6 @@ describe("Mainnet tokenlist", () => {
     });
 
     const resultingTokens = await fetchTokenList(1);
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(resultingTokens).to.be.empty;
   });
 
@@ -65,7 +64,6 @@ describe("Mainnet tokenlist", () => {
     });
 
     const resultingTokens = await fetchTokenList(1);
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(resultingTokens).to.be.empty;
   });
 });

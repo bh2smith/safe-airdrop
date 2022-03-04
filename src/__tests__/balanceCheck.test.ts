@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import BigNumber from "bignumber.js";
 import { expect } from "chai";
 
