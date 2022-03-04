@@ -63,7 +63,7 @@ const isCollectibleTokenValid = (row: CollectibleTransfer): string[] =>
   row.tokenName === "TOKEN_NOT_FOUND" ? [`No token contract was found at ${row.tokenAddress}`] : [];
 
 const isTokenIdPositive = (row: CollectibleTransfer): string[] =>
-  row.tokenId.isGreaterThan(0) ? [] : [`Only positive Token IDs possible: ${row.tokenId.toFixed()}`];
+  row.tokenId.isPositive() ? [] : [`Only positive Token IDs possible: ${row.tokenId.toFixed()}`];
 
 const isTokenIdInteger = (row: CollectibleTransfer): string[] =>
   row.tokenId.isInteger() ? [] : [`Token IDs must be integer numbers: ${row.tokenId.toFixed()}`];

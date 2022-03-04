@@ -255,19 +255,31 @@ describe("Parsing CSVs ", () => {
   it("parses valid collectible transfers", async () => {
     const rowWithErc721AndAddress = ["nft", testData.addresses.dummyErc721Address, validReceiverAddress, "", "1"];
     const rowWithErc721AndENS = ["nft", testData.addresses.dummyErc721Address, "receiver2.eth", "", "69"];
+    const rowWithErc721AndIDZero = ["nft", testData.addresses.dummyErc721Address, "receiver1.eth", "", "0"];
     const rowWithErc1155AndAddress = ["nft", testData.addresses.dummyErc1155Address, validReceiverAddress, "69", "420"];
     const rowWithErc1155AndENS = ["nft", testData.addresses.dummyErc1155Address, "receiver3.eth", "9", "99"];
 
     const [payment, warnings] = await CSVParser.parseCSV(
-      csvStringFromRows(rowWithErc721AndAddress, rowWithErc721AndENS, rowWithErc1155AndAddress, rowWithErc1155AndENS),
+      csvStringFromRows(
+        rowWithErc721AndAddress,
+        rowWithErc721AndENS,
+        rowWithErc721AndIDZero,
+        rowWithErc1155AndAddress,
+        rowWithErc1155AndENS,
+      ),
       mockTokenInfoProvider,
       mockCollectibleTokenInfoProvider,
       mockEnsResolver,
     );
     expect(warnings).to.be.empty;
-    expect(payment).to.have.lengthOf(4);
-    const [transferErc721AndAddress, transferErc721AndENS, transferErc1155AndAddress, transferErc1155AndENS] =
-      payment as CollectibleTransfer[];
+    expect(payment).to.have.lengthOf(5);
+    const [
+      transferErc721AndAddress,
+      transferErc721AndENS,
+      transferErc721AndIDZero,
+      transferErc1155AndAddress,
+      transferErc1155AndENS,
+    ] = payment as CollectibleTransfer[];
     expect(transferErc721AndAddress.receiver).to.equal(validReceiverAddress);
     expect(transferErc721AndAddress.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
     expect(transferErc721AndAddress.amount).to.be.undefined;
@@ -279,6 +291,12 @@ describe("Parsing CSVs ", () => {
     expect(transferErc721AndENS.tokenId.isEqualTo(new BigNumber(69))).to.be.true;
     expect(transferErc721AndENS.amount).to.be.undefined;
     expect(transferErc721AndENS.receiverEnsName).to.equal("receiver2.eth");
+
+    expect(transferErc721AndIDZero.receiver).to.equal(testData.addresses.receiver1);
+    expect(transferErc721AndIDZero.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
+    expect(transferErc721AndIDZero.tokenId.isEqualTo(new BigNumber(0))).to.be.true;
+    expect(transferErc721AndIDZero.amount).to.be.undefined;
+    expect(transferErc721AndIDZero.receiverEnsName).to.equal("receiver1.eth");
 
     expect(transferErc1155AndAddress.receiver).to.equal(validReceiverAddress);
     expect(transferErc1155AndAddress.tokenAddress.toLowerCase()).to.equal(
