@@ -3,6 +3,7 @@ import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import { useCallback, useMemo } from "react";
+import { resolveIpfsUri } from "src/utils";
 
 import { erc1155Instance } from "../transfers/erc1155";
 import { erc165Instance } from "../transfers/erc165";
@@ -120,19 +121,21 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
         const metaInfo: CollectibleTokenMetaInfo = {
           name: await erc721Contract.name().catch(() => undefined),
         };
-        const tokenURI = await erc721Contract.tokenURI(id.toFixed()).catch(() => undefined);
+        let tokenURI = await erc721Contract.tokenURI(id.toFixed()).catch(() => undefined);
         if (tokenURI) {
+          tokenURI = resolveIpfsUri(tokenURI);
           const metaDataJSON = await ethers.utils.fetchJson(tokenURI).catch(() => undefined);
-          metaInfo.imageURI = metaDataJSON?.image;
+          metaInfo.imageURI = metaDataJSON?.image ? resolveIpfsUri(metaDataJSON?.image) : undefined;
         }
         return metaInfo;
       } else {
         const erc1155Contract = erc1155Instance(tokenAddress, web3Provider);
         const metaInfo: CollectibleTokenMetaInfo = {};
-        const tokenURI = await erc1155Contract.uri(id.toFixed()).catch(() => undefined);
+        let tokenURI = await erc1155Contract.uri(id.toFixed()).catch(() => undefined);
         if (tokenURI) {
+          tokenURI = resolveIpfsUri(tokenURI);
           const metaDataJSON = await ethers.utils.fetchJson(tokenURI).catch(() => undefined);
-          metaInfo.imageURI = metaDataJSON?.image;
+          metaInfo.imageURI = metaDataJSON?.image ? resolveIpfsUri(metaDataJSON?.image) : undefined;
           metaInfo.name = metaDataJSON?.name;
         }
         return metaInfo;
