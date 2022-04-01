@@ -11584,10 +11584,10 @@ react-scripts@^4.0.3:
   optionalDependencies:
     fsevents "^2.1.3"
 
-react-svg@^14.1.16:
-  version "14.1.16"
-  resolved "https://registry.yarnpkg.com/react-svg/-/react-svg-14.1.16.tgz#0febf9725036e77ea9ea810db6e20d432d0336fe"
-  integrity sha512-5VzQajm5BYYTxfqYk4EtWUrf8Chzl26b47KYrpCxnGnPfE4hL41V1e0GXdmq7GtaT/kIYrDGxlrj2gccPmIejw==
+react-svg@^14.1.17:
+  version "14.1.17"
+  resolved "https://registry.yarnpkg.com/react-svg/-/react-svg-14.1.17.tgz#4ae97be85750547f3ab1cc075fdc95d94054c80f"
+  integrity sha512-GPrPayKctk4U7taDGW0+cl0xX77OhNyJow7eTfT/xmUEoQKedfsPg60X6vUuw/ukW+GExuKMR61c4Dg40F6tqA==
   dependencies:
     "@babel/runtime" "^7.17.8"
     "@tanem/svg-injector" "^10.1.21"
