@@ -160,6 +160,6 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
 };
 
 /**
- * Maps cannot hash custom objects. So we convert tokenaddress and id to a unique key.
+ * Maps cannot hash custom objects. So we convert token address and id to a unique key.
  */
 const toKey = (tokenAddr: string, id: string) => `addr: ${tokenAddr}, id: ${id}`;
