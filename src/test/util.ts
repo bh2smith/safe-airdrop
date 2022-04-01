@@ -8,6 +8,7 @@ const dummySafeInfo: SafeInfo = {
   chainId: 4,
   threshold: 1,
   owners: [],
+  isReadOnly: true,
 };
 
 const unlistedERC20Token: TokenInfo = {
