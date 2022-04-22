@@ -57,7 +57,6 @@ const App: React.FC = () => {
   }, [assetTransfers, collectibleTransfers, sdk.txs]);
 
   const nextTransaction = () => {
-    console.log("Next TX");
     setCreatedTXNonce(undefined);
     setTokenTransfers([]);
   };
