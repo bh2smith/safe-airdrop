@@ -6,6 +6,7 @@ import React, { useCallback, useState, useContext } from "react";
 import styled from "styled-components";
 
 import { CSVForm } from "./components/CSVForm";
+import { Confirmation } from "./components/Confirmation";
 import { Header } from "./components/Header";
 import { Summary } from "./components/Summary";
 import { MessageContext } from "./contexts/MessageContextProvider";
@@ -23,6 +24,7 @@ const App: React.FC = () => {
   const { messages } = useContext(MessageContext);
 
   const [submitting, setSubmitting] = useState(false);
+  const [createdTXNonce, setCreatedTXNonce] = useState<number | undefined>(undefined);
   const [parsing, setParsing] = useState(false);
   const { sdk } = useSafeAppsSDK();
 
@@ -43,12 +45,22 @@ const App: React.FC = () => {
       console.log(`Encoded ${txs.length} transfers.`);
       const sendTxResponse = await sdk.txs.send({ txs });
       const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
-      console.log({ safeTx });
+      if (safeTx) {
+        if (safeTx.detailedExecutionInfo?.type === "MULTISIG") {
+          setCreatedTXNonce(safeTx.detailedExecutionInfo.nonce);
+        }
+      }
     } catch (e) {
       console.error(e);
     }
     setSubmitting(false);
   }, [assetTransfers, collectibleTransfers, sdk.txs]);
+
+  const nextTransaction = () => {
+    console.log("Next TX");
+    setCreatedTXNonce(undefined);
+    setTokenTransfers([]);
+  };
 
   return (
     <Container>
@@ -74,40 +86,46 @@ const App: React.FC = () => {
             </>
           ) : (
             <Card className="cardWithCustomShadow">
-              <Breadcrumb>
-                <BreadcrumbElement text="CSV Transfer File" iconType="paste" />
-              </Breadcrumb>
-              <CSVForm updateTransferTable={setTokenTransfers} setParsing={setParsing} />
-              <Divider />
-              <Breadcrumb>
-                <BreadcrumbElement text="Summary" iconType="transactionsInactive" />
-                <BreadcrumbElement text="Transfers" color="placeHolder" />
-              </Breadcrumb>
-              <Summary assetTransfers={assetTransfers} collectibleTransfers={collectibleTransfers} />
-              {submitting ? (
-                <>
-                  <Loader size="md" />
-                  <br />
-                  <Button size="lg" color="secondary" onClick={() => setSubmitting(false)}>
-                    Cancel
-                  </Button>
-                </>
+              {createdTXNonce ? (
+                <Confirmation createNewTX={nextTransaction} noTxs={tokenTransfers.length} txNonce={createdTXNonce} />
               ) : (
-                <Button
-                  style={{ alignSelf: "flex-start", marginTop: 16, marginBottom: 16 }}
-                  size="lg"
-                  color={messages.length === 0 ? "primary" : "error"}
-                  onClick={submitTx}
-                  disabled={parsing || tokenTransfers.length + collectibleTransfers.length === 0}
-                >
-                  {parsing ? (
-                    <Loader size="sm" color="primaryLight" />
-                  ) : messages.length === 0 ? (
-                    "Submit"
+                <>
+                  <Breadcrumb>
+                    <BreadcrumbElement text="CSV Transfer File" iconType="paste" />
+                  </Breadcrumb>
+                  <CSVForm updateTransferTable={setTokenTransfers} setParsing={setParsing} />
+                  <Divider />
+                  <Breadcrumb>
+                    <BreadcrumbElement text="Summary" iconType="transactionsInactive" />
+                    <BreadcrumbElement text="Transfers" color="placeHolder" />
+                  </Breadcrumb>
+                  <Summary assetTransfers={assetTransfers} collectibleTransfers={collectibleTransfers} />
+                  {submitting ? (
+                    <>
+                      <Loader size="md" />
+                      <br />
+                      <Button size="lg" color="secondary" onClick={() => setSubmitting(false)}>
+                        Cancel
+                      </Button>
+                    </>
                   ) : (
-                    "Submit with errors"
+                    <Button
+                      style={{ alignSelf: "flex-start", marginTop: 16, marginBottom: 16 }}
+                      size="lg"
+                      color={messages.length === 0 ? "primary" : "error"}
+                      onClick={submitTx}
+                      disabled={parsing || tokenTransfers.length + collectibleTransfers.length === 0}
+                    >
+                      {parsing ? (
+                        <Loader size="sm" color="primaryLight" />
+                      ) : messages.length === 0 ? (
+                        "Submit"
+                      ) : (
+                        "Submit with errors"
+                      )}
+                    </Button>
                   )}
-                </Button>
+                </>
               )}
             </Card>
           )}
