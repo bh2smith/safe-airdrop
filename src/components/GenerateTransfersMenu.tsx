@@ -4,26 +4,32 @@ import { Collapse } from "@material-ui/core";
 import BigNumber from "bignumber.js";
 import { utils } from "ethers";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useCollectibleTokenInfoProvider } from "src/hooks/collectibleTokenInfoProvider";
+import { useTokenInfoProvider } from "src/hooks/token";
+import { useGetAssetBalanceQuery, useGetNFTBalanceQuery } from "src/stores/api/balanceApi";
+import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
 
-import { AssetBalance, CollectibleBalance } from "../hooks/balances";
 import { useEnsResolver } from "../hooks/ens";
 import { networkInfo } from "../networks";
 import { fromWei } from "../utils";
 
-export interface GenerateTransfersMenuProps {
-  assetBalance?: AssetBalance;
-  collectibleBalance?: CollectibleBalance;
-  setCsvText: (csv: string) => void;
-}
+export interface GenerateTransfersMenuProps {}
 
 export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.Element => {
-  const { assetBalance, collectibleBalance, setCsvText } = props;
+  const dispatch = useDispatch();
+
+  const assetBalanceQuery = useGetAssetBalanceQuery();
+  const nftBalanceQuery = useGetNFTBalanceQuery();
+
   const [isGenerationMenuOpen, setIsGenerationMenuOpen] = useState(false);
   const [isDrainModalOpen, setIsDrainModalOpen] = useState(false);
   const [drainAddress, setDrainAddress] = useState("");
   const { safe } = useSafeAppsSDK();
 
   const ensResolver = useEnsResolver();
+  const tokenInfoProvider = useTokenInfoProvider();
+  const collectibleTokenInfoProvider = useCollectibleTokenInfoProvider();
 
   const selectedNetworkInfo = networkInfo.get(safe.chainId);
 
@@ -34,7 +40,7 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.El
   const generateDrainTransfers = () => {
     let drainCSV = "token_type,token_address,receiver,amount,id,";
     if (drainAddress) {
-      assetBalance?.forEach((asset) => {
+      assetBalanceQuery.data?.forEach((asset) => {
         if (asset.token === null && asset.tokenAddress === null) {
           const decimalBalance = fromWei(new BigNumber(asset.balance), 18);
           // The API returns zero balances for the native token.
@@ -52,11 +58,11 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.El
         }
       });
 
-      collectibleBalance?.forEach((collectible) => {
+      nftBalanceQuery.data?.forEach((collectible) => {
         drainCSV += `\nnft,${collectible.address},${drainAddress},,${collectible.id}`;
       });
     }
-    setCsvText(drainCSV);
+    dispatch(updateCsvContent({ csvContent: drainCSV, ensResolver, collectibleTokenInfoProvider, tokenInfoProvider }));
   };
   return (
     <>

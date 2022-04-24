@@ -1,10 +1,11 @@
 import { Icon, Text } from "@gnosis.pm/safe-react-components";
 import { Fab, Snackbar } from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
-import React, { useContext } from "react";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { hideMessages, Message, removeMessage, toggleMessages } from "src/stores/slices/messageSlice";
+import { RootState } from "src/stores/store";
 import styled from "styled-components";
-
-import { MessageContext, Message } from "../contexts/MessageContextProvider";
 
 import { FAQModal } from "./FAQModal";
 
@@ -32,14 +33,13 @@ const AlertWrapper = styled.div`
 `;
 
 export const Header = (): JSX.Element => {
-  const { messages, showMessages, hideMessages, toggleMessages, removeMessage } = useContext(MessageContext);
-
+  const dispatch = useDispatch();
+  const { messages, showMessages } = useSelector((state: RootState) => state.messages);
   const handleClose = (event: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
-
-    hideMessages();
+    dispatch(hideMessages());
   };
 
   return (
@@ -49,7 +49,7 @@ export const Header = (): JSX.Element => {
         size="small"
         className={messages.length === 0 ? "statusDotButtonEmpty" : "statusDotButtonErrors"}
         style={{ textTransform: "none", width: "34px", height: "34px" }}
-        onClick={toggleMessages}
+        onClick={() => dispatch(toggleMessages())}
       >
         {messages.length === 0 ? (
           <Icon color="white" type="check" size="sm" />
@@ -74,7 +74,7 @@ export const Header = (): JSX.Element => {
             </Alert>
           )}
           {messages.map((message: Message, index: number) => (
-            <Alert severity={message.severity} key={"message" + index} onClose={() => removeMessage(message)}>
+            <Alert severity={message.severity} key={"message" + index} onClose={() => dispatch(removeMessage(message))}>
               {message.message}
             </Alert>
           ))}

@@ -2,11 +2,12 @@ import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
 import { theme, Loader, Title } from "@gnosis.pm/safe-react-components";
 import React from "react";
 import ReactDOM from "react-dom";
+import { Provider as ReduxProvider } from "react-redux";
 import { ThemeProvider } from "styled-components";
 
 import App from "./App";
 import GlobalStyle from "./GlobalStyle";
-import { MessageContextProvider } from "./contexts/MessageContextProvider";
+import { store } from "./stores/store";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -20,9 +21,9 @@ ReactDOM.render(
           </>
         }
       >
-        <MessageContextProvider>
+        <ReduxProvider store={store}>
           <App />
-        </MessageContextProvider>
+        </ReduxProvider>
       </SafeProvider>
     </ThemeProvider>
   </React.StrictMode>,

@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import { expect } from "chai";
+import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
 
-import { AssetBalance, CollectibleBalance } from "../hooks/balances";
 import { assetTransfersToSummary, checkAllBalances } from "../parser/balanceCheck";
 import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
 import { testData } from "../test/util";
@@ -472,7 +472,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    const exactBalance: CollectibleBalance = [
+    const exactBalance: NFTBalance = [
       {
         address: testData.unlistedERC20Token.address,
         id: "69",
@@ -486,7 +486,7 @@ describe("transferToSummary and check balances", () => {
         tokenSymbol: "TC",
       },
     ];
-    const biggerBalance: CollectibleBalance = [
+    const biggerBalance: NFTBalance = [
       {
         address: testData.unlistedERC20Token.address,
         id: "69",
@@ -506,7 +506,7 @@ describe("transferToSummary and check balances", () => {
         tokenSymbol: "TC",
       },
     ];
-    const smallerBalance: CollectibleBalance = [
+    const smallerBalance: NFTBalance = [
       {
         address: testData.unlistedERC20Token.address,
         id: "69",
@@ -548,7 +548,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    const exactBalance: CollectibleBalance = [
+    const exactBalance: NFTBalance = [
       {
         address: testData.unlistedERC20Token.address,
         id: "69",

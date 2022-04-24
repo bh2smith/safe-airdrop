@@ -2,13 +2,22 @@ import { Button, Text, theme as GnosisTheme } from "@gnosis.pm/safe-react-compon
 import { createStyles } from "@material-ui/core";
 import React, { useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
+import { useDispatch } from "react-redux";
+import { useCollectibleTokenInfoProvider } from "src/hooks/collectibleTokenInfoProvider";
+import { useEnsResolver } from "src/hooks/ens";
+import { useTokenInfoProvider } from "src/hooks/token";
 
-export type CSVUploadProps = {
-  onChange: (string) => void;
-};
+import { updateCsvContent } from "../stores/slices/csvEditorSlice";
+
+export type CSVUploadProps = {};
 
 export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
-  const { onChange } = props;
+  const dispatch = useDispatch();
+
+  const ensResolver = useEnsResolver();
+  const collectibleTokenInfoProvider = useCollectibleTokenInfoProvider();
+  const tokenInfoProvider = useTokenInfoProvider();
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       acceptedFiles.forEach((file) => {
@@ -17,12 +26,19 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
           if (!evt.target) {
             return;
           }
-          onChange(evt.target.result as string);
+          dispatch(
+            updateCsvContent({
+              csvContent: evt.target.result as string,
+              collectibleTokenInfoProvider,
+              ensResolver,
+              tokenInfoProvider,
+            }),
+          );
         };
         reader.readAsText(file);
       });
     },
-    [onChange],
+    [collectibleTokenInfoProvider, dispatch, ensResolver, tokenInfoProvider],
   );
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({

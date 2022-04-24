@@ -1,7 +1,7 @@
 import { parseString, RowValidateCallback } from "@fast-csv/parse";
 import { BigNumber } from "bignumber.js";
+import { CodeWarning } from "src/stores/slices/messageSlice";
 
-import { CodeWarning } from "../contexts/MessageContextProvider";
 import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import { EnsResolver } from "../hooks/ens";
 import { TokenInfoProvider } from "../hooks/token";
