@@ -5,6 +5,7 @@ import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { AssetBalance } from "src/hooks/balances";
 import { networkInfo } from "src/networks";
+import { DONATION_ADDRESS } from "src/utils";
 
 export const DonateDialog = ({
   onSubmit,
@@ -69,7 +70,7 @@ export const DonateDialog = ({
       const donationCSVRow = headerRow
         .replace("token_type", "erc20")
         .replace("token_address", selectedToken === "0x0" ? "" : selectedToken)
-        .replace("receiver", "0xD011a7e124181336ED417B737A495745F150d248")
+        .replace("receiver", DONATION_ADDRESS)
         .replace("amount", selectedAmount)
         .replace("id", "");
 

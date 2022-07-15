@@ -6,6 +6,8 @@ export const TWO = new BigNumber(2);
 export const TEN = new BigNumber(10);
 export const MAX_U256 = TWO.pow(255).minus(1);
 
+export const DONATION_ADDRESS = "0xD011a7e124181336ED417B737A495745F150d248";
+
 export interface TokenInfo {
   readonly chainId: number;
   readonly address: string;
