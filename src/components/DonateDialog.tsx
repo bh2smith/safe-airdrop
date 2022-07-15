@@ -69,7 +69,7 @@ export const DonateDialog = ({
       const donationCSVRow = headerRow
         .replace("token_type", "erc20")
         .replace("token_address", selectedToken === "0x0" ? "" : selectedToken)
-        .replace("receiver", "0x4E408FAd7fE13A7253994EFbFb2a237EcA93172d")
+        .replace("receiver", "0xD011a7e124181336ED417B737A495745F150d248")
         .replace("amount", selectedAmount)
         .replace("id", "");
 
