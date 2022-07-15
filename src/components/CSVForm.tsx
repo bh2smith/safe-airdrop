@@ -143,6 +143,7 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
         assetBalance={assetBalance}
         collectibleBalance={collectibleBalance}
         setCsvText={setCsvText}
+        csvText={csvText}
       />
     </Form>
   );

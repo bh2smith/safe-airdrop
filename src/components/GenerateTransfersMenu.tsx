@@ -10,16 +10,21 @@ import { useEnsResolver } from "../hooks/ens";
 import { networkInfo } from "../networks";
 import { fromWei } from "../utils";
 
+import { DonateDialog } from "./DonateDialog";
+
 export interface GenerateTransfersMenuProps {
   assetBalance?: AssetBalance;
   collectibleBalance?: CollectibleBalance;
   setCsvText: (csv: string) => void;
+  csvText: string;
 }
 
 export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.Element => {
-  const { assetBalance, collectibleBalance, setCsvText } = props;
+  const { assetBalance, collectibleBalance, setCsvText, csvText } = props;
   const [isGenerationMenuOpen, setIsGenerationMenuOpen] = useState(false);
   const [isDrainModalOpen, setIsDrainModalOpen] = useState(false);
+  const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);
+
   const [drainAddress, setDrainAddress] = useState("");
   const { safe } = useSafeAppsSDK();
 
@@ -73,6 +78,11 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.El
                 Drain safe
               </ButtonLink>
             </Tooltip>
+            <Tooltip title="Select a token and amount to donate to this Safe app">
+              <ButtonLink color="primary" iconType="gift" iconSize="sm" onClick={() => setIsDonateModalOpen(true)}>
+                Donate
+              </ButtonLink>
+            </Tooltip>
           </div>
         </Collapse>
       </div>
@@ -114,6 +124,13 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.El
           }
         />
       )}
+      <DonateDialog
+        assetBalance={assetBalance}
+        isOpen={isDonateModalOpen}
+        onClose={() => setIsDonateModalOpen(false)}
+        onSubmit={(updatedCSV) => setCsvText(updatedCSV)}
+        csvText={csvText}
+      />
     </>
   );
 };
