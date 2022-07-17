@@ -5,7 +5,6 @@ import { useTxPolling } from "src/hooks/useTxPolling";
 
 export const TransactionStatusScreen = ({ tx, reset }: { tx: GatewayTransactionDetails; reset: () => void }) => {
   const polledTx = useTxPolling(tx);
-  console.log(polledTx);
 
   const getPendingStateText = () => {
     switch (polledTx?.txStatus) {

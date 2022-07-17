@@ -15,7 +15,6 @@ export const useTxPolling = (initialTx: GatewayTransactionDetails) => {
       return;
     }
     const polledTx = await sdk.txs.getBySafeTxHash(safeTxHash);
-    console.log("Polled", polledTx);
     setSafeTx(polledTx);
   }, [safeTxHash, sdk.txs]);
 
