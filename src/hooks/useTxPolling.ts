@@ -27,6 +27,7 @@ export const useTxPolling = (initialTx: GatewayTransactionDetails) => {
     const newInterval = window.setInterval(updateTxState, 5000);
     setIntervalID(newInterval);
     return () => window.clearInterval(newInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateTxState]);
 
   return safeTx;
