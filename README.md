@@ -12,6 +12,16 @@ Its as simple as uploading a CSV "transfer" file and submitting a single transac
 
 In this article, we demonstrate how to use the Gnosis Safe - CSV Airdrop
 
+## ❤️ Donate ❤️
+
+If you find this app useful for your onchain activities or would like to contribute, donations are welcomed at
+
+```
+0xD011a7e124181336ED417B737A495745F150d248
+```
+
+This can also be done directly in the the app on your next airdrop via the "Donate" button!
+
 ## Loading the App in Gnosis Safe Interface
 
 The current version is deployed on IPFS at
