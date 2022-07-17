@@ -1,9 +1,17 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { AddressInput, Button, ButtonLink, GenericModal, Menu, Tooltip } from "@gnosis.pm/safe-react-components";
-import { Collapse } from "@material-ui/core";
+import {
+  AddressInput,
+  Breadcrumb,
+  BreadcrumbElement,
+  Button,
+  ButtonLink,
+  GenericModal,
+  Tooltip,
+} from "@gnosis.pm/safe-react-components";
 import BigNumber from "bignumber.js";
 import { utils } from "ethers";
 import React, { useState } from "react";
+import styled from "styled-components";
 
 import { AssetBalance, CollectibleBalance } from "../hooks/balances";
 import { useEnsResolver } from "../hooks/ens";
@@ -19,9 +27,22 @@ export interface GenerateTransfersMenuProps {
   csvText: string;
 }
 
-export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.Element => {
+const GenerateHeader = styled(Breadcrumb)`
+  padding: 8px 0px;
+`;
+
+const GenerateMenuButton = styled(ButtonLink)`
+  background-color: rgb(246, 247, 248);
+  border-radius: 4px;
+  margin-bottom: 4px;
+  min-width: 100px;
+  &:hover {
+    background-color: rgb(239, 250, 248);
+  }
+`;
+
+export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps) => {
   const { assetBalance, collectibleBalance, setCsvText, csvText } = props;
-  const [isGenerationMenuOpen, setIsGenerationMenuOpen] = useState(false);
   const [isDrainModalOpen, setIsDrainModalOpen] = useState(false);
   const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);
 
@@ -65,26 +86,57 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.El
   };
   return (
     <>
-      <div className="generateMenu">
-        <Menu className="leftAlignedMenu">
-          <ButtonLink color="primary" iconType="add" onClick={() => setIsGenerationMenuOpen(!isGenerationMenuOpen)}>
-            Generate transfers
-          </ButtonLink>
-        </Menu>
-        <Collapse in={isGenerationMenuOpen}>
-          <div className="openedGenerateMenu">
-            <Tooltip title="Send all assets and collectibles from this safe">
-              <ButtonLink color="primary" iconType="exportImg" iconSize="sm" onClick={() => setIsDrainModalOpen(true)}>
-                Drain safe
-              </ButtonLink>
-            </Tooltip>
-            <Tooltip title="Select a token and amount to donate to this Safe app">
-              <ButtonLink color="primary" iconType="gift" iconSize="sm" onClick={() => setIsDonateModalOpen(true)}>
-                Donate
-              </ButtonLink>
-            </Tooltip>
-          </div>
-        </Collapse>
+      <div style={{ position: "relative", paddingLeft: "8px" }}>
+        <div
+          style={{
+            borderLeft: "1px solid  #008C73",
+            borderRadius: "4px",
+            width: "10px",
+            height: "45%",
+            position: "absolute",
+            borderBottomLeftRadius: "0px",
+            top: 0,
+            left: 0,
+          }}
+        />
+        <div
+          style={{
+            borderLeft: "1px solid #008C73",
+            borderRadius: "4px",
+            width: "10px",
+            height: "45%",
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            borderTopLeftRadius: "0px",
+          }}
+        />
+        <GenerateHeader>
+          <BreadcrumbElement text="Generate" iconType="add" />
+          <BreadcrumbElement text="Transfers" color="placeHolder" />
+        </GenerateHeader>
+        <div>
+          <Tooltip title="Send all assets and collectibles from this safe">
+            <GenerateMenuButton
+              color="primary"
+              iconType="exportImg"
+              iconSize="sm"
+              onClick={() => setIsDrainModalOpen(true)}
+            >
+              Drain safe
+            </GenerateMenuButton>
+          </Tooltip>
+          <Tooltip title="Select a token and amount to donate to this Safe app">
+            <GenerateMenuButton
+              color="primary"
+              iconType="gift"
+              iconSize="sm"
+              onClick={() => setIsDonateModalOpen(true)}
+            >
+              Donate
+            </GenerateMenuButton>
+          </Tooltip>
+        </div>
       </div>
       {isDrainModalOpen && (
         <GenericModal
@@ -112,7 +164,6 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.El
                 onClick={() => {
                   generateDrainTransfers();
                   setIsDrainModalOpen(false);
-                  setIsGenerationMenuOpen(false);
                 }}
               >
                 Submit
