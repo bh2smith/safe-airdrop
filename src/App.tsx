@@ -1,13 +1,15 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { Breadcrumb, BreadcrumbElement, Button, Card, Divider, Loader, Text } from "@gnosis.pm/safe-react-components";
+import { BaseTransaction, GatewayTransactionDetails } from "@gnosis.pm/safe-apps-sdk";
+import { Breadcrumb, BreadcrumbElement, Button, Card, Divider, Loader } from "@gnosis.pm/safe-react-components";
 import { setUseWhatChange } from "@simbathesailor/use-what-changed";
 import React, { useCallback, useState, useContext } from "react";
 import styled from "styled-components";
 
 import { CSVForm } from "./components/CSVForm";
 import { Header } from "./components/Header";
+import { Loading } from "./components/Loading";
 import { Summary } from "./components/Summary";
+import { TransactionStatusScreen } from "./components/TransactionStatusScreen";
 import { MessageContext } from "./contexts/MessageContextProvider";
 import { useBalances } from "./hooks/balances";
 import { useTokenList } from "./hooks/token";
@@ -21,11 +23,10 @@ const App: React.FC = () => {
   const balanceLoader = useBalances();
   const [tokenTransfers, setTokenTransfers] = useState<Transfer[]>([]);
   const { messages } = useContext(MessageContext);
-
   const [submitting, setSubmitting] = useState(false);
   const [parsing, setParsing] = useState(false);
   const { sdk } = useSafeAppsSDK();
-
+  const [pendingTx, setPendingTx] = useState<GatewayTransactionDetails>();
   const assetTransfers = tokenTransfers.filter(
     (transfer) => transfer.token_type === "erc20" || transfer.token_type === "native",
   ) as AssetTransfer[];
@@ -43,7 +44,7 @@ const App: React.FC = () => {
       console.log(`Encoded ${txs.length} transfers.`);
       const sendTxResponse = await sdk.txs.send({ txs });
       const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
-      console.log({ safeTx });
+      setPendingTx(safeTx);
     } catch (e) {
       console.error(e);
     }
@@ -56,22 +57,9 @@ const App: React.FC = () => {
       {
         <>
           {isLoading || balanceLoader.isLoading ? (
-            <>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: "100%",
-                  paddingTop: "36px",
-                }}
-              >
-                <Text size={"xl"} strong>
-                  Loading tokenlist and balances...
-                </Text>
-                <Loader size={"md"} />
-              </div>
-            </>
+            <Loading />
+          ) : pendingTx ? (
+            <TransactionStatusScreen tx={pendingTx} reset={() => setPendingTx(undefined)} />
           ) : (
             <Card className="cardWithCustomShadow">
               <Breadcrumb>
