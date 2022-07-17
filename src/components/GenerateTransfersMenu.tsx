@@ -8,6 +8,7 @@ import {
   GenericModal,
   Tooltip,
 } from "@gnosis.pm/safe-react-components";
+import { Typography } from "@material-ui/core";
 import BigNumber from "bignumber.js";
 import { utils } from "ethers";
 import React, { useState } from "react";
@@ -141,20 +142,27 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps) => {
       {isDrainModalOpen && (
         <GenericModal
           onClose={() => setIsDrainModalOpen(false)}
-          title="Enter an address to send all assets to"
+          title="Transfer all funds"
           body={
-            <AddressInput
-              address={drainAddress}
-              hiddenLabel
-              label="Address"
-              name="address"
-              error={error}
-              getAddressFromDomain={(name) => ensResolver.resolveName(name).then((address) => address ?? name)}
-              onChangeAddress={setDrainAddress}
-              placeholder="Ethereum address"
-              showNetworkPrefix={true}
-              networkPrefix={selectedNetworkInfo?.shortName}
-            />
+            <>
+              <Typography>
+                Select an address to transfer all funds to. These funds include all ERC20, ERC721 and native tokens.
+                <strong>This will replace the entire CSV file.</strong>
+              </Typography>
+
+              <AddressInput
+                address={drainAddress}
+                hiddenLabel
+                label="Address"
+                name="address"
+                error={error}
+                getAddressFromDomain={(name) => ensResolver.resolveName(name).then((address) => address ?? name)}
+                onChangeAddress={setDrainAddress}
+                placeholder="Ethereum address"
+                showNetworkPrefix={true}
+                networkPrefix={selectedNetworkInfo?.shortName}
+              />
+            </>
           }
           footer={
             <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -175,13 +183,15 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps) => {
           }
         />
       )}
-      <DonateDialog
-        assetBalance={assetBalance}
-        isOpen={isDonateModalOpen}
-        onClose={() => setIsDonateModalOpen(false)}
-        onSubmit={(updatedCSV) => setCsvText(updatedCSV)}
-        csvText={csvText}
-      />
+      {assetBalance && (
+        <DonateDialog
+          assetBalance={assetBalance}
+          isOpen={isDonateModalOpen}
+          onClose={() => setIsDonateModalOpen(false)}
+          onSubmit={(updatedCSV) => setCsvText(updatedCSV)}
+          csvText={csvText}
+        />
+      )}
     </>
   );
 };

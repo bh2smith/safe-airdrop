@@ -1,6 +1,6 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { GenericModal, Button, Select, TextFieldInput, Icon } from "@gnosis.pm/safe-react-components";
-import { InputAdornment } from "@material-ui/core";
+import { InputAdornment, Typography } from "@material-ui/core";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { AssetBalance } from "src/hooks/balances";
@@ -17,12 +17,21 @@ export const DonateDialog = ({
   onSubmit: (donationRow: string) => void;
   isOpen: boolean;
   onClose: () => void;
-  assetBalance: AssetBalance | undefined;
+  assetBalance: AssetBalance;
   csvText: string;
 }) => {
   const { safe } = useSafeAppsSDK();
-  const [selectedToken, setSelectedToken] = useState<string>();
-  const [selectedAmount, setSelectedAmount] = useState<string>();
+  const nativeSymbol = networkInfo.get(safe.chainId)?.currencySymbol || "ETH";
+
+  const items = assetBalance?.map((asset) => ({
+    id: asset.tokenAddress || "0x0",
+    label: asset.token?.name || nativeSymbol,
+    subLabel: `${ethers.utils.formatUnits(asset.balance, asset.decimals)} ${asset.token?.symbol || nativeSymbol}`,
+  }));
+  const [selectedToken, setSelectedToken] = useState<string | undefined>(
+    items && items.length > 0 ? items[0].id : undefined,
+  );
+  const [selectedAmount, setSelectedAmount] = useState<string>("0");
   const [amountError, setAmountError] = useState<string>();
 
   useEffect(() => {
@@ -31,7 +40,9 @@ export const DonateDialog = ({
         setAmountError(undefined);
         return;
       }
-      const selectedBalance = assetBalance?.find((asset) => asset.tokenAddress === selectedToken);
+      const selectedBalance = assetBalance?.find(
+        (asset) => asset.tokenAddress === selectedToken || (selectedToken === "0x0" && asset.tokenAddress === null),
+      );
       if (!selectedBalance) {
         setAmountError("Select an asset with balance > 0");
         return;
@@ -52,17 +63,6 @@ export const DonateDialog = ({
       setAmountError("Amount must be a number");
     }
   }, [selectedAmount, selectedToken, assetBalance]);
-
-  if (!assetBalance) {
-    return null;
-  }
-
-  const nativeSymbol = networkInfo.get(safe.chainId)?.currencySymbol || "ETH";
-  const items = assetBalance.map((asset) => ({
-    id: asset.tokenAddress || "0x0",
-    label: asset.token?.symbol || nativeSymbol,
-    subLabel: asset.token?.name,
-  }));
 
   const handleSubmit = () => {
     if (selectedToken && selectedAmount) {
@@ -85,9 +85,12 @@ export const DonateDialog = ({
   return (
     <GenericModal
       onClose={onClose}
-      title="Select asset and amount you want to donate within batched transaction"
+      title="Donate to project"
       body={
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <Typography>
+            Select an asset and amount. The resulting transaction will be appended to the end of the current CSV.
+          </Typography>
           <Select
             activeItemId={selectedToken || items[0].id}
             items={items}
@@ -100,7 +103,7 @@ export const DonateDialog = ({
             label="Amount"
             name="amount"
             error={amountError}
-            disabled={!selectedToken}
+            disabled={typeof selectedToken === "undefined"}
             value={selectedAmount}
             InputProps={{
               startAdornment: (
@@ -121,7 +124,7 @@ export const DonateDialog = ({
             onClick={handleSubmit}
             disabled={Boolean(amountError) || !Boolean(selectedToken) || !Boolean(selectedAmount)}
           >
-            Submit
+            Add to CSV
           </Button>
           <Button size="md" color="secondary" onClick={onClose}>
             Abort
