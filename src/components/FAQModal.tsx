@@ -92,6 +92,23 @@ export const FAQModal: () => JSX.Element = () => {
                 Since native tokens do not have a token address, you must leave the <code>token_address</code> column
                 blank for native transfers.
               </Text>
+              <Divider />
+              <Title size="md" strong>
+                BEP-20 Transfers
+              </Title>
+              <Text size="lg">
+                As the BEP-20 standard is an extension of ERC20 they are supported by this app. Just pass{" "}
+                <code>erc20</code> as <code>token_id</code>.
+              </Text>
+              <Divider />
+              <Title size="md" strong>
+                Donations
+              </Title>
+              <Text size="lg">
+                You can use the <strong>Donate</strong> Button in the <strong>Generate / Transfers</strong> Menu. This
+                will add a transfer to the batch which sends the selected assets to{" "}
+                <code>0xD011a7e124181336ED417B737A495745F150d248</code>.
+              </Text>
             </div>
           }
           footer={
