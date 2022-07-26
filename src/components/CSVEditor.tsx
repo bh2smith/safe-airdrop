@@ -21,7 +21,7 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
         onChange={(newCode) => props.onChange(newCode)}
         value={props.csvText}
         theme="tomorrow"
-        width={"700px"}
+        width={"100%"}
         mode={"text"}
         minLines={6}
         maxLines={20}

@@ -76,7 +76,6 @@ const styles = createStyles({
     padding: "20px",
     borderWidth: 2,
     borderRadius: 2,
-    width: "660px",
     borderColor: "rgba(0, 0, 0, 0.23)",
     borderStyle: "dashed",
     backgroundColor: "#fafafa",

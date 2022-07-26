@@ -6,6 +6,8 @@ type NetworkInfo = {
   baseAPI?: string;
 };
 
+export const NETWORKS_WITH_DONATIONS_DEPLOYED = [1, 4, 5, 56, 100, 137];
+
 export const networkInfo = new Map<number, NetworkInfo>([
   [
     1,

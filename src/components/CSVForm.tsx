@@ -1,4 +1,5 @@
 import { Text } from "@gnosis.pm/safe-react-components";
+import { Grid } from "@material-ui/core";
 import debounce from "lodash.debounce";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
@@ -133,17 +134,24 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
         a CSV file in a single transaction.
       </Text>
       <Text size="lg">
-        Upload, edit or paste your asset transfer CSV <br /> (token_type,token_address,receiver,amount,id)
+        Upload, edit or paste your asset transfer CSV <br /> (
+        <span style={{ fontFamily: "monospace" }}>token_type,token_address,receiver,amount,id</span>)
       </Text>
 
       <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />
-
-      <CSVUpload onChange={onChangeTextHandler} />
-      <GenerateTransfersMenu
-        assetBalance={assetBalance}
-        collectibleBalance={collectibleBalance}
-        setCsvText={setCsvText}
-      />
+      <Grid container direction="row" spacing={2}>
+        <Grid item xs={12} md={8}>
+          <CSVUpload onChange={onChangeTextHandler} />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <GenerateTransfersMenu
+            assetBalance={assetBalance}
+            collectibleBalance={collectibleBalance}
+            setCsvText={setCsvText}
+            csvText={csvText}
+          />
+        </Grid>
+      </Grid>
     </Form>
   );
 };
