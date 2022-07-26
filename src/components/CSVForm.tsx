@@ -134,7 +134,8 @@ export const CSVForm = (props: CSVFormProps): JSX.Element => {
         a CSV file in a single transaction.
       </Text>
       <Text size="lg">
-        Upload, edit or paste your asset transfer CSV <br /> (token_type,token_address,receiver,amount,id)
+        Upload, edit or paste your asset transfer CSV <br /> (
+        <span style={{ fontFamily: "monospace" }}>token_type,token_address,receiver,amount,id</span>)
       </Text>
 
       <CSVEditor csvText={csvText} onChange={onChangeTextHandler} />

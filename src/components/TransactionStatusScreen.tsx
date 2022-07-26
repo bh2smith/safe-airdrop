@@ -13,13 +13,13 @@ export const TransactionStatusScreen = ({ tx, reset }: { tx: GatewayTransactionD
       case TransactionStatus.AWAITING_EXECUTION:
         return "Awaiting execution";
       case TransactionStatus.CANCELLED:
-        return "Cancelled";
+        return "Transaction cancelled!";
       case TransactionStatus.FAILED:
-        return "Failed";
+        return "Transaction failed!";
       case TransactionStatus.PENDING:
         return "Transaction pending";
       case TransactionStatus.SUCCESS:
-        return "Transaction successful";
+        return "Transaction successful!";
       case TransactionStatus.WILL_BE_REPLACED:
         return "Transaction will be replaced";
       default:
@@ -54,11 +54,10 @@ export const TransactionStatusScreen = ({ tx, reset }: { tx: GatewayTransactionD
           <Typography style={{ marginBottom: "16px" }} variant="body2">
             {getPendingStateText()}
           </Typography>
-          {isTxFinished() && (
-            <Button size={"md"} onClick={() => reset}>
-              New transaction
-            </Button>
-          )}
+
+          <Button size={"md"} onClick={reset}>
+            New transaction
+          </Button>
         </Grid>
       </Grid>
     </Card>

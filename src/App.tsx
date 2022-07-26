@@ -23,7 +23,6 @@ const App: React.FC = () => {
   const balanceLoader = useBalances();
   const [tokenTransfers, setTokenTransfers] = useState<Transfer[]>([]);
   const { messages } = useContext(MessageContext);
-  const [submitting, setSubmitting] = useState(false);
   const [parsing, setParsing] = useState(false);
   const { sdk } = useSafeAppsSDK();
   const [pendingTx, setPendingTx] = useState<GatewayTransactionDetails>();
@@ -35,7 +34,6 @@ const App: React.FC = () => {
   ) as CollectibleTransfer[];
 
   const submitTx = useCallback(async () => {
-    setSubmitting(true);
     try {
       const txs: BaseTransaction[] = [];
       txs.push(...buildAssetTransfers(assetTransfers));
@@ -48,7 +46,6 @@ const App: React.FC = () => {
     } catch (e) {
       console.error(e);
     }
-    setSubmitting(false);
   }, [assetTransfers, collectibleTransfers, sdk.txs]);
 
   return (
@@ -58,28 +55,24 @@ const App: React.FC = () => {
         <>
           {isLoading || balanceLoader.isLoading ? (
             <Loading />
-          ) : pendingTx ? (
-            <TransactionStatusScreen tx={pendingTx} reset={() => setPendingTx(undefined)} />
           ) : (
             <Card className="cardWithCustomShadow">
-              <Breadcrumb>
-                <BreadcrumbElement text="CSV Transfer File" iconType="paste" />
-              </Breadcrumb>
-              <CSVForm updateTransferTable={setTokenTransfers} setParsing={setParsing} />
-              <Divider />
+              {!pendingTx && (
+                <>
+                  <Breadcrumb>
+                    <BreadcrumbElement text="CSV Transfer File" iconType="paste" />
+                  </Breadcrumb>
+                  <CSVForm updateTransferTable={setTokenTransfers} setParsing={setParsing} />
+                  <Divider />
+                </>
+              )}
               <Breadcrumb>
                 <BreadcrumbElement text="Summary" iconType="transactionsInactive" />
                 <BreadcrumbElement text="Transfers" color="placeHolder" />
               </Breadcrumb>
               <Summary assetTransfers={assetTransfers} collectibleTransfers={collectibleTransfers} />
-              {submitting ? (
-                <>
-                  <Loader size="md" />
-                  <br />
-                  <Button size="lg" color="secondary" onClick={() => setSubmitting(false)}>
-                    Cancel
-                  </Button>
-                </>
+              {pendingTx ? (
+                <TransactionStatusScreen tx={pendingTx} reset={() => setPendingTx(undefined)} />
               ) : (
                 <Button
                   style={{ alignSelf: "flex-start", marginTop: 16, marginBottom: 16 }}
