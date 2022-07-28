@@ -25,7 +25,7 @@ This can also be done directly in the the app on your next airdrop via the "Dona
 ## Loading the App in Gnosis Safe Interface
 
 The current version is deployed on IPFS at
-https://cloudflare-ipfs.com/ipfs/Qmdc4ktU7wMaqM6165NxMgpioEre1Pcain582AFChAY19k
+https://cloudflare-ipfs.com/ipfs/QmUFKPZSn73LiwznQ3PVWQXpcaWVdYrSM6c5DES2y24EYd
 
 For older deployed versions, you can find the IPFS hash under [Releases](https://github.com/bh2smith/safe-airdrop/releases).
 
