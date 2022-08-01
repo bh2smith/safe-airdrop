@@ -1532,10 +1532,10 @@
     "@gnosis.pm/safe-react-gateway-sdk" "^3.1.1"
     ethers "^5.6.8"
 
-"@gnosis.pm/safe-react-components@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-react-components/-/safe-react-components-1.1.4.tgz#4db12424bd0227fa28148230d231e61cd145ebe6"
-  integrity sha512-OrVP54gc05dY1H6PrVk/vz6Fg0yFrCoNB9FER+s/1q/nnVMCkeW6/qA3Cr87O9MOmTql/gy+PO9jQJXYvRkYvg==
+"@gnosis.pm/safe-react-components@^1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-react-components/-/safe-react-components-1.1.5.tgz#794e6cd175dc82ffb12f0e2a721d047113d5046d"
+  integrity sha512-B2Li8vZYFUwS7ARMFh76DYKKAxJAAWCv1y8eZ8k8CpqqZmvBzY6Qqb5JxoeHWvOy5YWq4L5LPcXF6wNCT72M9w==
   dependencies:
     react-media "^1.10.0"
     web3-utils "^1.6.0"
