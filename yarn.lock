@@ -1045,10 +1045,10 @@
     core-js-pure "^3.20.2"
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.10.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.18.3", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
-  version "7.18.6"
-  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.18.6.tgz#6a1ef59f838debd670421f8c7f2cbb8da9751580"
-  integrity sha512-t9wi7/AW6XtKahAe20Yw0/mMljKq0B1r2fPdvaAdV/KPDZewFXdaaa6K7lxmZBZ8FBNpCiAT6iHPmd6QO9bKfQ==
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.10.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.18.9", "@babel/runtime@^7.2.0", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+  version "7.18.9"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.18.9.tgz#b4fcfce55db3d2e5e080d2490f608a3b9f407f4a"
+  integrity sha512-lkqXDcvlFT5rvEjiu6+QYO+1GXrEHRo2LOtS7E4GtX5ESIZOgepqsZBVIj6Pv+a6zqsya9VCgiK1KAK4BvJDAw==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -2103,12 +2103,12 @@
     "@svgr/plugin-svgo" "^5.5.0"
     loader-utils "^2.0.0"
 
-"@tanem/svg-injector@^10.1.25":
-  version "10.1.26"
-  resolved "https://registry.yarnpkg.com/@tanem/svg-injector/-/svg-injector-10.1.26.tgz#1db18384d8574b67172949c0513e9a86cdf2c69b"
-  integrity sha512-cDpqy6w/XzfU+vs5UkFhOWhvkhNG3yNei4v4kY0CzBnP0/GqVBt1Kyh8qINvzWQiJwcpvd6RjZPOojpau5sa/g==
+"@tanem/svg-injector@^10.1.28":
+  version "10.1.29"
+  resolved "https://registry.yarnpkg.com/@tanem/svg-injector/-/svg-injector-10.1.29.tgz#e9f6623c8763ebbb5d70712757bb1660b75fbca3"
+  integrity sha512-Q/Bt9OY68QkgobzFZJf/AVPkvcPEHXXVbgd+3NzvhQLVEKNHtVZ9MpM5N41s8uCZtyJ3uxoHJtUl1LJG5RXzYQ==
   dependencies:
-    "@babel/runtime" "^7.18.3"
+    "@babel/runtime" "^7.18.9"
     content-type "^1.0.4"
     tslib "^2.4.0"
 
@@ -10575,13 +10575,13 @@ react-scripts@^4.0.3:
   optionalDependencies:
     fsevents "^2.1.3"
 
-react-svg@^15.1.0:
-  version "15.1.0"
-  resolved "https://registry.yarnpkg.com/react-svg/-/react-svg-15.1.0.tgz#32493d74b4048b3a2adbec6fcc9691f229d589d4"
-  integrity sha512-inDZ73T7SmZdn+2cFSc/YJIZu29bBTdVYYtykwPgu7fLLyDXPKinJ9K1ABe12Pi/GAd/AVQX3TZ9lj6xj2dnow==
+react-svg@^15.1.4:
+  version "15.1.4"
+  resolved "https://registry.yarnpkg.com/react-svg/-/react-svg-15.1.4.tgz#6e1e752f185c4f4f3dc6aae810d44a6dd3ab228f"
+  integrity sha512-ma3CEdjrC6xdpJHiBG3O4Zz5e6sSzHsJ6+EKVEXJ7qIZai52J6Qh0X0KmZ+RrfLQIqt+D/z9pqaSernX3Ap2NQ==
   dependencies:
-    "@babel/runtime" "^7.18.3"
-    "@tanem/svg-injector" "^10.1.25"
+    "@babel/runtime" "^7.18.9"
+    "@tanem/svg-injector" "^10.1.28"
     "@types/prop-types" "^15.7.5"
     prop-types "^15.8.1"
 
