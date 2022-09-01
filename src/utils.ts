@@ -23,7 +23,9 @@ export interface TokenInfo {
 
 export function toWei(amount: string | number | BigNumber, decimals: number): BigNumber {
   let res = TEN.pow(decimals).multipliedBy(amount);
-  if (res.decimalPlaces() > 0) {
+  const decimalPlaces = res.decimalPlaces();
+  // unsure when this can be null, so we simply skip the case as a possibility.
+  if (decimalPlaces != null && decimalPlaces > 0) {
     // TODO - reinstate this warning by passing along with return content
     // Return (Transaction[], Message)
     // setLastError({
