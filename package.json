@@ -24,7 +24,7 @@
     "@gnosis.pm/safe-react-components": "1.1.5",
     "@material-ui/core": "^4.12.3",
     "@material-ui/lab": "^4.0.0-alpha.60",
-    "@openzeppelin/contracts": "^4.7.2",
+    "@openzeppelin/contracts": "^4.7.3",
     "ace-builds": "^1.10.0",
     "bignumber.js": "^9.0.2",
     "ethers": "^5.6.2",
