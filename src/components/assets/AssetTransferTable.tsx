@@ -64,7 +64,7 @@ const Row = memo((props: RowProps) => {
         <ERC20Token tokenAddress={row.tokenAddress} symbol={row.symbol} />
         <Receiver receiverAddress={row.receiver} receiverEnsName={row.receiverEnsName} />
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
-          <Text size="md">{row.amount?.toFixed()}</Text>
+          <Text size="md">{row.amount?.toString()}</Text>
         </div>
       </div>
     </div>

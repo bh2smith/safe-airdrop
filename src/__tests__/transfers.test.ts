@@ -1,6 +1,5 @@
-import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 
 import { fetchTokenList, MinimalTokenInfo } from "../hooks/token";
 import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
@@ -64,16 +63,16 @@ describe("Build Transfers:", () => {
       expect(listedTransfer.value).to.be.equal("0");
       expect(listedTransfer.to).to.be.equal(listedToken.address);
       expect(listedTransfer.data).to.be.equal(
-        erc20Interface.encodeFunctionData("transfer", [receiver, MAX_U256.toFixed()]),
+        erc20Interface.encodeFunctionData("transfer", [receiver, MAX_U256.toString()]),
       );
 
       expect(unlistedTransfer.value).to.be.equal("0");
       expect(unlistedTransfer.to).to.be.equal(testData.unlistedERC20Token.address);
       expect(unlistedTransfer.data).to.be.equal(
-        erc20Interface.encodeFunctionData("transfer", [receiver, MAX_U256.toFixed()]),
+        erc20Interface.encodeFunctionData("transfer", [receiver, MAX_U256.toString()]),
       );
 
-      expect(nativeTransfer.value).to.be.equal(MAX_U256.toFixed());
+      expect(nativeTransfer.value).to.be.equal(MAX_U256.toString());
       expect(nativeTransfer.to).to.be.equal(receiver);
       expect(nativeTransfer.data).to.be.equal("0x");
     });
@@ -81,7 +80,7 @@ describe("Build Transfers:", () => {
 
   describe("Decimals", () => {
     it("works with decimal payments on listed, unlisted and native transfers", () => {
-      const tinyAmount = new BigNumber("0.0000001");
+      const tinyAmount = BigNumber.from("0.0000001");
       const smallPayments: AssetTransfer[] = [
         // Listed ERC20
         {
@@ -119,7 +118,7 @@ describe("Build Transfers:", () => {
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
-        erc20Interface.encodeFunctionData("transfer", [receiver, toWei(tinyAmount, listedToken.decimals).toFixed()]),
+        erc20Interface.encodeFunctionData("transfer", [receiver, toWei(tinyAmount, listedToken.decimals).toString()]),
       );
 
       expect(unlisted.value).to.be.equal("0");
@@ -127,7 +126,7 @@ describe("Build Transfers:", () => {
       expect(unlisted.data).to.be.equal(
         erc20Interface.encodeFunctionData("transfer", [
           receiver,
-          toWei(tinyAmount, testData.unlistedERC20Token.decimals).toFixed(),
+          toWei(tinyAmount, testData.unlistedERC20Token.decimals).toString(),
         ]),
       );
 
@@ -139,7 +138,7 @@ describe("Build Transfers:", () => {
 
   describe("Mixed", () => {
     it("works with arbitrary value strings on listed, unlisted and native transfers", () => {
-      const mixedAmount = new BigNumber("123456.000000789");
+      const mixedAmount = BigNumber.from("123456.000000789");
       const mixedPayments: AssetTransfer[] = [
         // Listed ERC20
         {
@@ -177,7 +176,7 @@ describe("Build Transfers:", () => {
       expect(listed.value).to.be.equal("0");
       expect(listed.to).to.be.equal(listedToken.address);
       expect(listed.data).to.be.equal(
-        erc20Interface.encodeFunctionData("transfer", [receiver, toWei(mixedAmount, listedToken.decimals).toFixed()]),
+        erc20Interface.encodeFunctionData("transfer", [receiver, toWei(mixedAmount, listedToken.decimals).toString()]),
       );
 
       expect(unlisted.value).to.be.equal("0");
@@ -185,11 +184,11 @@ describe("Build Transfers:", () => {
       expect(unlisted.data).to.be.equal(
         erc20Interface.encodeFunctionData("transfer", [
           receiver,
-          toWei(mixedAmount, testData.unlistedERC20Token.decimals).toFixed(),
+          toWei(mixedAmount, testData.unlistedERC20Token.decimals).toString(),
         ]),
       );
 
-      expect(native.value).to.be.equal(toWei(mixedAmount, 18).toFixed());
+      expect(native.value).to.be.equal(toWei(mixedAmount, 18).toString());
       expect(native.to).to.be.equal(receiver);
       expect(native.data).to.be.equal("0x");
     });
@@ -197,7 +196,7 @@ describe("Build Transfers:", () => {
 
   describe("Truncation on too many decimals", () => {
     it("cuts fractional part of token with 0 decimals", () => {
-      const amount = new BigNumber("1.000000789");
+      const amount = 1.000000789;
       const crappyToken: TokenInfo = {
         address: "0x6b175474e89094c44da98b954eedeac495271d0f",
         decimals: 0,
@@ -219,7 +218,7 @@ describe("Build Transfers:", () => {
       expect(transfer.value).to.be.equal("0");
       expect(transfer.to).to.be.equal(crappyToken.address);
       expect(transfer.data).to.be.equal(
-        erc20Interface.encodeFunctionData("transfer", [receiver, toWei(amount, crappyToken.decimals).toFixed()]),
+        erc20Interface.encodeFunctionData("transfer", [receiver, toWei(amount, crappyToken.decimals).toString()]),
       );
     });
   });
@@ -233,7 +232,7 @@ describe("Build Transfers:", () => {
         receiverEnsName: null,
         tokenAddress: testData.addresses.dummyErc721Address,
         tokenName: "Test NFT",
-        tokenId: new BigNumber("69"),
+        tokenId: BigNumber.from("69"),
         hasMetaData: false,
       },
       {
@@ -243,8 +242,8 @@ describe("Build Transfers:", () => {
         receiverEnsName: null,
         tokenAddress: testData.addresses.dummyErc1155Address,
         tokenName: "Test MultiToken",
-        amount: new BigNumber("69"),
-        tokenId: new BigNumber("420"),
+        amount: BigNumber.from("69"),
+        tokenId: BigNumber.from("420"),
         hasMetaData: false,
       },
     ];

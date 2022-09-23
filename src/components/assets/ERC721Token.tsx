@@ -1,6 +1,6 @@
 import { Loader, Text } from "@gnosis.pm/safe-react-components";
 import { Popover } from "@material-ui/core";
-import { BigNumber } from "bignumber.js";
+import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 

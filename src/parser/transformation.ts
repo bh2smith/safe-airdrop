@@ -1,6 +1,5 @@
 import { RowTransformCallback } from "@fast-csv/parse";
-import { BigNumber } from "bignumber.js";
-import { utils } from "ethers";
+import { utils, BigNumber } from "ethers";
 
 import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import { EnsResolver } from "../hooks/ens";
@@ -83,7 +82,7 @@ export const transformAsset = (
   const prePayment: PrePayment = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
     tokenAddress: transformERC20TokenAddress(row.token_address),
-    amount: new BigNumber(row.amount ?? row.value ?? ""),
+    amount: BigNumber.from(row.amount ?? row.value ?? ""),
     receiver: normalizeAddress(trimMatchingNetwork(row.receiver, selectedChainShortname)),
     tokenType: row.token_type,
   };
@@ -158,10 +157,10 @@ export const transformCollectible = (
   const prePayment: PreCollectibleTransfer = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
     tokenAddress: normalizeAddress(row.token_address),
-    tokenId: new BigNumber(row.id ?? ""),
+    tokenId: BigNumber.from(row.id ?? ""),
     receiver: normalizeAddress(row.receiver),
     tokenType: row.token_type,
-    amount: new BigNumber(row.amount ?? ""),
+    amount: BigNumber.from(row.amount ?? ""),
   };
 
   toCollectibleTransfer(prePayment, erc721InfoProvider, ensResolver)

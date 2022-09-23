@@ -14,7 +14,7 @@ export function buildAssetTransfers(transferData: AssetTransfer[]): BaseTransact
       // Native asset transfer
       return {
         to: transfer.receiver,
-        value: toWei(transfer.amount, 18).toFixed(),
+        value: toWei(transfer.amount, 18).toString(),
         data: "0x",
       };
     } else {
@@ -24,7 +24,7 @@ export function buildAssetTransfers(transferData: AssetTransfer[]): BaseTransact
       return {
         to: transfer.tokenAddress,
         value: "0",
-        data: erc20Interface.encodeFunctionData("transfer", [transfer.receiver, valueData.toFixed()]),
+        data: erc20Interface.encodeFunctionData("transfer", [transfer.receiver, valueData.toString()]),
       };
     }
   });
@@ -40,7 +40,7 @@ export function buildCollectibleTransfers(transferData: CollectibleTransfer[]): 
         data: erc721Interface.encodeFunctionData("safeTransferFrom", [
           transfer.from,
           transfer.receiver,
-          transfer.tokenId.toFixed(),
+          transfer.tokenId.toString(),
         ]),
       };
     } else {
@@ -50,8 +50,8 @@ export function buildCollectibleTransfers(transferData: CollectibleTransfer[]): 
         data: erc1155Interface.encodeFunctionData("safeTransferFrom", [
           transfer.from,
           transfer.receiver,
-          transfer.tokenId.toFixed(),
-          transfer.amount?.toFixed() ?? "0",
+          transfer.tokenId.toString(),
+          transfer.amount?.toString() ?? "0",
           ethers.utils.hexlify("0x00"),
         ]),
       };

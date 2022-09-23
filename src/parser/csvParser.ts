@@ -1,5 +1,5 @@
 import { parseString, RowValidateCallback } from "@fast-csv/parse";
-import { BigNumber } from "bignumber.js";
+import { BigNumber, BigNumberish } from "ethers";
 
 import { CodeWarning } from "../contexts/MessageContextProvider";
 import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
@@ -21,7 +21,7 @@ export type CollectibleTokenType = "erc721" | "erc1155";
 export interface AssetTransfer {
   token_type: AssetTokenType;
   receiver: string;
-  amount: BigNumber;
+  amount: BigNumberish;
   tokenAddress: string | null;
   decimals: number;
   symbol?: string;

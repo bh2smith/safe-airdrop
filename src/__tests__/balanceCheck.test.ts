@@ -1,5 +1,5 @@
-import BigNumber from "bignumber.js";
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 
 import { AssetBalance, CollectibleBalance } from "../hooks/balances";
 import { assetTransfersToSummary, checkAllBalances } from "../parser/balanceCheck";
@@ -13,7 +13,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(1),
+        amount: BigNumber.from(1),
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
@@ -22,7 +22,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(2),
+        amount: BigNumber.from(2),
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ETH",
@@ -31,7 +31,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(3),
+        amount: BigNumber.from(3),
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ETH",
@@ -39,13 +39,13 @@ describe("transferToSummary and check balances", () => {
       },
     ];
     const summary = assetTransfersToSummary(transfers);
-    expect(summary.get(null)?.amount.toFixed()).to.equal("6");
+    expect(summary.get(null)?.amount.toString()).to.equal("6");
 
     const exactBalance: AssetBalance = [
       {
         token: null,
         tokenAddress: null,
-        balance: toWei("6", 18).toFixed(),
+        balance: toWei("6", 18).toString(),
         decimals: 18,
       },
     ];
@@ -53,7 +53,7 @@ describe("transferToSummary and check balances", () => {
       {
         token: null,
         tokenAddress: null,
-        balance: toWei("7", 18).toFixed(),
+        balance: toWei("7", 18).toString(),
         decimals: 18,
       },
     ];
@@ -61,7 +61,7 @@ describe("transferToSummary and check balances", () => {
       {
         token: null,
         tokenAddress: null,
-        balance: toWei("5.999999999999", 18).toFixed(),
+        balance: toWei("5.999999999999", 18).toString(),
         decimals: 18,
       },
     ];
@@ -80,7 +80,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(0.1),
+        amount: BigNumber.from(0.1),
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
@@ -89,7 +89,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(0.01),
+        amount: BigNumber.from(0.01),
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ETH",
@@ -98,7 +98,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(0.001),
+        amount: BigNumber.from(0.001),
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ETH",
@@ -106,13 +106,13 @@ describe("transferToSummary and check balances", () => {
       },
     ];
     const summary = assetTransfersToSummary(transfers);
-    expect(summary.get(null)?.amount.toFixed()).to.equal("0.111");
+    expect(summary.get(null)?.amount.toString()).to.equal("0.111");
 
     const exactBalance: AssetBalance = [
       {
         token: null,
         tokenAddress: null,
-        balance: toWei("0.111", 18).toFixed(),
+        balance: toWei("0.111", 18).toString(),
         decimals: 18,
       },
     ];
@@ -120,7 +120,7 @@ describe("transferToSummary and check balances", () => {
       {
         token: null,
         tokenAddress: null,
-        balance: toWei("0.1111", 18).toFixed(),
+        balance: toWei("0.1111", 18).toString(),
         decimals: 18,
       },
     ];
@@ -128,7 +128,7 @@ describe("transferToSummary and check balances", () => {
       {
         token: null,
         tokenAddress: null,
-        balance: toWei("0.11", 18).toFixed(),
+        balance: toWei("0.11", 18).toString(),
         decimals: 18,
       },
     ];
@@ -147,7 +147,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(0.1),
+        amount: BigNumber.from(0.1),
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ULT",
@@ -156,7 +156,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(0.01),
+        amount: BigNumber.from(0.01),
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ULT",
@@ -165,7 +165,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(0.001),
+        amount: BigNumber.from(0.001),
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ULT",
@@ -173,7 +173,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
     const summary = assetTransfersToSummary(transfers);
-    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("0.111");
+    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toString()).to.equal("0.111");
 
     const exactBalance: AssetBalance = [
       {
@@ -183,7 +183,7 @@ describe("transferToSummary and check balances", () => {
           name: "Unlisted Token",
         },
         tokenAddress: testData.unlistedERC20Token.address,
-        balance: toWei("0.111", 18).toFixed(),
+        balance: toWei("0.111", 18).toString(),
         decimals: 18,
       },
     ];
@@ -195,7 +195,7 @@ describe("transferToSummary and check balances", () => {
           name: "Unlisted Token",
         },
         tokenAddress: testData.unlistedERC20Token.address,
-        balance: toWei("0.1111", 18).toFixed(),
+        balance: toWei("0.1111", 18).toString(),
         decimals: 18,
       },
     ];
@@ -207,7 +207,7 @@ describe("transferToSummary and check balances", () => {
           name: "Unlisted Token",
         },
         tokenAddress: testData.unlistedERC20Token.address,
-        balance: toWei("0.11", 18).toFixed(),
+        balance: toWei("0.11", 18).toString(),
         decimals: 18,
       },
     ];
@@ -226,7 +226,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(1),
+        amount: BigNumber.from(1),
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ULT",
@@ -235,7 +235,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(2),
+        amount: BigNumber.from(2),
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ULT",
@@ -244,7 +244,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(3),
+        amount: BigNumber.from(3),
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ULT",
@@ -252,7 +252,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
     const summary = assetTransfersToSummary(transfers);
-    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("6");
+    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toString()).to.equal("6");
 
     const exactBalance: AssetBalance = [
       {
@@ -262,7 +262,7 @@ describe("transferToSummary and check balances", () => {
           name: "Unlisted Token",
         },
         tokenAddress: testData.unlistedERC20Token.address,
-        balance: toWei("6", 18).toFixed(),
+        balance: toWei("6", 18).toString(),
         decimals: 18,
       },
     ];
@@ -274,7 +274,7 @@ describe("transferToSummary and check balances", () => {
           name: "Unlisted Token",
         },
         tokenAddress: testData.unlistedERC20Token.address,
-        balance: toWei("7", 18).toFixed(),
+        balance: toWei("7", 18).toString(),
         decimals: 18,
       },
     ];
@@ -286,7 +286,7 @@ describe("transferToSummary and check balances", () => {
           name: "Unlisted Token",
         },
         tokenAddress: testData.unlistedERC20Token.address,
-        balance: toWei("5.999999999999", 18).toFixed(),
+        balance: toWei("5.999999999999", 18).toString(),
         decimals: 18,
       },
     ];
@@ -305,7 +305,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(1.1),
+        amount: BigNumber.from(1.1),
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ULT",
@@ -314,7 +314,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(2),
+        amount: BigNumber.from(2),
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ULT",
@@ -323,7 +323,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(3.3),
+        amount: BigNumber.from(3.3),
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ULT",
@@ -332,7 +332,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(3),
+        amount: BigNumber.from(3),
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
@@ -341,7 +341,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(0.33),
+        amount: BigNumber.from(0.33),
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
@@ -349,14 +349,14 @@ describe("transferToSummary and check balances", () => {
       },
     ];
     const summary = assetTransfersToSummary(transfers);
-    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("6.4");
-    expect(summary.get(null)?.amount.toFixed()).to.equal("3.33");
+    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toString()).to.equal("6.4");
+    expect(summary.get(null)?.amount.toString()).to.equal("3.33");
 
     const exactBalance: AssetBalance = [
       {
         token: null,
         tokenAddress: null,
-        balance: toWei("3.33", 18).toFixed(),
+        balance: toWei("3.33", 18).toString(),
         decimals: 18,
       },
       {
@@ -366,7 +366,7 @@ describe("transferToSummary and check balances", () => {
           name: "Unlisted Token",
         },
         tokenAddress: testData.unlistedERC20Token.address,
-        balance: toWei("6.4", 18).toFixed(),
+        balance: toWei("6.4", 18).toString(),
         decimals: 18,
       },
     ];
@@ -374,7 +374,7 @@ describe("transferToSummary and check balances", () => {
       {
         token: null,
         tokenAddress: null,
-        balance: toWei("3.34", 18).toFixed(),
+        balance: toWei("3.34", 18).toString(),
         decimals: 18,
       },
       {
@@ -384,7 +384,7 @@ describe("transferToSummary and check balances", () => {
           name: "Unlisted Token",
         },
         tokenAddress: testData.unlistedERC20Token.address,
-        balance: toWei("6.5", 18).toFixed(),
+        balance: toWei("6.5", 18).toString(),
         decimals: 18,
       },
     ];
@@ -392,7 +392,7 @@ describe("transferToSummary and check balances", () => {
       {
         token: null,
         tokenAddress: null,
-        balance: toWei("3.32", 18).toFixed(),
+        balance: toWei("3.32", 18).toString(),
         decimals: 18,
       },
       {
@@ -402,7 +402,7 @@ describe("transferToSummary and check balances", () => {
           name: "Unlisted Token",
         },
         tokenAddress: testData.unlistedERC20Token.address,
-        balance: toWei("6.3", 18).toFixed(),
+        balance: toWei("6.3", 18).toString(),
         decimals: 18,
       },
     ];
@@ -411,7 +411,7 @@ describe("transferToSummary and check balances", () => {
       {
         token: null,
         tokenAddress: null,
-        balance: toWei("3.32", 18).toFixed(),
+        balance: toWei("3.32", 18).toString(),
         decimals: 18,
       },
       {
@@ -421,7 +421,7 @@ describe("transferToSummary and check balances", () => {
           name: "Unlisted Token",
         },
         tokenAddress: testData.unlistedERC20Token.address,
-        balance: toWei("69", 18).toFixed(),
+        balance: toWei("69", 18).toString(),
         decimals: 18,
       },
     ];
@@ -453,7 +453,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc721",
         tokenAddress: testData.unlistedERC20Token.address,
-        tokenId: new BigNumber(69),
+        tokenId: BigNumber.from(69),
         receiver: testData.addresses.receiver1,
         tokenName: "Test Collectible",
         receiverEnsName: null,
@@ -463,7 +463,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc721",
         tokenAddress: testData.unlistedERC20Token.address,
-        tokenId: new BigNumber(420),
+        tokenId: BigNumber.from(420),
         receiver: testData.addresses.receiver1,
         tokenName: "Test Collectible",
         receiverEnsName: null,
@@ -521,7 +521,7 @@ describe("transferToSummary and check balances", () => {
     expect(smallBalanceCheckResult).to.have.length(1);
     expect(smallBalanceCheckResult[0].token).to.equal("Test Collectible");
     expect(smallBalanceCheckResult[0].token_type).to.equal("erc721");
-    expect(smallBalanceCheckResult[0].id?.toFixed()).to.equal("420");
+    expect(smallBalanceCheckResult[0].id?.toString()).to.equal("420");
     expect(smallBalanceCheckResult[0].transferAmount).to.be.undefined;
     expect(smallBalanceCheckResult[0].isDuplicate).to.be.false;
   });
@@ -531,7 +531,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc721",
         tokenAddress: testData.unlistedERC20Token.address,
-        tokenId: new BigNumber(69),
+        tokenId: BigNumber.from(69),
         receiver: testData.addresses.receiver1,
         receiverEnsName: null,
         hasMetaData: false,
@@ -540,7 +540,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc721",
         tokenAddress: testData.unlistedERC20Token.address,
-        tokenId: new BigNumber(69),
+        tokenId: BigNumber.from(69),
         receiver: testData.addresses.receiver2,
         receiverEnsName: null,
         hasMetaData: false,
@@ -561,7 +561,7 @@ describe("transferToSummary and check balances", () => {
     expect(balanceCheckResult).to.have.length(1);
     expect(balanceCheckResult[0].token).to.equal("Test Collectible");
     expect(balanceCheckResult[0].token_type).to.equal("erc721");
-    expect(balanceCheckResult[0].id?.toFixed()).to.equal("69");
+    expect(balanceCheckResult[0].id?.toString()).to.equal("69");
     expect(balanceCheckResult[0].transferAmount).to.undefined;
     expect(balanceCheckResult[0].isDuplicate).to.be.true;
   });

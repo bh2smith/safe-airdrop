@@ -1,7 +1,7 @@
-import { BigNumber } from "bignumber.js";
 import * as chai from "chai";
 import { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { BigNumber } from "ethers";
 
 import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import { EnsResolver } from "../hooks/ens";
@@ -147,19 +147,19 @@ describe("Parsing CSVs ", () => {
     expect(paymentWithoutDecimal.decimals).to.be.equal(18);
     expect(paymentWithoutDecimal.receiver).to.equal(validReceiverAddress);
     expect(paymentWithoutDecimal.tokenAddress).to.equal(listedToken.address);
-    expect(paymentWithoutDecimal.amount.isEqualTo(new BigNumber(1))).to.be.true;
+    expect(paymentWithoutDecimal.amount.eq(BigNumber.from(1))).to.be.true;
     expect(paymentWithoutDecimal.receiverEnsName).to.be.null;
 
     expect(paymentWithDecimal.receiver).to.equal(validReceiverAddress);
     expect(paymentWithDecimal.tokenAddress?.toLowerCase()).to.equal(listedToken.address.toLowerCase());
     expect(paymentWithDecimal.decimals).to.equal(18);
-    expect(paymentWithDecimal.amount.isEqualTo(new BigNumber(69.42))).to.be.true;
+    expect(paymentWithDecimal.amount.eq(BigNumber.from(69.42))).to.be.true;
     expect(paymentWithDecimal.receiverEnsName).to.be.null;
 
     expect(paymentWithoutTokenAddress.decimals).to.be.equal(18);
     expect(paymentWithoutTokenAddress.receiver).to.equal(validReceiverAddress);
     expect(paymentWithoutTokenAddress.tokenAddress).to.equal(null);
-    expect(paymentWithoutTokenAddress.amount.isEqualTo(new BigNumber(1))).to.be.true;
+    expect(paymentWithoutTokenAddress.amount.eq(BigNumber.from(1))).to.be.true;
     expect(paymentWithoutTokenAddress.receiverEnsName).to.be.null;
   });
 
@@ -232,13 +232,13 @@ describe("Parsing CSVs ", () => {
     expect(paymentReceiverEnsName.decimals).to.be.equal(18);
     expect(paymentReceiverEnsName.receiver).to.equal(testData.addresses.receiver1);
     expect(paymentReceiverEnsName.tokenAddress).to.equal(listedToken.address);
-    expect(paymentReceiverEnsName.amount.isEqualTo(new BigNumber(1))).to.be.true;
+    expect(paymentReceiverEnsName.amount.eq(BigNumber.from(1))).to.be.true;
     expect(paymentReceiverEnsName.receiverEnsName).to.equal("receiver1.eth");
 
     expect(paymentTokenEnsName.receiver).to.equal(validReceiverAddress);
     expect(paymentTokenEnsName.tokenAddress?.toLowerCase()).to.equal(listedToken.address.toLowerCase());
     expect(paymentTokenEnsName.decimals).to.equal(18);
-    expect(paymentTokenEnsName.amount.isEqualTo(new BigNumber(69.42))).to.be.true;
+    expect(paymentTokenEnsName.amount.eq(BigNumber.from(69.42))).to.be.true;
     expect(paymentReceiverEnsName.receiverEnsName).to.equal("receiver1.eth");
 
     expect(warningUnknownReceiverEnsName.lineNo).to.equal(3);
@@ -282,18 +282,18 @@ describe("Parsing CSVs ", () => {
     expect(transferErc721AndAddress.receiver).to.equal(validReceiverAddress);
     expect(transferErc721AndAddress.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
     expect(transferErc721AndAddress.amount).to.be.undefined;
-    expect(transferErc721AndAddress.tokenId.isEqualTo(new BigNumber(1))).to.be.true;
+    expect(transferErc721AndAddress.tokenId.eq(BigNumber.from(1))).to.be.true;
     expect(transferErc721AndAddress.receiverEnsName).to.be.null;
 
     expect(transferErc721AndENS.receiver).to.equal(testData.addresses.receiver2);
     expect(transferErc721AndENS.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
-    expect(transferErc721AndENS.tokenId.isEqualTo(new BigNumber(69))).to.be.true;
+    expect(transferErc721AndENS.tokenId.eq(BigNumber.from(69))).to.be.true;
     expect(transferErc721AndENS.amount).to.be.undefined;
     expect(transferErc721AndENS.receiverEnsName).to.equal("receiver2.eth");
 
     expect(transferErc721AndIDZero.receiver).to.equal(testData.addresses.receiver1);
     expect(transferErc721AndIDZero.tokenAddress).to.equal(testData.addresses.dummyErc721Address);
-    expect(transferErc721AndIDZero.tokenId.isEqualTo(new BigNumber(0))).to.be.true;
+    expect(transferErc721AndIDZero.tokenId.eq(BigNumber.from(0))).to.be.true;
     expect(transferErc721AndIDZero.amount).to.be.undefined;
     expect(transferErc721AndIDZero.receiverEnsName).to.equal("receiver1.eth");
 
@@ -302,8 +302,8 @@ describe("Parsing CSVs ", () => {
       testData.addresses.dummyErc1155Address.toLowerCase(),
     );
     expect(transferErc1155AndAddress.amount).not.to.be.undefined;
-    expect(transferErc1155AndAddress.amount?.isEqualTo(new BigNumber(69))).to.be.true;
-    expect(transferErc1155AndAddress.tokenId.isEqualTo(new BigNumber(420))).to.be.true;
+    expect(transferErc1155AndAddress.amount?.eq(BigNumber.from(69))).to.be.true;
+    expect(transferErc1155AndAddress.tokenId.eq(BigNumber.from(420))).to.be.true;
     expect(transferErc1155AndAddress.receiverEnsName).to.be.null;
 
     expect(transferErc1155AndENS.receiver).to.equal(testData.addresses.receiver3);
@@ -311,8 +311,8 @@ describe("Parsing CSVs ", () => {
       testData.addresses.dummyErc1155Address.toLowerCase(),
     );
     expect(transferErc1155AndENS.amount).not.to.be.undefined;
-    expect(transferErc1155AndENS.amount?.isEqualTo(new BigNumber(9))).to.be.true;
-    expect(transferErc1155AndENS.tokenId.isEqualTo(new BigNumber(99))).to.be.true;
+    expect(transferErc1155AndENS.amount?.eq(BigNumber.from(9))).to.be.true;
+    expect(transferErc1155AndENS.tokenId.eq(BigNumber.from(99))).to.be.true;
     expect(transferErc1155AndENS.receiverEnsName).to.equal("receiver3.eth");
   });
 
@@ -473,7 +473,7 @@ describe("Parsing CSVs ", () => {
       expect(payment).to.have.length(1);
       const [nativeTransferData] = payment as AssetTransfer[];
 
-      expect(nativeTransferData.amount.isEqualTo(new BigNumber(15))).to.be.true;
+      expect(nativeTransferData.amount.eq(BigNumber.from(15))).to.be.true;
     });
   });
 });

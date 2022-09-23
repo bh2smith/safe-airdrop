@@ -1,8 +1,7 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { GenericModal, AddressInput, Button, Icon } from "@gnosis.pm/safe-react-components";
 import { Typography } from "@material-ui/core";
-import BigNumber from "bignumber.js";
-import { utils } from "ethers";
+import { utils, BigNumber } from "ethers";
 import { useState } from "react";
 import { AssetBalance, CollectibleBalance } from "src/hooks/balances";
 import { useEnsResolver } from "src/hooks/ens";
@@ -38,7 +37,7 @@ export const DrainSafeDialog = ({
     if (drainAddress) {
       assetBalance?.forEach((asset) => {
         if (asset.token === null && asset.tokenAddress === null) {
-          const decimalBalance = fromWei(new BigNumber(asset.balance), 18);
+          const decimalBalance = fromWei(BigNumber.from(asset.balance), 18);
           // The API returns zero balances for the native token.
           if (!decimalBalance.isZero()) {
             drainCSV += `\nnative,,${drainAddress},${decimalBalance},`;
@@ -47,7 +46,7 @@ export const DrainSafeDialog = ({
           const tokenDecimals = asset.token?.decimals;
           if (tokenDecimals) {
             drainCSV += `\nerc20,${asset.tokenAddress},${drainAddress},${fromWei(
-              new BigNumber(asset.balance),
+              BigNumber.from(asset.balance),
               tokenDecimals,
             )},`;
           }

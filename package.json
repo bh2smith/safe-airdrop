@@ -26,7 +26,6 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@openzeppelin/contracts": "^4.7.2",
     "ace-builds": "^1.10.0",
-    "bignumber.js": "^9.0.2",
     "ethers": "^5.6.2",
     "honeyswap-default-token-list": "^3.1.1",
     "lodash.debounce": "^4.0.8",

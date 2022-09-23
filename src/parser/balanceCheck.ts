@@ -1,4 +1,4 @@
-import { BigNumber } from "bignumber.js";
+import { BigNumber } from "ethers";
 
 import { AssetBalance, CollectibleBalance } from "../hooks/balances";
 import { toWei } from "../utils";
@@ -18,13 +18,13 @@ export const assetTransfersToSummary = (transfers: AssetTransfer[]) => {
     if (typeof tokenSummary === "undefined") {
       tokenSummary = {
         tokenAddress: currentValue.tokenAddress,
-        amount: new BigNumber(0),
+        amount: BigNumber.from(0),
         decimals: currentValue.decimals,
         symbol: currentValue.symbol,
       };
       previousValue.set(currentValue.tokenAddress, tokenSummary);
     }
-    tokenSummary.amount = tokenSummary.amount.plus(currentValue.amount);
+    tokenSummary.amount = tokenSummary.amount.add(currentValue.amount.toString());
 
     return previousValue;
   }, new Map<string | null, AssetSummaryEntry>());
@@ -39,7 +39,7 @@ export type CollectibleSummaryEntry = {
 
 export const collectibleTransfersToSummary = (transfers: CollectibleTransfer[]) => {
   return transfers.reduce((previousValue, currentValue): Map<string | null, CollectibleSummaryEntry> => {
-    const entryKey = `${currentValue.tokenAddress}:${currentValue.tokenId.toFixed()}`;
+    const entryKey = `${currentValue.tokenAddress}:${currentValue.tokenId.toString()}`;
     let tokenSummary = previousValue.get(entryKey);
     if (typeof tokenSummary === "undefined") {
       tokenSummary = {
@@ -89,12 +89,12 @@ export const checkAllBalances = (
 
       if (
         typeof tokenBalance === "undefined" ||
-        !isSufficientBalance(new BigNumber(tokenBalance.balance), amount, 18)
+        !isSufficientBalance(BigNumber.from(tokenBalance.balance), amount, 18)
       ) {
         insufficientTokens.push({
           token: "ETH",
           token_type: "native",
-          transferAmount: amount.toFixed(),
+          transferAmount: amount.toString(),
           isDuplicate: false, // For Erc20 / Coin Transfers duplicates are never an issue
         });
       }
@@ -104,12 +104,12 @@ export const checkAllBalances = (
       );
       if (
         typeof tokenBalance === "undefined" ||
-        !isSufficientBalance(new BigNumber(tokenBalance.balance), amount, decimals)
+        !isSufficientBalance(BigNumber.from(tokenBalance.balance), amount, decimals)
       ) {
         insufficientTokens.push({
           token: symbol || tokenAddress,
           token_type: "erc20",
-          transferAmount: amount.toFixed(),
+          transferAmount: amount.toString(),
           isDuplicate: false, // For Erc20 / Coin Transfers duplicates are never an issue
         });
       }
@@ -119,7 +119,7 @@ export const checkAllBalances = (
   for (const { tokenAddress, count, name, id } of collectibleSummary.values()) {
     const tokenBalance = collectibleBalance?.find(
       (balanceEntry) =>
-        balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase() && balanceEntry.id === id.toFixed(),
+        balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase() && balanceEntry.id === id.toString(),
     );
     if (typeof tokenBalance === "undefined" || count > 1) {
       const tokenName =

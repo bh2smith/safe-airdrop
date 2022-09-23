@@ -1,5 +1,5 @@
-import { BigNumber } from "bignumber.js";
 import { expect } from "chai";
+import { BigNumber } from "ethers";
 
 import { fromWei, toWei, TEN, ONE, ZERO, resolveIpfsUri } from "../utils";
 
@@ -12,13 +12,13 @@ describe("toWei()", () => {
   });
   it("integers", () => {
     expect(toWei(1, 0).eq(ONE));
-    expect(toWei(123, 1).eq(new BigNumber(1230)));
-    expect(toWei(1, 18).eq(new BigNumber(1000000000000000000)));
+    expect(toWei(123, 1).eq(BigNumber.from(1230)));
+    expect(toWei(1, 18).eq(BigNumber.from(1000000000000000000)));
   });
   it("mixed", () => {
     expect(toWei(1.234, 0).eq(ONE));
-    expect(toWei(1.234, 3).eq(new BigNumber(1234)));
-    expect(toWei(1.00000000000000000001, 18).eq(new BigNumber(1000000000000000000)));
+    expect(toWei(1.234, 3).eq(BigNumber.from(1234)));
+    expect(toWei(1.00000000000000000001, 18).eq(BigNumber.from(1000000000000000000)));
   });
 });
 
@@ -31,11 +31,11 @@ describe("fromWei()", () => {
     expect(fromWei(oneETH, 19).toString()).to.be.equal("0.1");
     expect(fromWei(oneETH, 20).toString()).to.be.equal("0.01");
 
-    expect(fromWei(oneETH, 0).toFixed()).to.be.equal("1000000000000000000");
-    expect(fromWei(oneETH, 9).toFixed()).to.be.equal((10 ** 9).toString());
-    expect(fromWei(oneETH, 18).toFixed()).to.be.equal("1");
-    expect(fromWei(oneETH, 19).toFixed()).to.be.equal("0.1");
-    expect(fromWei(oneETH, 20).toFixed()).to.be.equal("0.01");
+    expect(fromWei(oneETH, 0).toString()).to.be.equal("1000000000000000000");
+    expect(fromWei(oneETH, 9).toString()).to.be.equal((10 ** 9).toString());
+    expect(fromWei(oneETH, 18).toString()).to.be.equal("1");
+    expect(fromWei(oneETH, 19).toString()).to.be.equal("0.1");
+    expect(fromWei(oneETH, 20).toString()).to.be.equal("0.01");
   });
 });
 

@@ -1,4 +1,4 @@
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
+import { PostMessageOptions, SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import React from "react";
 import { act } from "react-dom/test-utils";
 

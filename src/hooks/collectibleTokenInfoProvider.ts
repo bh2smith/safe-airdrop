@@ -1,9 +1,8 @@
 import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import BigNumber from "bignumber.js";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import { useCallback, useMemo } from "react";
-import { resolveIpfsUri } from "src/utils";
+import { resolveIpfsUri, ZERO } from "src/utils";
 
 import { erc1155Instance } from "../transfers/erc1155";
 import { erc165Instance } from "../transfers/erc165";
@@ -80,8 +79,9 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
   const getTokenInfo = useCallback(
     async (tokenAddress: string, id: BigNumber) => {
       let tokenId: string = "-1";
-      if (!id.isNaN() && id.isInteger() && id.isPositive()) {
-        tokenId = id.toFixed();
+      // We used to check that its an integer and is also a number (but this doesn't exist on ethers.BigNumber)
+      if (id.gt(ZERO)) {
+        tokenId = id.toString();
       }
       if (collectibleContractCache.has(toKey(tokenAddress, tokenId))) {
         return collectibleContractCache.get(toKey(tokenAddress, tokenId));
@@ -121,7 +121,7 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
         const metaInfo: CollectibleTokenMetaInfo = {
           name: await erc721Contract.name().catch(() => undefined),
         };
-        let tokenURI = await erc721Contract.tokenURI(id.toFixed()).catch(() => undefined);
+        let tokenURI = await erc721Contract.tokenURI(id.toString()).catch(() => undefined);
         if (tokenURI) {
           tokenURI = resolveIpfsUri(tokenURI);
           const metaDataJSON = await ethers.utils.fetchJson(tokenURI).catch(() => undefined);
@@ -131,7 +131,7 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
       } else {
         const erc1155Contract = erc1155Instance(tokenAddress, web3Provider);
         const metaInfo: CollectibleTokenMetaInfo = {};
-        let tokenURI = await erc1155Contract.uri(id.toFixed()).catch(() => undefined);
+        let tokenURI = await erc1155Contract.uri(id.toString()).catch(() => undefined);
         if (tokenURI) {
           tokenURI = resolveIpfsUri(tokenURI);
           const metaDataJSON = await ethers.utils.fetchJson(tokenURI).catch(() => undefined);
