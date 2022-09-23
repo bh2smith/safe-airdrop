@@ -22,8 +22,11 @@ export interface TokenInfo {
 }
 
 export function toWei(amount: string | number | BigNumber, decimals: number): BigNumber {
+  // # TODO - replace all this logic with ethers.utils.formatUnits
   let res = TEN.pow(decimals).multipliedBy(amount);
-  if (res.decimalPlaces() > 0) {
+  const decimalPlaces = res.decimalPlaces();
+  // unsure when this can be null, so we simply skip the case as a possibility.
+  if (decimalPlaces != null && decimalPlaces > 0) {
     // TODO - reinstate this warning by passing along with return content
     // Return (Transaction[], Message)
     // setLastError({
@@ -36,6 +39,7 @@ export function toWei(amount: string | number | BigNumber, decimals: number): Bi
 }
 
 export function fromWei(amount: BigNumber, decimals: number): BigNumber {
+  // # TODO - replace all this logic with ethers.utils.parseUnits
   return amount.dividedBy(TEN.pow(decimals));
 }
 

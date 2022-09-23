@@ -16,12 +16,8 @@ export const TransactionStatusScreen = ({ tx, reset }: { tx: GatewayTransactionD
         return "Transaction cancelled!";
       case TransactionStatus.FAILED:
         return "Transaction failed!";
-      case TransactionStatus.PENDING:
-        return "Transaction pending";
       case TransactionStatus.SUCCESS:
         return "Transaction successful!";
-      case TransactionStatus.WILL_BE_REPLACED:
-        return "Transaction will be replaced";
       default:
         return "Unknown state";
     }
@@ -31,8 +27,6 @@ export const TransactionStatusScreen = ({ tx, reset }: { tx: GatewayTransactionD
     switch (polledTx?.txStatus) {
       case TransactionStatus.AWAITING_CONFIRMATIONS:
       case TransactionStatus.AWAITING_EXECUTION:
-      case TransactionStatus.WILL_BE_REPLACED:
-      case TransactionStatus.PENDING:
         return false;
       case TransactionStatus.CANCELLED:
       case TransactionStatus.FAILED:
