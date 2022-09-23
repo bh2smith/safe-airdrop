@@ -1,4 +1,5 @@
 import { BigNumber } from "bignumber.js";
+import { ethers } from "ethers";
 
 export const ZERO = new BigNumber(0);
 export const ONE = new BigNumber(1);
@@ -22,6 +23,7 @@ export interface TokenInfo {
 }
 
 export function toWei(amount: string | number | BigNumber, decimals: number): BigNumber {
+  // # TODO - replace all this logic with ethers.utils.formatUnits
   let res = TEN.pow(decimals).multipliedBy(amount);
   const decimalPlaces = res.decimalPlaces();
   // unsure when this can be null, so we simply skip the case as a possibility.
@@ -38,6 +40,7 @@ export function toWei(amount: string | number | BigNumber, decimals: number): Bi
 }
 
 export function fromWei(amount: BigNumber, decimals: number): BigNumber {
+  // # TODO - replace all this logic with ethers.utils.parseUnits
   return amount.dividedBy(TEN.pow(decimals));
 }
 
