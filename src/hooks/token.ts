@@ -1,5 +1,6 @@
 import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { SafeBalanceResponse } from "@gnosis.pm/safe-react-gateway-sdk";
 import { ethers, utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
 import { useState, useEffect, useMemo } from "react";
@@ -90,6 +91,22 @@ export interface TokenInfoProvider {
 export const useTokenInfoProvider: () => TokenInfoProvider = () => {
   const { safe, sdk } = useSafeAppsSDK();
   const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
+  const [balances, setBalances] = useState<SafeBalanceResponse>({
+    fiatTotal: "0",
+    items: [],
+  });
+  useEffect(() => {
+    let isMounted = true;
+    sdk.safe
+      .experimental_getBalances()
+      .then((balances) => {
+        isMounted && setBalances(balances);
+      })
+      .catch(() => console.error("Error fetching balances from safe apps sdk"));
+    return () => {
+      isMounted = false;
+    };
+  }, [sdk.safe]);
   const { tokenList } = useTokenList();
 
   return useMemo(
@@ -97,26 +114,36 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
       getTokenInfo: async (tokenAddress: string) => {
         if (tokenList?.has(tokenAddress)) {
           return tokenList.get(tokenAddress);
-        } else {
-          const tokenContract = erc20Instance(tokenAddress, web3Provider);
-          const decimals = await tokenContract.decimals().catch((reason) => undefined);
-          const symbol = await tokenContract.symbol().catch((reason) => undefined);
+        }
 
-          if (typeof decimals !== "undefined") {
-            tokenList?.set(tokenAddress, {
-              decimals,
-              symbol,
-              address: tokenAddress,
-            });
-            return { decimals, symbol, address: tokenAddress };
-          } else {
-            return undefined;
-          }
+        const tokenInfoFromBalances = balances.items.find((item) => item.tokenInfo.address === tokenAddress);
+        if (tokenInfoFromBalances) {
+          return {
+            decimals: tokenInfoFromBalances.tokenInfo.decimals,
+            symbol: tokenInfoFromBalances.tokenInfo.symbol,
+            address: tokenAddress,
+            logoURI: tokenInfoFromBalances.tokenInfo.logoUri,
+          };
+        }
+
+        const tokenContract = erc20Instance(tokenAddress, web3Provider);
+        const decimals = await tokenContract.decimals().catch((reason) => undefined);
+        const symbol = await tokenContract.symbol().catch((reason) => undefined);
+
+        if (typeof decimals !== "undefined") {
+          tokenList?.set(tokenAddress, {
+            decimals,
+            symbol,
+            address: tokenAddress,
+          });
+          return { decimals, symbol, address: tokenAddress };
+        } else {
+          return undefined;
         }
       },
       getNativeTokenSymbol: () => networkInfo.get(safe.chainId)?.currencySymbol ?? "ETH",
       getSelectedNetworkShortname: () => networkInfo.get(safe.chainId)?.shortName,
     }),
-    [safe.chainId, tokenList, web3Provider],
+    [balances.items, safe.chainId, tokenList, web3Provider],
   );
 };
