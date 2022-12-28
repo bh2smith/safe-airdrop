@@ -1,5 +1,5 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { GenericModal, Button, Select, TextFieldInput, Icon } from "@gnosis.pm/safe-react-components";
+import { Button, GenericModal, Icon, Select, TextFieldInput } from "@gnosis.pm/safe-react-components";
 import { InputAdornment, Typography } from "@material-ui/core";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
@@ -72,6 +72,7 @@ export const DonateDialog = ({
         .replace("token_address", selectedToken === "0x0" ? "" : selectedToken)
         .replace("receiver", DONATION_ADDRESS)
         .replace("amount", selectedAmount)
+        .replace("value", selectedAmount)
         .replace("id", "");
 
       onSubmit(`${csvText}\n${donationCSVRow}`);
