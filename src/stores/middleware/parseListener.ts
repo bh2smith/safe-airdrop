@@ -14,49 +14,44 @@ export const setupParserListener = (startListening: AppStartListening) => {
       listenerApi.cancelActiveListeners();
       await listenerApi.delay(750);
       listenerApi.dispatch(startParsing());
-
-      const assetBalanceSubscription = listenerApi.dispatch(balanceApi.endpoints.getAssetBalance.initiate());
-      const nftBalanceSubscription = listenerApi.dispatch(balanceApi.endpoints.getNFTBalance.initiate());
-
-      let [transfers, codeWarnings] = await CSVParser.parseCSV(
-        csvContent,
-        tokenInfoProvider,
-        collectibleTokenInfoProvider,
-        ensResolver,
-      );
-      const uniqueReceiversWithoutEnsName = transfers.reduce(
-        (previousValue, currentValue): Set<string> =>
-          currentValue.receiverEnsName === null ? previousValue.add(currentValue.receiver) : previousValue,
-        new Set<string>(),
-      );
-      if (uniqueReceiversWithoutEnsName.size < 15) {
-        transfers = await Promise.all(
-          // If there is no ENS Name we will try to lookup the address
-          transfers.map(async (transfer) =>
-            transfer.receiverEnsName
-              ? transfer
-              : {
-                  ...transfer,
-                  receiverEnsName: (await ensResolver.isEnsEnabled())
-                    ? await ensResolver.lookupAddress(transfer.receiver)
-                    : null,
-                },
-          ),
+      try {
+        let [transfers, codeWarnings] = await CSVParser.parseCSV(
+          csvContent,
+          tokenInfoProvider,
+          collectibleTokenInfoProvider,
+          ensResolver,
         );
-      }
-      transfers = transfers.map((transfer, idx) => ({ ...transfer, position: idx + 1 }));
-      listenerApi.dispatch(setTransfers(transfers));
-      const result = await listenerApi.condition((action, state) => {
-        const assetBalanceResult = balanceApi.endpoints.getAssetBalance.select()(state);
-        const nftBalanceResult = balanceApi.endpoints.getNFTBalance.select()(state);
+        const uniqueReceiversWithoutEnsName = transfers.reduce(
+          (previousValue, currentValue): Set<string> =>
+            currentValue.receiverEnsName === null ? previousValue.add(currentValue.receiver) : previousValue,
+          new Set<string>(),
+        );
+        if (uniqueReceiversWithoutEnsName.size < 15) {
+          transfers = await Promise.all(
+            // If there is no ENS Name we will try to lookup the address
+            transfers.map(async (transfer) =>
+              transfer.receiverEnsName
+                ? transfer
+                : {
+                    ...transfer,
+                    receiverEnsName: (await ensResolver.isEnsEnabled())
+                      ? await ensResolver.lookupAddress(transfer.receiver)
+                      : null,
+                  },
+            ),
+          );
+        }
+        transfers = transfers.map((transfer, idx) => ({ ...transfer, position: idx + 1 }));
+        listenerApi.dispatch(setTransfers(transfers));
+        listenerApi.dispatch(setCodeWarnings(codeWarnings));
 
-        return assetBalanceResult.isSuccess && nftBalanceResult.isSuccess;
-      }, 3000);
-      if (result) {
         const currentState = listenerApi.getState();
         const assetBalanceResult = balanceApi.endpoints.getAssetBalance.select()(currentState);
         const nftBalanceResult = balanceApi.endpoints.getNFTBalance.select()(currentState);
         const insufficientBalances = checkAllBalances(assetBalanceResult.data, nftBalanceResult.data, transfers);
+
+        listenerApi.dispatch(stopParsing());
+
         listenerApi.dispatch(
           setMessages(
             insufficientBalances.map((insufficientBalanceInfo) => {
@@ -84,12 +79,17 @@ export const setupParserListener = (startListening: AppStartListening) => {
             }),
           ),
         );
+      } catch (err) {
+        listenerApi.dispatch(
+          setMessages([
+            {
+              message: JSON.stringify(err),
+              severity: "error",
+            },
+          ]),
+        );
+        listenerApi.dispatch(stopParsing());
       }
-
-      listenerApi.dispatch(setCodeWarnings(codeWarnings));
-      listenerApi.dispatch(stopParsing());
-      assetBalanceSubscription.unsubscribe();
-      nftBalanceSubscription.unsubscribe();
     },
   });
 

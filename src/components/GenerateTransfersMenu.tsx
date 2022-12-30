@@ -1,123 +1,87 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { AddressInput, Button, ButtonLink, GenericModal, Menu, Tooltip } from "@gnosis.pm/safe-react-components";
-import { Collapse } from "@material-ui/core";
-import BigNumber from "bignumber.js";
-import { utils } from "ethers";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useCollectibleTokenInfoProvider } from "src/hooks/collectibleTokenInfoProvider";
-import { useTokenInfoProvider } from "src/hooks/token";
+import { Breadcrumb, BreadcrumbElement, ButtonLink, Tooltip } from "@gnosis.pm/safe-react-components";
+import { useState } from "react";
 import { useGetAssetBalanceQuery, useGetNFTBalanceQuery } from "src/stores/api/balanceApi";
-import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
+import styled from "styled-components";
 
-import { useEnsResolver } from "../hooks/ens";
-import { networkInfo } from "../networks";
-import { fromWei } from "../utils";
+import { NETWORKS_WITH_DONATIONS_DEPLOYED } from "../networks";
 
-export interface GenerateTransfersMenuProps {}
+import { DonateDialog } from "./DonateDialog";
+import { DrainSafeDialog } from "./DrainSafeDialog";
 
-export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps): JSX.Element => {
-  const dispatch = useDispatch();
+const GenerateHeader = styled(Breadcrumb)`
+  padding: 0px 0px 8px 0px;
+`;
 
+const GenerateMenuButton = styled(ButtonLink)`
+  background-color: rgb(246, 247, 248);
+  border-radius: 4px;
+  margin-bottom: 4px;
+  min-width: 100px;
+  &:hover {
+    background-color: rgb(239, 250, 248);
+  }
+`;
+
+export const GenerateTransfersMenu = () => {
   const assetBalanceQuery = useGetAssetBalanceQuery();
   const nftBalanceQuery = useGetNFTBalanceQuery();
 
-  const [isGenerationMenuOpen, setIsGenerationMenuOpen] = useState(false);
+  const assetBalance = assetBalanceQuery.currentData;
+  const nftBalance = nftBalanceQuery.currentData;
+
   const [isDrainModalOpen, setIsDrainModalOpen] = useState(false);
-  const [drainAddress, setDrainAddress] = useState("");
+  const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);
+
   const { safe } = useSafeAppsSDK();
 
-  const ensResolver = useEnsResolver();
-  const tokenInfoProvider = useTokenInfoProvider();
-  const collectibleTokenInfoProvider = useCollectibleTokenInfoProvider();
+  const isDonationAvailable = NETWORKS_WITH_DONATIONS_DEPLOYED.includes(safe.chainId);
 
-  const selectedNetworkInfo = networkInfo.get(safe.chainId);
-
-  const invalidNetworkError = drainAddress.includes(":") ? "The chain prefix must match the current network" : "";
-  const invalidAddressError = utils.isAddress(drainAddress) ? "" : "The address is invalid";
-  const error = drainAddress ? invalidNetworkError || invalidAddressError : "";
-
-  const generateDrainTransfers = () => {
-    let drainCSV = "token_type,token_address,receiver,amount,id,";
-    if (drainAddress) {
-      assetBalanceQuery.data?.forEach((asset) => {
-        if (asset.token === null && asset.tokenAddress === null) {
-          const decimalBalance = fromWei(new BigNumber(asset.balance), 18);
-          // The API returns zero balances for the native token.
-          if (!decimalBalance.isZero()) {
-            drainCSV += `\nnative,,${drainAddress},${decimalBalance},`;
-          }
-        } else {
-          const tokenDecimals = asset.token?.decimals;
-          if (tokenDecimals) {
-            drainCSV += `\nerc20,${asset.tokenAddress},${drainAddress},${fromWei(
-              new BigNumber(asset.balance),
-              tokenDecimals,
-            )},`;
-          }
-        }
-      });
-
-      nftBalanceQuery.data?.forEach((collectible) => {
-        drainCSV += `\nnft,${collectible.address},${drainAddress},,${collectible.id}`;
-      });
-    }
-    dispatch(updateCsvContent({ csvContent: drainCSV, ensResolver, collectibleTokenInfoProvider, tokenInfoProvider }));
-  };
   return (
     <>
-      <div className="generateMenu">
-        <Menu className="leftAlignedMenu">
-          <ButtonLink color="primary" iconType="add" onClick={() => setIsGenerationMenuOpen(!isGenerationMenuOpen)}>
-            Generate transfers
-          </ButtonLink>
-        </Menu>
-        <Collapse in={isGenerationMenuOpen}>
-          <div className="openedGenerateMenu">
-            <Tooltip title="Send all assets and collectibles from this safe">
-              <ButtonLink color="primary" iconType="exportImg" iconSize="sm" onClick={() => setIsDrainModalOpen(true)}>
-                Drain safe
-              </ButtonLink>
-            </Tooltip>
-          </div>
-        </Collapse>
-      </div>
-      {isDrainModalOpen && (
-        <GenericModal
-          onClose={() => setIsDrainModalOpen(false)}
-          title="Enter an address to send all assets to"
-          body={
-            <AddressInput
-              address={drainAddress}
-              hiddenLabel
-              label="Address"
-              name="address"
-              error={error}
-              getAddressFromDomain={(name) => ensResolver.resolveName(name).then((address) => address ?? name)}
-              onChangeAddress={setDrainAddress}
-              placeholder="Ethereum address"
-              showNetworkPrefix={true}
-              networkPrefix={selectedNetworkInfo?.shortName}
-            />
-          }
-          footer={
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <Button
-                size="md"
+      <div style={{ position: "relative", borderLeft: "thin solid #008C73" }}>
+        <GenerateHeader>
+          <BreadcrumbElement text="Generate" iconType="add" />
+          <BreadcrumbElement text="Transfers" color="placeHolder" />
+        </GenerateHeader>
+        <div style={{ marginLeft: "5px" }}>
+          <Tooltip title="Send all assets and collectibles from this safe">
+            <GenerateMenuButton
+              color="primary"
+              iconType="exportImg"
+              iconSize="sm"
+              onClick={() => setIsDrainModalOpen(true)}
+            >
+              Drain safe
+            </GenerateMenuButton>
+          </Tooltip>
+          {isDonationAvailable && (
+            <Tooltip title="Select a token and amount to donate to this Safe app">
+              <GenerateMenuButton
                 color="primary"
-                onClick={() => {
-                  generateDrainTransfers();
-                  setIsDrainModalOpen(false);
-                  setIsGenerationMenuOpen(false);
-                }}
+                iconType="gift"
+                iconSize="sm"
+                onClick={() => setIsDonateModalOpen(true)}
               >
-                Submit
-              </Button>
-              <Button size="md" color="secondary" onClick={() => setIsDrainModalOpen(false)}>
-                Abort
-              </Button>
-            </div>
-          }
+                Donate
+              </GenerateMenuButton>
+            </Tooltip>
+          )}
+        </div>
+      </div>
+      {nftBalance && assetBalance && (
+        <DrainSafeDialog
+          assetBalance={assetBalance}
+          nftBalance={nftBalance}
+          onClose={() => setIsDrainModalOpen(false)}
+          isOpen={isDrainModalOpen}
+        />
+      )}
+      {assetBalance && (
+        <DonateDialog
+          assetBalance={assetBalance}
+          isOpen={isDonateModalOpen}
+          onClose={() => setIsDonateModalOpen(false)}
         />
       )}
     </>

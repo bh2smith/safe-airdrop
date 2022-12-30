@@ -8,9 +8,8 @@ import { CollectibleTokenMetaInfo, useCollectibleTokenInfoProvider } from "../..
 
 type TokenProps = {
   tokenAddress: string;
-  id: BigNumber;
+  id: string;
   token_type: "erc721" | "erc1155";
-  hasMetaData: boolean;
 };
 
 const Container = styled.div`
@@ -33,24 +32,24 @@ export const ERC721Token = (props: TokenProps) => {
 
   const collectibleTokenInfoProvider = useCollectibleTokenInfoProvider();
 
-  const { tokenAddress, id, token_type, hasMetaData } = props;
+  const { tokenAddress, id, token_type } = props;
 
   const imageZoomedIn = Boolean(anchorEl);
   useEffect(() => {
     let isMounted = true;
-    if (hasMetaData) {
-      setIsMetaDataLoading(true);
-      collectibleTokenInfoProvider.fetchMetaInfo(tokenAddress, id, token_type).then((result) => {
-        if (isMounted) {
-          setTokenMetaData(result);
-          setIsMetaDataLoading(false);
-        }
-      });
-    }
+    setIsMetaDataLoading(true);
+    collectibleTokenInfoProvider.fetchMetaInfo(tokenAddress, new BigNumber(id), token_type).then((result) => {
+      console.log("metadata:", result);
+      if (isMounted) {
+        setTokenMetaData(result);
+        setIsMetaDataLoading(false);
+      }
+    });
+
     return function callback() {
       isMounted = false;
     };
-  }, [hasMetaData, collectibleTokenInfoProvider, tokenAddress, id, token_type]);
+  }, [collectibleTokenInfoProvider, tokenAddress, id, token_type]);
 
   return (
     <Container>

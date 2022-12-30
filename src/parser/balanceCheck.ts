@@ -1,6 +1,6 @@
 import { BigNumber } from "bignumber.js";
+import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
 
-import { AssetBalance, CollectibleBalance } from "../hooks/balances";
 import { toWei } from "../utils";
 
 import { AssetTransfer, CollectibleTransfer, Transfer } from "./csvParser";
@@ -32,14 +32,14 @@ export const assetTransfersToSummary = (transfers: AssetTransfer[]) => {
 
 export type CollectibleSummaryEntry = {
   tokenAddress: string;
-  id: BigNumber;
+  id: string;
   count: number;
   name?: string;
 };
 
 export const collectibleTransfersToSummary = (transfers: CollectibleTransfer[]) => {
   return transfers.reduce((previousValue, currentValue): Map<string | null, CollectibleSummaryEntry> => {
-    const entryKey = `${currentValue.tokenAddress}:${currentValue.tokenId.toFixed()}`;
+    const entryKey = `${currentValue.tokenAddress}:${currentValue.tokenId}`;
     let tokenSummary = previousValue.get(entryKey);
     if (typeof tokenSummary === "undefined") {
       tokenSummary = {
@@ -61,12 +61,12 @@ export type InsufficientBalanceInfo = {
   transferAmount?: string;
   isDuplicate: boolean;
   token_type: "erc20" | "native" | "erc721";
-  id?: BigNumber;
+  id?: string;
 };
 
 export const checkAllBalances = (
   assetBalance: AssetBalance | undefined,
-  collectibleBalance: CollectibleBalance | undefined,
+  collectibleBalance: NFTBalance | undefined,
   transfers: Transfer[],
 ): InsufficientBalanceInfo[] => {
   const insufficientTokens: InsufficientBalanceInfo[] = [];
@@ -118,8 +118,7 @@ export const checkAllBalances = (
 
   for (const { tokenAddress, count, name, id } of collectibleSummary.values()) {
     const tokenBalance = collectibleBalance?.find(
-      (balanceEntry) =>
-        balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase() && balanceEntry.id === id.toFixed(),
+      (balanceEntry) => balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase() && balanceEntry.id === id,
     );
     if (typeof tokenBalance === "undefined" || count > 1) {
       const tokenName =

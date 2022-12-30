@@ -22,13 +22,11 @@ const unlistedERC20Token: TokenInfo = {
 const dummyERC721Token: CollectibleTokenInfo = {
   token_type: "erc721",
   address: "0x5500000000000000000000000000000000000000",
-  hasMetaInfo: false,
 };
 
 const dummyERC1155Token: CollectibleTokenInfo = {
   token_type: "erc1155",
   address: "0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656",
-  hasMetaInfo: false,
 };
 
 const addresses = {

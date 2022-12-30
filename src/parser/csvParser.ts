@@ -1,5 +1,4 @@
 import { parseString, RowValidateCallback } from "@fast-csv/parse";
-import { BigNumber } from "bignumber.js";
 import { CodeWarning } from "src/stores/slices/messageSlice";
 
 import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
@@ -21,7 +20,7 @@ export type CollectibleTokenType = "erc721" | "erc1155";
 export interface AssetTransfer {
   token_type: AssetTokenType;
   receiver: string;
-  amount: BigNumber;
+  amount: string;
   tokenAddress: string | null;
   decimals: number;
   symbol?: string;
@@ -35,10 +34,9 @@ export interface CollectibleTransfer {
   receiver: string;
   tokenAddress: string;
   tokenName?: string;
-  tokenId: BigNumber;
-  amount?: BigNumber;
+  tokenId: string;
+  amount?: string;
   receiverEnsName: string | null;
-  hasMetaData: boolean;
 }
 
 export interface UnknownTransfer {
@@ -78,12 +76,10 @@ export class CSVParser {
     ensResolver: EnsResolver,
   ): Promise<[Transfer[], CodeWarning[]]> => {
     const noLines = countLines(csvText);
-    // Hard limit at 400 lines of txs
-    if (noLines > 401) {
+    // Hard limit at 500 lines of txs
+    if (noLines > 501) {
       return new Promise<[Transfer[], CodeWarning[]]>((resolve, reject) => {
-        reject({
-          message: "Max number of lines exceeded. Due to the block gas limit transactions are limited to 400 lines.",
-        });
+        reject("Max number of lines exceeded. Due to the block gas limit transactions are limited to 500 lines.");
       });
     }
 

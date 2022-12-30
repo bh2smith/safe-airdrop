@@ -6,6 +6,7 @@ import {
   TypedStartListening,
 } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import { balanceApi } from "./api/balanceApi";
 import balanceReducer from "./slices/balanceSlice";
@@ -48,3 +49,6 @@ export type AppStartListening = TypedStartListening<RootState, AppDispatch>;
 export type AppAddListener = TypedAddListener<RootState, AppDispatch>;
 
 export const startAppListening = listenerMiddlewareInstance.startListening as AppStartListening;
+
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

@@ -44,7 +44,9 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({
     maxFiles: 1,
     onDrop,
-    accept: "text/csv",
+    accept: {
+      text: [".csv"],
+    },
   });
 
   const style = useMemo(
@@ -90,7 +92,6 @@ const styles = createStyles({
     padding: "20px",
     borderWidth: 2,
     borderRadius: 2,
-    width: "660px",
     borderColor: "rgba(0, 0, 0, 0.23)",
     borderStyle: "dashed",
     backgroundColor: "#fafafa",

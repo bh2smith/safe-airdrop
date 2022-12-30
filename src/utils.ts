@@ -6,6 +6,8 @@ export const TWO = new BigNumber(2);
 export const TEN = new BigNumber(10);
 export const MAX_U256 = TWO.pow(255).minus(1);
 
+export const DONATION_ADDRESS = "0xD011a7e124181336ED417B737A495745F150d248";
+
 export interface TokenInfo {
   readonly chainId: number;
   readonly address: string;
@@ -20,8 +22,11 @@ export interface TokenInfo {
 }
 
 export function toWei(amount: string | number | BigNumber, decimals: number): BigNumber {
+  // # TODO - replace all this logic with ethers.utils.formatUnits
   let res = TEN.pow(decimals).multipliedBy(amount);
-  if (res.decimalPlaces() > 0) {
+  const decimalPlaces = res.decimalPlaces();
+  // unsure when this can be null, so we simply skip the case as a possibility.
+  if (decimalPlaces != null && decimalPlaces > 0) {
     // TODO - reinstate this warning by passing along with return content
     // Return (Transaction[], Message)
     // setLastError({
@@ -34,6 +39,7 @@ export function toWei(amount: string | number | BigNumber, decimals: number): Bi
 }
 
 export function fromWei(amount: BigNumber, decimals: number): BigNumber {
+  // # TODO - replace all this logic with ethers.utils.parseUnits
   return amount.dividedBy(TEN.pow(decimals));
 }
 
@@ -44,5 +50,7 @@ export function fromWei(amount: BigNumber, decimals: number): BigNumber {
  * @returns URI resolved to the infura ipfs host or uri if it's not an ipfs uri.
  */
 export function resolveIpfsUri(uri: string): string {
-  return uri.startsWith("ipfs://") ? uri.replace("ipfs://", "https://ipfs.infura.io/ipfs/") : uri;
+  return uri.startsWith("ipfs://")
+    ? uri.replace("ipfs://ipfs/", "ipfs://").replace("ipfs://", "https://cloudflare-ipfs.com/ipfs/")
+    : uri;
 }

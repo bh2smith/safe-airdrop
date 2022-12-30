@@ -15,6 +15,8 @@ type NFTBalanceEntry = {
   tokenName: string;
   tokenSymbol: string;
   id: string;
+  imageUri: string;
+  name: string;
 };
 
 type Token = {

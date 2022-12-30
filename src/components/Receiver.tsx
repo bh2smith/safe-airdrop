@@ -1,5 +1,6 @@
 import { Icon, Text, Tooltip } from "@gnosis.pm/safe-react-components";
 import React from "react";
+import { DONATION_ADDRESS } from "src/utils";
 import styled from "styled-components";
 
 type ReceiverProps = {
@@ -20,9 +21,13 @@ const Container = styled.div`
 
 export const Receiver = (props: ReceiverProps) => {
   const { receiverEnsName, receiverAddress } = props;
+  const isDonation = receiverAddress.toLowerCase() === DONATION_ADDRESS.toLowerCase();
   return receiverEnsName !== null ? (
     <Container>
-      <Text size="md">{receiverEnsName}</Text>
+      <Text size="md">
+        {isDonation && "❤️ "}
+        {receiverEnsName}
+      </Text>
       <Tooltip title={receiverAddress}>
         <span>
           <Icon type="info" size="sm" />
@@ -31,7 +36,10 @@ export const Receiver = (props: ReceiverProps) => {
     </Container>
   ) : (
     <Container>
-      <Text size="md">{receiverAddress}</Text>
+      <Text size="md">
+        {isDonation && "❤️ "}
+        {receiverAddress}
+      </Text>
     </Container>
   );
 };

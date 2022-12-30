@@ -34,7 +34,7 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
         }
         value={csvText}
         theme="tomorrow"
-        width={"700px"}
+        width={"100%"}
         mode={"text"}
         minLines={6}
         maxLines={20}

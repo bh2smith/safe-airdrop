@@ -1,7 +1,7 @@
 import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { Breadcrumb, BreadcrumbElement, Button, Card, Divider, Loader, Text } from "@gnosis.pm/safe-react-components";
+import { BaseTransaction, GatewayTransactionDetails } from "@gnosis.pm/safe-apps-sdk";
+import { Breadcrumb, BreadcrumbElement, Button, Card, Divider, Loader } from "@gnosis.pm/safe-react-components";
 import { setUseWhatChange } from "@simbathesailor/use-what-changed";
 import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,7 +10,9 @@ import styled from "styled-components";
 
 import { CSVForm } from "./components/CSVForm";
 import { Header } from "./components/Header";
+import { Loading } from "./components/Loading";
 import { Summary } from "./components/Summary";
+import { TransactionStatusScreen } from "./components/TransactionStatusScreen";
 import { useTokenList } from "./hooks/token";
 import { AssetTransfer, CollectibleTransfer } from "./parser/csvParser";
 import { useGetAssetBalanceQuery, useGetNFTBalanceQuery } from "./stores/api/balanceApi";
@@ -29,7 +31,7 @@ const App: React.FC = () => {
   const { messages } = useSelector((state: RootState) => state.messages);
   const { transfers, parsing } = useSelector((state: RootState) => state.csvEditor);
 
-  const [submitting, setSubmitting] = useState(false);
+  const [pendingTx, setPendingTx] = useState<GatewayTransactionDetails>();
   const { sdk, safe } = useSafeAppsSDK();
   const dispatch = useDispatch();
 
@@ -39,7 +41,7 @@ const App: React.FC = () => {
     dispatch(setSafeAppProvider(provider));
     const subscriptions: Unsubscribe[] = [setupParserListener(startAppListening)];
     return () => subscriptions.forEach((unsubscribe) => unsubscribe());
-  });
+  }, [dispatch, safe, sdk]);
 
   const assetTransfers = transfers.filter(
     (transfer) => transfer.token_type === "erc20" || transfer.token_type === "native",
@@ -49,20 +51,17 @@ const App: React.FC = () => {
   ) as CollectibleTransfer[];
 
   const submitTx = useCallback(async () => {
-    setSubmitting(true);
     try {
       const txs: BaseTransaction[] = [];
       txs.push(...buildAssetTransfers(assetTransfers));
       txs.push(...buildCollectibleTransfers(collectibleTransfers));
 
-      console.log(`Encoded ${txs.length} transfers.`);
       const sendTxResponse = await sdk.txs.send({ txs });
       const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);
-      console.log({ safeTx });
+      setPendingTx(safeTx);
     } catch (e) {
       console.error(e);
     }
-    setSubmitting(false);
   }, [assetTransfers, collectibleTransfers, sdk.txs]);
 
   return (
@@ -71,42 +70,25 @@ const App: React.FC = () => {
       {
         <>
           {isLoading || assetBalanceQuery.isLoading || nftBalanceQuery.isLoading ? (
-            <>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: "100%",
-                  paddingTop: "36px",
-                }}
-              >
-                <Text size={"xl"} strong>
-                  Loading tokenlist and balances...
-                </Text>
-                <Loader size={"md"} />
-              </div>
-            </>
+            <Loading />
           ) : (
             <Card className="cardWithCustomShadow">
-              <Breadcrumb>
-                <BreadcrumbElement text="CSV Transfer File" iconType="paste" />
-              </Breadcrumb>
-              <CSVForm />
-              <Divider />
+              {!pendingTx && (
+                <>
+                  <Breadcrumb>
+                    <BreadcrumbElement text="CSV Transfer File" iconType="paste" />
+                  </Breadcrumb>
+                  <CSVForm />
+                  <Divider />
+                </>
+              )}
               <Breadcrumb>
                 <BreadcrumbElement text="Summary" iconType="transactionsInactive" />
                 <BreadcrumbElement text="Transfers" color="placeHolder" />
               </Breadcrumb>
               <Summary assetTransfers={assetTransfers} collectibleTransfers={collectibleTransfers} />
-              {submitting ? (
-                <>
-                  <Loader size="md" />
-                  <br />
-                  <Button size="lg" color="secondary" onClick={() => setSubmitting(false)}>
-                    Cancel
-                  </Button>
-                </>
+              {pendingTx ? (
+                <TransactionStatusScreen tx={pendingTx} reset={() => setPendingTx(undefined)} />
               ) : (
                 <Button
                   style={{ alignSelf: "flex-start", marginTop: 16, marginBottom: 16 }}

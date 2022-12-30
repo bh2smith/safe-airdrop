@@ -4,6 +4,8 @@ import { EnsResolver } from "src/hooks/ens";
 import { TokenInfoProvider } from "src/hooks/token";
 import { Transfer } from "src/parser/csvParser";
 
+import { RootState } from "../store";
+
 export interface CSVEditorState {
   csvContent: string;
   transfers: Transfer[];
@@ -46,3 +48,5 @@ export const csvEditorSlice = createSlice({
 export const { updateCsvContent, setTransfers, startParsing, stopParsing } = csvEditorSlice.actions;
 
 export default csvEditorSlice.reducer;
+
+export const selectCsvContent = ({ csvEditor }: RootState) => csvEditor.csvContent;

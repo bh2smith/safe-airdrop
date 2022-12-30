@@ -6,6 +6,8 @@ type NetworkInfo = {
   baseAPI?: string;
 };
 
+export const NETWORKS_WITH_DONATIONS_DEPLOYED = [1, 4, 5, 56, 100, 137];
+
 export const networkInfo = new Map<number, NetworkInfo>([
   [
     1,
@@ -14,17 +16,7 @@ export const networkInfo = new Map<number, NetworkInfo>([
       name: "Ethereum",
       shortName: "eth",
       currencySymbol: "ETH",
-      baseAPI: "https://safe-transaction.gnosis.io/api/v1",
-    },
-  ],
-  [
-    4,
-    {
-      chainID: 4,
-      name: "Rinkeby",
-      shortName: "rin",
-      currencySymbol: "RIN",
-      baseAPI: "https://safe-transaction.rinkeby.gnosis.io/api/v1",
+      baseAPI: "https://safe-transaction-mainnet.safe.global/api/v1",
     },
   ],
   [
@@ -34,7 +26,7 @@ export const networkInfo = new Map<number, NetworkInfo>([
       name: "Goerli",
       shortName: "gor",
       currencySymbol: "GOR",
-      baseAPI: "https://safe-transaction.goerli.gnosis.io/api/v1",
+      baseAPI: "https://safe-transaction-goerli.safe.global/api/v1",
     },
   ],
   [
@@ -44,7 +36,7 @@ export const networkInfo = new Map<number, NetworkInfo>([
       name: "Optimism",
       shortName: "oeth",
       currencySymbol: "OETH",
-      baseAPI: "https://safe-transaction.optimism.gnosis.io/api/v1",
+      baseAPI: "https://safe-transaction-optimism.safe.global/api/v1",
     },
   ],
   [
@@ -54,7 +46,7 @@ export const networkInfo = new Map<number, NetworkInfo>([
       name: "Binance Smart Chain",
       shortName: "bnb",
       currencySymbol: "BNB",
-      baseAPI: "https://safe-transaction.bsc.gnosis.io/api/v1",
+      baseAPI: "https://safe-transaction-bsc.safe.global/api/v1",
     },
   ],
   [
@@ -62,9 +54,9 @@ export const networkInfo = new Map<number, NetworkInfo>([
     {
       chainID: 100,
       name: "Gnosis Chain (formerly xDai)",
-      shortName: "xdai", // gno this is the offical shortname. wierdly gnosis Safe still uses xdai
+      shortName: "gno",
       currencySymbol: "xDAI",
-      baseAPI: "https://safe-transaction.xdai.gnosis.io/api/v1",
+      baseAPI: "https://safe-transaction-gnosis-chain.safe.global/api/v1",
     },
   ],
   [
@@ -74,7 +66,7 @@ export const networkInfo = new Map<number, NetworkInfo>([
       name: "Polygon",
       shortName: "matic",
       currencySymbol: "MATIC",
-      baseAPI: "https://safe-transaction.polygon.gnosis.io/api/v1",
+      baseAPI: "https://safe-transaction-polygon.safe.global/api/v1",
     },
   ],
   [
@@ -93,7 +85,7 @@ export const networkInfo = new Map<number, NetworkInfo>([
       name: "Arbitrum One",
       shortName: "arb1",
       currencySymbol: "AETH",
-      baseAPI: "https://safe-transaction.arbitrum.gnosis.io/api/v1",
+      baseAPI: "https://safe-transaction-arbitrum.safe.global/api/v1",
     },
   ],
   [
@@ -103,7 +95,7 @@ export const networkInfo = new Map<number, NetworkInfo>([
       name: "Avalanche",
       shortName: "avax",
       currencySymbol: "AVAX",
-      baseAPI: "https://safe-transaction.avalanche.gnosis.io/api/v1",
+      baseAPI: "https://safe-transaction-avalanche.safe.global/api/v1",
     },
   ],
   [
@@ -113,7 +105,7 @@ export const networkInfo = new Map<number, NetworkInfo>([
       name: "Volta",
       shortName: "vt",
       currencySymbol: "VT",
-      baseAPI: "https://safe-transaction.volta.gnosis.io/api/v1",
+      baseAPI: "https://safe-transaction-volta.safe.global/api/v1",
     },
   ],
 ]);
