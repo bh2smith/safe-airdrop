@@ -63,12 +63,14 @@ const isAssetTokenValid = (row: AssetTransfer): string[] =>
 const isCollectibleTokenValid = (row: CollectibleTransfer): string[] =>
   row.tokenName === "TOKEN_NOT_FOUND" ? [`No token contract was found at ${row.tokenAddress}`] : [];
 
-const isTokenIdPositive = (row: CollectibleTransfer): string[] =>
-  new BigNumber(row.tokenId).isPositive() ? [] : [`Only positive Token IDs possible: ${row.tokenId}`];
-
-const isTokenIdInteger = (row: CollectibleTransfer): string[] =>
-  new BigNumber(row.tokenId).isInteger() ? [] : [`Token IDs must be integer numbers: ${row.tokenId}`];
-
+const isTokenIdPositive = (row: CollectibleTransfer): string[] => {
+  const tokenIdAsNumber = new BigNumber(row.tokenId);
+  return tokenIdAsNumber.isPositive() ? [] : [`Only positive Token IDs possible: ${tokenIdAsNumber.toFixed()}`];
+};
+const isTokenIdInteger = (row: CollectibleTransfer): string[] => {
+  const tokenIdAsNumber = new BigNumber(row.tokenId);
+  return tokenIdAsNumber.isInteger() ? [] : [`Token IDs must be integer numbers: ${tokenIdAsNumber.toFixed()}`];
+};
 const isTokenValueInteger = (row: CollectibleTransfer): string[] => {
   if (row.amount) {
     const amountAsNumber = new BigNumber(row.amount);

@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { ethers } from "ethers";
 
 import { fetchTokenList, MinimalTokenInfo } from "../hooks/token";
-import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
+import { AssetTransfer, CollectibleTransfer } from "../hooks/useCsvParser";
 import { testData } from "../test/util";
 import { erc1155Interface } from "../transfers/erc1155";
 import { erc20Interface } from "../transfers/erc20";
@@ -32,7 +32,7 @@ describe("Build Transfers:", () => {
         {
           token_type: "erc20",
           receiver,
-          amount: fromWei(MAX_U256, listedToken.decimals),
+          amount: fromWei(MAX_U256, listedToken.decimals).toFixed(),
           tokenAddress: listedToken.address,
           decimals: listedToken.decimals,
           symbol: "LIT",
@@ -42,7 +42,7 @@ describe("Build Transfers:", () => {
         {
           token_type: "erc20",
           receiver,
-          amount: fromWei(MAX_U256, testData.unlistedERC20Token.decimals),
+          amount: fromWei(MAX_U256, testData.unlistedERC20Token.decimals).toFixed(),
           tokenAddress: testData.unlistedERC20Token.address,
           decimals: testData.unlistedERC20Token.decimals,
           symbol: "ULT",
@@ -52,7 +52,7 @@ describe("Build Transfers:", () => {
         {
           token_type: "native",
           receiver,
-          amount: fromWei(MAX_U256, 18),
+          amount: fromWei(MAX_U256, 18).toFixed(),
           tokenAddress: null,
           decimals: 18,
           symbol: "ETH",
@@ -87,7 +87,7 @@ describe("Build Transfers:", () => {
         {
           token_type: "erc20",
           receiver,
-          amount: tinyAmount,
+          amount: tinyAmount.toFixed(),
           tokenAddress: listedToken.address,
           decimals: listedToken.decimals,
           symbol: "LIT",
@@ -97,7 +97,7 @@ describe("Build Transfers:", () => {
         {
           token_type: "erc20",
           receiver,
-          amount: tinyAmount,
+          amount: tinyAmount.toFixed(),
           tokenAddress: testData.unlistedERC20Token.address,
           decimals: testData.unlistedERC20Token.decimals,
           symbol: "ULT",
@@ -107,7 +107,7 @@ describe("Build Transfers:", () => {
         {
           token_type: "native",
           receiver,
-          amount: tinyAmount,
+          amount: tinyAmount.toFixed(),
           tokenAddress: null,
           decimals: 18,
           symbol: "ETH",
@@ -145,7 +145,7 @@ describe("Build Transfers:", () => {
         {
           token_type: "erc20",
           receiver,
-          amount: mixedAmount,
+          amount: mixedAmount.toFixed(),
           tokenAddress: listedToken.address,
           decimals: listedToken.decimals,
           symbol: "LIT",
@@ -155,7 +155,7 @@ describe("Build Transfers:", () => {
         {
           token_type: "erc20",
           receiver,
-          amount: mixedAmount,
+          amount: mixedAmount.toFixed(),
           tokenAddress: testData.unlistedERC20Token.address,
           decimals: testData.unlistedERC20Token.decimals,
           symbol: "ULT",
@@ -165,7 +165,7 @@ describe("Build Transfers:", () => {
         {
           token_type: "native",
           receiver,
-          amount: mixedAmount,
+          amount: mixedAmount.toFixed(),
           tokenAddress: null,
           decimals: 18,
           symbol: "ETH",
@@ -209,7 +209,7 @@ describe("Build Transfers:", () => {
       const payment: AssetTransfer = {
         token_type: "erc20",
         receiver,
-        amount,
+        amount: amount.toFixed(),
         tokenAddress: crappyToken.address,
         decimals: crappyToken.decimals,
         symbol: "BTC",
@@ -233,8 +233,7 @@ describe("Build Transfers:", () => {
         receiverEnsName: null,
         tokenAddress: testData.addresses.dummyErc721Address,
         tokenName: "Test NFT",
-        tokenId: new BigNumber("69"),
-        hasMetaData: false,
+        tokenId: new BigNumber("69").toFixed(),
       },
       {
         token_type: "erc1155",
@@ -243,9 +242,8 @@ describe("Build Transfers:", () => {
         receiverEnsName: null,
         tokenAddress: testData.addresses.dummyErc1155Address,
         tokenName: "Test MultiToken",
-        amount: new BigNumber("69"),
-        tokenId: new BigNumber("420"),
-        hasMetaData: false,
+        amount: new BigNumber("69").toFixed(),
+        tokenId: new BigNumber("420").toFixed(),
       },
     ];
 
