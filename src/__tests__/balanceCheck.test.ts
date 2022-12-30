@@ -1,4 +1,3 @@
-import BigNumber from "bignumber.js";
 import { expect } from "chai";
 import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
 
