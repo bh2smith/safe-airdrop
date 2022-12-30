@@ -3,9 +3,6 @@ import { Button, GenericModal, Icon, Select, TextFieldInput } from "@gnosis.pm/s
 import { InputAdornment, Typography } from "@material-ui/core";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { useCollectibleTokenInfoProvider } from "src/hooks/collectibleTokenInfoProvider";
-import { useEnsResolver } from "src/hooks/ens";
-import { useTokenInfoProvider } from "src/hooks/token";
 import { useCsvContent } from "src/hooks/useCsvContent";
 import { networkInfo } from "src/networks";
 import { AssetBalance } from "src/stores/api/balanceApi";
@@ -25,9 +22,6 @@ export const DonateDialog = ({
   const { safe } = useSafeAppsSDK();
   const dispatch = useAppDispatch();
   const csvContent = useCsvContent();
-  const ensResolver = useEnsResolver();
-  const collectibleTokenInfoProvider = useCollectibleTokenInfoProvider();
-  const tokenInfoProvider = useTokenInfoProvider();
 
   const nativeSymbol = networkInfo.get(safe.chainId)?.currencySymbol || "ETH";
 
@@ -86,9 +80,6 @@ export const DonateDialog = ({
       dispatch(
         updateCsvContent({
           csvContent: `${csvContent}\n${donationCSVRow}`,
-          collectibleTokenInfoProvider,
-          ensResolver,
-          tokenInfoProvider,
         }),
       );
       onClose();

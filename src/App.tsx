@@ -1,4 +1,3 @@
-import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { BaseTransaction, GatewayTransactionDetails } from "@gnosis.pm/safe-apps-sdk";
 import { Breadcrumb, BreadcrumbElement, Button, Card, Divider, Loader } from "@gnosis.pm/safe-react-components";
@@ -13,11 +12,12 @@ import { Header } from "./components/Header";
 import { Loading } from "./components/Loading";
 import { Summary } from "./components/Summary";
 import { TransactionStatusScreen } from "./components/TransactionStatusScreen";
+import { useEnsResolver } from "./hooks/ens";
 import { useTokenList } from "./hooks/token";
-import { AssetTransfer, CollectibleTransfer } from "./parser/csvParser";
-import { useGetAssetBalanceQuery, useGetNFTBalanceQuery } from "./stores/api/balanceApi";
+import { AssetTransfer, CollectibleTransfer, useCsvParser } from "./hooks/useCsvParser";
+import { useGetAssetBalanceQuery, useGetAllNFTsQuery } from "./stores/api/balanceApi";
 import { setupParserListener } from "./stores/middleware/parseListener";
-import { setSafeAppProvider, setSafeInfo } from "./stores/slices/safeInfoSlice";
+import { setSafeInfo } from "./stores/slices/safeInfoSlice";
 import { RootState, startAppListening } from "./stores/store";
 import { buildAssetTransfers, buildCollectibleTransfers } from "./transfers/transfers";
 
@@ -25,23 +25,23 @@ setUseWhatChange(process.env.NODE_ENV === "development");
 
 const App: React.FC = () => {
   const { isLoading } = useTokenList();
+  const { sdk, safe } = useSafeAppsSDK();
   const assetBalanceQuery = useGetAssetBalanceQuery();
-  const nftBalanceQuery = useGetNFTBalanceQuery();
+  const nftBalanceQuery = useGetAllNFTsQuery();
 
   const { messages } = useSelector((state: RootState) => state.messages);
   const { transfers, parsing } = useSelector((state: RootState) => state.csvEditor);
 
   const [pendingTx, setPendingTx] = useState<GatewayTransactionDetails>();
-  const { sdk, safe } = useSafeAppsSDK();
+  const { parseCsv } = useCsvParser();
+  const ensResolver = useEnsResolver();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const provider = new SafeAppProvider(safe, sdk);
     dispatch(setSafeInfo(safe));
-    dispatch(setSafeAppProvider(provider));
-    const subscriptions: Unsubscribe[] = [setupParserListener(startAppListening)];
+    const subscriptions: Unsubscribe[] = [setupParserListener(startAppListening, parseCsv, ensResolver)];
     return () => subscriptions.forEach((unsubscribe) => unsubscribe());
-  }, [dispatch, safe, sdk]);
+  }, [dispatch, safe, sdk, parseCsv, ensResolver]);
 
   const assetTransfers = transfers.filter(
     (transfer) => transfer.token_type === "erc20" || transfer.token_type === "native",

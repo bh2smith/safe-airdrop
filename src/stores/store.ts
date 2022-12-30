@@ -9,7 +9,6 @@ import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import { balanceApi } from "./api/balanceApi";
-import balanceReducer from "./slices/balanceSlice";
 import csvReducer from "./slices/csvEditorSlice";
 import messageReducer from "./slices/messageSlice";
 import safeInfoReducer from "./slices/safeInfoSlice";
@@ -23,17 +22,10 @@ export const store = configureStore({
     csvEditor: csvReducer,
     messages: messageReducer,
     safeInfo: safeInfoReducer,
-    balance: balanceReducer,
     [balanceApi.reducerPath]: balanceApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ["csvEditor/updateCsvContent", "safeInfo/setSafeAppProvider"],
-      },
-    })
-      .prepend(listenerMiddlewareInstance.middleware)
-      .concat(balanceApi.middleware),
+    getDefaultMiddleware().prepend(listenerMiddlewareInstance.middleware).concat(balanceApi.middleware),
 });
 
 setupListeners(store.dispatch);

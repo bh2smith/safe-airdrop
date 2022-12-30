@@ -3,9 +3,6 @@ import AceEditor, { IMarker, IAnnotation } from "react-ace";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/mode-text";
 import { useDispatch, useSelector } from "react-redux";
-import { useCollectibleTokenInfoProvider } from "src/hooks/collectibleTokenInfoProvider";
-import { useEnsResolver } from "src/hooks/ens";
-import { useTokenInfoProvider } from "src/hooks/token";
 import { RootState } from "src/stores/store";
 import styled from "styled-components";
 
@@ -20,18 +17,10 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
   const dispatch = useDispatch();
   const csvText = useSelector((state: RootState) => state.csvEditor.csvContent);
 
-  const ensResolver = useEnsResolver();
-  const collectibleTokenInfoProvider = useCollectibleTokenInfoProvider();
-  const tokenInfoProvider = useTokenInfoProvider();
-
   return (
     <EditorWrapper>
       <AceEditor
-        onChange={(newCode) =>
-          dispatch(
-            updateCsvContent({ csvContent: newCode, collectibleTokenInfoProvider, ensResolver, tokenInfoProvider }),
-          )
-        }
+        onChange={(newCode) => dispatch(updateCsvContent({ csvContent: newCode }))}
         value={csvText}
         theme="tomorrow"
         width={"100%"}

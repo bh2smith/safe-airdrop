@@ -3,7 +3,7 @@ import React, { memo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList as List } from "react-window";
 
-import { AssetTransfer } from "../../parser/csvParser";
+import { AssetTransfer } from "../../hooks/useCsvParser";
 import { Receiver } from "../Receiver";
 
 import { ERC20Token } from "./ERC20Token";

@@ -1,7 +1,7 @@
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { ethers } from "ethers";
 
-import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
+import { AssetTransfer, CollectibleTransfer } from "../hooks/useCsvParser";
 import { toWei } from "../utils";
 
 import { erc1155Interface } from "./erc1155";

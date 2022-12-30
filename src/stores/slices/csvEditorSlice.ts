@@ -1,11 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CollectibleTokenInfoProvider } from "src/hooks/collectibleTokenInfoProvider";
-import { EnsResolver } from "src/hooks/ens";
-import { TokenInfoProvider } from "src/hooks/token";
-import { Transfer } from "src/parser/csvParser";
+import { Transfer } from "src/hooks/useCsvParser";
 
 import { RootState } from "../store";
-
 export interface CSVEditorState {
   csvContent: string;
   transfers: Transfer[];
@@ -26,9 +22,6 @@ export const csvEditorSlice = createSlice({
       state,
       action: PayloadAction<{
         csvContent: string;
-        ensResolver: EnsResolver;
-        tokenInfoProvider: TokenInfoProvider;
-        collectibleTokenInfoProvider: CollectibleTokenInfoProvider;
       }>,
     ) => {
       state.csvContent = action.payload.csvContent;

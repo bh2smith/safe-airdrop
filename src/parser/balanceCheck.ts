@@ -1,9 +1,8 @@
 import { BigNumber } from "bignumber.js";
 import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
 
+import { AssetTransfer, CollectibleTransfer, Transfer } from "../hooks/useCsvParser";
 import { toWei } from "../utils";
-
-import { AssetTransfer, CollectibleTransfer, Transfer } from "./csvParser";
 
 export type AssetSummaryEntry = {
   tokenAddress: string | null;
@@ -92,7 +91,7 @@ export const checkAllBalances = (
         !isSufficientBalance(new BigNumber(tokenBalance.balance), amount, 18)
       ) {
         insufficientTokens.push({
-          token: "ETH",
+          token: tokenBalance?.token?.symbol || "ETH",
           token_type: "native",
           transferAmount: amount.toFixed(),
           isDuplicate: false, // For Erc20 / Coin Transfers duplicates are never an issue
@@ -117,15 +116,16 @@ export const checkAllBalances = (
   }
 
   for (const { tokenAddress, count, name, id } of collectibleSummary.values()) {
-    const tokenBalance = collectibleBalance?.find(
+    const tokenBalance = collectibleBalance?.results.find(
       (balanceEntry) => balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase() && balanceEntry.id === id,
     );
     if (typeof tokenBalance === "undefined" || count > 1) {
       const tokenName =
         name ??
         tokenBalance?.tokenName ??
-        collectibleBalance?.find((balanceEntry) => balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase())
-          ?.tokenName;
+        collectibleBalance?.results.find(
+          (balanceEntry) => balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase(),
+        )?.tokenName;
       insufficientTokens.push({
         token: tokenName ?? tokenAddress,
         token_type: "erc721",

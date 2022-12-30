@@ -5,8 +5,7 @@ import { utils } from "ethers";
 import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import { EnsResolver } from "../hooks/ens";
 import { TokenInfoProvider } from "../hooks/token";
-
-import { AssetTransfer, CollectibleTransfer, CSVRow, Transfer, UnknownTransfer } from "./csvParser";
+import { AssetTransfer, CollectibleTransfer, CSVRow, Transfer, UnknownTransfer } from "../hooks/useCsvParser";
 
 interface PrePayment {
   receiver: string;
@@ -155,13 +154,15 @@ export const transformCollectible = (
   ensResolver: EnsResolver,
   callback: RowTransformCallback<Transfer>,
 ): void => {
+  let amount = row.amount ?? row.value ?? "1";
+  amount = amount === "" ? "1" : amount;
   const prePayment: PreCollectibleTransfer = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
     tokenAddress: normalizeAddress(row.token_address),
     tokenId: row.id ?? "",
     receiver: normalizeAddress(row.receiver),
     tokenType: row.token_type,
-    amount: row.amount ?? row.value ?? "",
+    amount,
   };
 
   toCollectibleTransfer(prePayment, erc721InfoProvider, ensResolver)

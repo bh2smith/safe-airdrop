@@ -1,6 +1,6 @@
 import { Accordion, AccordionDetails, AccordionSummary, Icon, Text } from "@gnosis.pm/safe-react-components";
 
-import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
+import { AssetTransfer, CollectibleTransfer } from "../hooks/useCsvParser";
 
 import { AssetTransferTable } from "./assets/AssetTransferTable";
 import { CollectiblesTransferTable } from "./assets/CollectiblesTransferTable";

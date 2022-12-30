@@ -1,7 +1,7 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Breadcrumb, BreadcrumbElement, ButtonLink, Tooltip } from "@gnosis.pm/safe-react-components";
 import { useState } from "react";
-import { useGetAssetBalanceQuery, useGetNFTBalanceQuery } from "src/stores/api/balanceApi";
+import { useGetAssetBalanceQuery, useGetAllNFTsQuery } from "src/stores/api/balanceApi";
 import styled from "styled-components";
 
 import { NETWORKS_WITH_DONATIONS_DEPLOYED } from "../networks";
@@ -25,7 +25,7 @@ const GenerateMenuButton = styled(ButtonLink)`
 
 export const GenerateTransfersMenu = () => {
   const assetBalanceQuery = useGetAssetBalanceQuery();
-  const nftBalanceQuery = useGetNFTBalanceQuery();
+  const nftBalanceQuery = useGetAllNFTsQuery();
 
   const assetBalance = assetBalanceQuery.currentData;
   const nftBalance = nftBalanceQuery.currentData;

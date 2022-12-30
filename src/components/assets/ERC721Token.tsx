@@ -39,7 +39,6 @@ export const ERC721Token = (props: TokenProps) => {
     let isMounted = true;
     setIsMetaDataLoading(true);
     collectibleTokenInfoProvider.fetchMetaInfo(tokenAddress, new BigNumber(id), token_type).then((result) => {
-      console.log("metadata:", result);
       if (isMounted) {
         setTokenMetaData(result);
         setIsMetaDataLoading(false);

@@ -1,26 +1,26 @@
+import { EnsResolver } from "src/hooks/ens";
+import { Transfer } from "src/hooks/useCsvParser";
 import { checkAllBalances } from "src/parser/balanceCheck";
-import { CSVParser } from "src/parser/csvParser";
 
 import { balanceApi } from "../api/balanceApi";
 import { setTransfers, startParsing, stopParsing, updateCsvContent } from "../slices/csvEditorSlice";
-import { setCodeWarnings, setMessages } from "../slices/messageSlice";
+import { CodeWarning, setCodeWarnings, setMessages } from "../slices/messageSlice";
 import { AppStartListening } from "../store";
 
-export const setupParserListener = (startListening: AppStartListening) => {
+export const setupParserListener = (
+  startListening: AppStartListening,
+  parseCsv: (csvText: string) => Promise<[Transfer[], CodeWarning[]]>,
+  ensResolver: EnsResolver,
+) => {
   const subscription = startListening({
     actionCreator: updateCsvContent,
     effect: async (action, listenerApi) => {
-      const { collectibleTokenInfoProvider, csvContent, ensResolver, tokenInfoProvider } = action.payload;
+      const { csvContent } = action.payload;
       listenerApi.cancelActiveListeners();
       await listenerApi.delay(750);
       listenerApi.dispatch(startParsing());
       try {
-        let [transfers, codeWarnings] = await CSVParser.parseCSV(
-          csvContent,
-          tokenInfoProvider,
-          collectibleTokenInfoProvider,
-          ensResolver,
-        );
+        let [transfers, codeWarnings] = await parseCsv(csvContent);
         const uniqueReceiversWithoutEnsName = transfers.reduce(
           (previousValue, currentValue): Set<string> =>
             currentValue.receiverEnsName === null ? previousValue.add(currentValue.receiver) : previousValue,
@@ -47,7 +47,7 @@ export const setupParserListener = (startListening: AppStartListening) => {
 
         const currentState = listenerApi.getState();
         const assetBalanceResult = balanceApi.endpoints.getAssetBalance.select()(currentState);
-        const nftBalanceResult = balanceApi.endpoints.getNFTBalance.select()(currentState);
+        const nftBalanceResult = balanceApi.endpoints.getAllNFTs.select()(currentState);
         const insufficientBalances = checkAllBalances(assetBalanceResult.data, nftBalanceResult.data, transfers);
 
         listenerApi.dispatch(stopParsing());
@@ -56,9 +56,6 @@ export const setupParserListener = (startListening: AppStartListening) => {
           setMessages(
             insufficientBalances.map((insufficientBalanceInfo) => {
               if (insufficientBalanceInfo.token_type === "erc20" || insufficientBalanceInfo.token_type === "native") {
-                if (insufficientBalanceInfo.token_type === "native") {
-                  insufficientBalanceInfo.token = tokenInfoProvider.getNativeTokenSymbol();
-                }
                 return {
                   message: `Insufficient Balance: ${insufficientBalanceInfo.transferAmount} of ${insufficientBalanceInfo.token}`,
                   severity: "error",

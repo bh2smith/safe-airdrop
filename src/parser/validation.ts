@@ -2,7 +2,7 @@ import { RowValidateCallback } from "@fast-csv/parse";
 import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
 
-import { AssetTransfer, CollectibleTransfer, Transfer, UnknownTransfer } from "./csvParser";
+import { AssetTransfer, CollectibleTransfer, Transfer, UnknownTransfer } from "../hooks/useCsvParser";
 
 export const validateRow = (row: Transfer | UnknownTransfer, callback: RowValidateCallback) => {
   switch (row.token_type) {
