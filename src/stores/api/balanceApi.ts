@@ -3,6 +3,11 @@ import { networkInfo } from "src/networks";
 
 import { RootState } from "../store";
 
+/**
+ * Currently the tx service is rate limited to 5 requests / minute and fetching NFTs is very slow.
+ */
+const MAX_NFTS = 50;
+
 type AssetBalanceEntry = {
   tokenAddress: string | null;
   token: Token | null;
@@ -91,8 +96,7 @@ export const balanceApi = createApi({
           const nextBalance = data as NFTBalance;
           console.log("Result:", nextBalance);
           allNFTs.next = nextBalance?.next ?? null;
-          // the endpoint is quite slow so we cap the NFTs to 100 now
-          if (offset === 100) {
+          if (offset >= MAX_NFTS) {
             break;
           }
           offset += 10;
