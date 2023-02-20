@@ -47,6 +47,6 @@ describe("resolveIpfsUri", () => {
 
   it("returns infura url for ipfs urls", () => {
     const ipfsURI = "ipfs://SomeHash";
-    expect(resolveIpfsUri(ipfsURI)).to.be.equal("https://ipfs.infura.io/ipfs/SomeHash");
+    expect(resolveIpfsUri(ipfsURI)).to.be.equal("https://cloudflare-ipfs.com/ipfs/SomeHash");
   });
 });

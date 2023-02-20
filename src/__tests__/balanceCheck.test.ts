@@ -1,9 +1,8 @@
-import BigNumber from "bignumber.js";
 import { expect } from "chai";
+import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
 
-import { AssetBalance, CollectibleBalance } from "../hooks/balances";
+import { AssetTransfer, CollectibleTransfer } from "../hooks/useCsvParser";
 import { assetTransfersToSummary, checkAllBalances } from "../parser/balanceCheck";
-import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
 import { testData } from "../test/util";
 import { toWei } from "../utils";
 
@@ -13,7 +12,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(1),
+        amount: "1",
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
@@ -22,7 +21,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(2),
+        amount: "2",
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ETH",
@@ -31,7 +30,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(3),
+        amount: "3",
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ETH",
@@ -80,7 +79,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(0.1),
+        amount: "0.1",
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
@@ -89,7 +88,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(0.01),
+        amount: "0.01",
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ETH",
@@ -98,7 +97,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(0.001),
+        amount: "0.001",
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ETH",
@@ -147,7 +146,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(0.1),
+        amount: "0.1",
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ULT",
@@ -156,7 +155,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(0.01),
+        amount: "0.01",
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ULT",
@@ -165,7 +164,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(0.001),
+        amount: "0.001",
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ULT",
@@ -226,7 +225,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(1),
+        amount: "1",
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ULT",
@@ -235,7 +234,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(2),
+        amount: "2",
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ULT",
@@ -244,7 +243,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(3),
+        amount: "3",
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ULT",
@@ -305,7 +304,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(1.1),
+        amount: "1.1",
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ULT",
@@ -314,7 +313,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(2),
+        amount: "2",
         receiver: testData.addresses.receiver2,
         decimals: 18,
         symbol: "ULT",
@@ -323,7 +322,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc20",
         tokenAddress: testData.unlistedERC20Token.address,
-        amount: new BigNumber(3.3),
+        amount: "3.3",
         receiver: testData.addresses.receiver3,
         decimals: 18,
         symbol: "ULT",
@@ -332,7 +331,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(3),
+        amount: "3",
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
@@ -341,7 +340,7 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "native",
         tokenAddress: null,
-        amount: new BigNumber(0.33),
+        amount: "0.33",
         receiver: testData.addresses.receiver1,
         decimals: 18,
         symbol: "ETH",
@@ -453,67 +452,86 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc721",
         tokenAddress: testData.unlistedERC20Token.address,
-        tokenId: new BigNumber(69),
+        tokenId: "69",
         receiver: testData.addresses.receiver1,
         tokenName: "Test Collectible",
         receiverEnsName: null,
-        hasMetaData: false,
         from: testData.addresses.receiver2,
       },
       {
         token_type: "erc721",
         tokenAddress: testData.unlistedERC20Token.address,
-        tokenId: new BigNumber(420),
+        tokenId: "420",
         receiver: testData.addresses.receiver1,
         tokenName: "Test Collectible",
         receiverEnsName: null,
-        hasMetaData: false,
         from: testData.addresses.receiver2,
       },
     ];
 
-    const exactBalance: CollectibleBalance = [
-      {
-        address: testData.unlistedERC20Token.address,
-        id: "69",
-        tokenName: "Test Collectible",
-        tokenSymbol: "TC",
-      },
-      {
-        address: testData.unlistedERC20Token.address,
-        id: "420",
-        tokenName: "Test Collectible",
-        tokenSymbol: "TC",
-      },
-    ];
-    const biggerBalance: CollectibleBalance = [
-      {
-        address: testData.unlistedERC20Token.address,
-        id: "69",
-        tokenName: "Test Collectible",
-        tokenSymbol: "TC",
-      },
-      {
-        address: testData.unlistedERC20Token.address,
-        id: "420",
-        tokenName: "Test Collectible",
-        tokenSymbol: "TC",
-      },
-      {
-        address: testData.unlistedERC20Token.address,
-        id: "42069",
-        tokenName: "Test Collectible",
-        tokenSymbol: "TC",
-      },
-    ];
-    const smallerBalance: CollectibleBalance = [
-      {
-        address: testData.unlistedERC20Token.address,
-        id: "69",
-        tokenName: "Test Collectible",
-        tokenSymbol: "TC",
-      },
-    ];
+    const exactBalance: NFTBalance = {
+      results: [
+        {
+          address: testData.unlistedERC20Token.address,
+          id: "69",
+          tokenName: "Test Collectible",
+          tokenSymbol: "TC",
+          imageUri: "",
+          name: "",
+        },
+        {
+          address: testData.unlistedERC20Token.address,
+          id: "420",
+          tokenName: "Test Collectible",
+          tokenSymbol: "TC",
+          imageUri: "",
+          name: "",
+        },
+      ],
+      next: null,
+    };
+    const biggerBalance: NFTBalance = {
+      results: [
+        {
+          address: testData.unlistedERC20Token.address,
+          id: "69",
+          tokenName: "Test Collectible",
+          tokenSymbol: "TC",
+          imageUri: "",
+          name: "",
+        },
+        {
+          address: testData.unlistedERC20Token.address,
+          id: "420",
+          tokenName: "Test Collectible",
+          tokenSymbol: "TC",
+          imageUri: "",
+          name: "",
+        },
+        {
+          address: testData.unlistedERC20Token.address,
+          id: "42069",
+          tokenName: "Test Collectible",
+          tokenSymbol: "TC",
+          imageUri: "",
+          name: "",
+        },
+      ],
+      next: null,
+    };
+    const smallerBalance: NFTBalance = {
+      results: [
+        {
+          address: testData.unlistedERC20Token.address,
+          id: "69",
+          tokenName: "Test Collectible",
+          tokenSymbol: "TC",
+          imageUri: "",
+          name: "",
+        },
+      ],
+      next: null,
+    };
 
     expect(checkAllBalances(undefined, exactBalance, transfers)).to.be.empty;
     expect(checkAllBalances(undefined, biggerBalance, transfers)).to.be.empty;
@@ -521,7 +539,7 @@ describe("transferToSummary and check balances", () => {
     expect(smallBalanceCheckResult).to.have.length(1);
     expect(smallBalanceCheckResult[0].token).to.equal("Test Collectible");
     expect(smallBalanceCheckResult[0].token_type).to.equal("erc721");
-    expect(smallBalanceCheckResult[0].id?.toFixed()).to.equal("420");
+    expect(smallBalanceCheckResult[0].id).to.equal("420");
     expect(smallBalanceCheckResult[0].transferAmount).to.be.undefined;
     expect(smallBalanceCheckResult[0].isDuplicate).to.be.false;
   });
@@ -531,37 +549,40 @@ describe("transferToSummary and check balances", () => {
       {
         token_type: "erc721",
         tokenAddress: testData.unlistedERC20Token.address,
-        tokenId: new BigNumber(69),
+        tokenId: "69",
         receiver: testData.addresses.receiver1,
         receiverEnsName: null,
-        hasMetaData: false,
         from: testData.addresses.receiver2,
       },
       {
         token_type: "erc721",
         tokenAddress: testData.unlistedERC20Token.address,
-        tokenId: new BigNumber(69),
+        tokenId: "69",
         receiver: testData.addresses.receiver2,
         receiverEnsName: null,
-        hasMetaData: false,
         from: testData.addresses.receiver2,
       },
     ];
 
-    const exactBalance: CollectibleBalance = [
-      {
-        address: testData.unlistedERC20Token.address,
-        id: "69",
-        tokenName: "Test Collectible",
-        tokenSymbol: "TC",
-      },
-    ];
+    const exactBalance: NFTBalance = {
+      results: [
+        {
+          address: testData.unlistedERC20Token.address,
+          id: "69",
+          tokenName: "Test Collectible",
+          tokenSymbol: "TC",
+          imageUri: "",
+          name: "",
+        },
+      ],
+      next: null,
+    };
 
     const balanceCheckResult = checkAllBalances(undefined, exactBalance, transfers);
     expect(balanceCheckResult).to.have.length(1);
     expect(balanceCheckResult[0].token).to.equal("Test Collectible");
     expect(balanceCheckResult[0].token_type).to.equal("erc721");
-    expect(balanceCheckResult[0].id?.toFixed()).to.equal("69");
+    expect(balanceCheckResult[0].id).to.equal("69");
     expect(balanceCheckResult[0].transferAmount).to.undefined;
     expect(balanceCheckResult[0].isDuplicate).to.be.true;
   });

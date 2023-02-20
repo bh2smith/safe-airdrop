@@ -5,22 +5,21 @@ import { utils } from "ethers";
 import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import { EnsResolver } from "../hooks/ens";
 import { TokenInfoProvider } from "../hooks/token";
-
-import { AssetTransfer, CollectibleTransfer, CSVRow, Transfer, UnknownTransfer } from "./csvParser";
+import { AssetTransfer, CollectibleTransfer, CSVRow, Transfer, UnknownTransfer } from "../hooks/useCsvParser";
 
 interface PrePayment {
   receiver: string;
-  amount: BigNumber;
+  amount: string;
   tokenAddress: string | null;
   tokenType: "erc20" | "native";
 }
 
 interface PreCollectibleTransfer {
   receiver: string;
-  tokenId: BigNumber;
+  tokenId: string;
   tokenAddress: string;
   tokenType: "nft";
-  amount?: BigNumber;
+  amount?: string;
 }
 
 export const transform = (
@@ -83,7 +82,7 @@ export const transformAsset = (
   const prePayment: PrePayment = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
     tokenAddress: transformERC20TokenAddress(row.token_address),
-    amount: new BigNumber(row.amount ?? row.value ?? ""),
+    amount: row.amount ?? row.value ?? "",
     receiver: normalizeAddress(trimMatchingNetwork(row.receiver, selectedChainShortname)),
     tokenType: row.token_type,
   };
@@ -155,13 +154,15 @@ export const transformCollectible = (
   ensResolver: EnsResolver,
   callback: RowTransformCallback<Transfer>,
 ): void => {
+  let amount = row.amount ?? row.value ?? "1";
+  amount = amount === "" ? "1" : amount;
   const prePayment: PreCollectibleTransfer = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
     tokenAddress: normalizeAddress(row.token_address),
-    tokenId: new BigNumber(row.id ?? ""),
+    tokenId: row.id ?? "",
     receiver: normalizeAddress(row.receiver),
     tokenType: row.token_type,
-    amount: new BigNumber(row.amount ?? ""),
+    amount,
   };
 
   toCollectibleTransfer(prePayment, erc721InfoProvider, ensResolver)
@@ -186,7 +187,7 @@ const toCollectibleTransfer = async (
 
   const tokenInfo = await collectibleTokenInfoProvider.getTokenInfo(
     preCollectible.tokenAddress,
-    preCollectible.tokenId,
+    new BigNumber(preCollectible.tokenId),
   );
 
   if (tokenInfo?.token_type === "erc721") {
@@ -197,7 +198,6 @@ const toCollectibleTransfer = async (
       tokenAddress: preCollectible.tokenAddress,
       receiverEnsName,
       token_type: "erc721",
-      hasMetaData: tokenInfo.hasMetaInfo,
     };
   } else if (tokenInfo?.token_type === "erc1155") {
     return {
@@ -208,7 +208,6 @@ const toCollectibleTransfer = async (
       receiverEnsName,
       amount: preCollectible.amount,
       token_type: "erc1155",
-      hasMetaData: tokenInfo.hasMetaInfo,
     };
   } else {
     // return a fake token which will fail validation.
@@ -220,7 +219,6 @@ const toCollectibleTransfer = async (
       tokenName: "TOKEN_NOT_FOUND",
       receiverEnsName,
       token_type: "erc721",
-      hasMetaData: false,
     };
   }
 };

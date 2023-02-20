@@ -1,20 +1,13 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Breadcrumb, BreadcrumbElement, ButtonLink, Tooltip } from "@gnosis.pm/safe-react-components";
 import { useState } from "react";
+import { useGetAssetBalanceQuery, useGetAllNFTsQuery } from "src/stores/api/balanceApi";
 import styled from "styled-components";
 
-import { AssetBalance, CollectibleBalance } from "../hooks/balances";
 import { NETWORKS_WITH_DONATIONS_DEPLOYED } from "../networks";
 
 import { DonateDialog } from "./DonateDialog";
 import { DrainSafeDialog } from "./DrainSafeDialog";
-
-export interface GenerateTransfersMenuProps {
-  assetBalance?: AssetBalance;
-  collectibleBalance?: CollectibleBalance;
-  setCsvText: (csv: string) => void;
-  csvText: string;
-}
 
 const GenerateHeader = styled(Breadcrumb)`
   padding: 0px 0px 8px 0px;
@@ -30,8 +23,13 @@ const GenerateMenuButton = styled(ButtonLink)`
   }
 `;
 
-export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps) => {
-  const { assetBalance, collectibleBalance, setCsvText, csvText } = props;
+export const GenerateTransfersMenu = () => {
+  const assetBalanceQuery = useGetAssetBalanceQuery();
+  const nftBalanceQuery = useGetAllNFTsQuery();
+
+  const assetBalance = assetBalanceQuery.currentData;
+  const nftBalance = nftBalanceQuery.currentData;
+
   const [isDrainModalOpen, setIsDrainModalOpen] = useState(false);
   const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);
 
@@ -71,12 +69,11 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps) => {
           )}
         </div>
       </div>
-      {assetBalance && collectibleBalance && (
+      {nftBalance && assetBalance && (
         <DrainSafeDialog
           assetBalance={assetBalance}
-          collectibleBalance={collectibleBalance}
+          nftBalance={nftBalance}
           onClose={() => setIsDrainModalOpen(false)}
-          onSubmit={(drainCsv) => setCsvText(drainCsv)}
           isOpen={isDrainModalOpen}
         />
       )}
@@ -85,8 +82,6 @@ export const GenerateTransfersMenu = (props: GenerateTransfersMenuProps) => {
           assetBalance={assetBalance}
           isOpen={isDonateModalOpen}
           onClose={() => setIsDonateModalOpen(false)}
-          onSubmit={(updatedCSV) => setCsvText(updatedCSV)}
-          csvText={csvText}
         />
       )}
     </>

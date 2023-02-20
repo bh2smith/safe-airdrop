@@ -1,7 +1,7 @@
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { ethers } from "ethers";
 
-import { AssetTransfer, CollectibleTransfer } from "../parser/csvParser";
+import { AssetTransfer, CollectibleTransfer } from "../hooks/useCsvParser";
 import { toWei } from "../utils";
 
 import { erc1155Interface } from "./erc1155";
@@ -40,7 +40,7 @@ export function buildCollectibleTransfers(transferData: CollectibleTransfer[]): 
         data: erc721Interface.encodeFunctionData("safeTransferFrom", [
           transfer.from,
           transfer.receiver,
-          transfer.tokenId.toFixed(),
+          transfer.tokenId,
         ]),
       };
     } else {
@@ -50,8 +50,8 @@ export function buildCollectibleTransfers(transferData: CollectibleTransfer[]): 
         data: erc1155Interface.encodeFunctionData("safeTransferFrom", [
           transfer.from,
           transfer.receiver,
-          transfer.tokenId.toFixed(),
-          transfer.amount?.toFixed() ?? "0",
+          transfer.tokenId,
+          transfer.amount ?? "0",
           ethers.utils.hexlify("0x00"),
         ]),
       };

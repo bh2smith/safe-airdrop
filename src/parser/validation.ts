@@ -1,7 +1,8 @@
 import { RowValidateCallback } from "@fast-csv/parse";
+import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
 
-import { AssetTransfer, CollectibleTransfer, Transfer, UnknownTransfer } from "./csvParser";
+import { AssetTransfer, CollectibleTransfer, Transfer, UnknownTransfer } from "../hooks/useCsvParser";
 
 export const validateRow = (row: Transfer | UnknownTransfer, callback: RowValidateCallback) => {
   switch (row.token_type) {
@@ -54,7 +55,7 @@ const areAddressesValid = (row: Transfer): string[] => {
 };
 
 const isAmountPositive = (row: AssetTransfer): string[] =>
-  row.amount.isGreaterThan(0) ? [] : ["Only positive amounts/values possible: " + row.amount.toFixed()];
+  new BigNumber(row.amount).isGreaterThan(0) ? [] : ["Only positive amounts/values possible: " + row.amount];
 
 const isAssetTokenValid = (row: AssetTransfer): string[] =>
   row.decimals === -1 && row.symbol === "TOKEN_NOT_FOUND" ? [`No token contract was found at ${row.tokenAddress}`] : [];
@@ -62,18 +63,25 @@ const isAssetTokenValid = (row: AssetTransfer): string[] =>
 const isCollectibleTokenValid = (row: CollectibleTransfer): string[] =>
   row.tokenName === "TOKEN_NOT_FOUND" ? [`No token contract was found at ${row.tokenAddress}`] : [];
 
-const isTokenIdPositive = (row: CollectibleTransfer): string[] =>
-  row.tokenId.isPositive() ? [] : [`Only positive Token IDs possible: ${row.tokenId.toFixed()}`];
-
-const isTokenIdInteger = (row: CollectibleTransfer): string[] =>
-  row.tokenId.isInteger() ? [] : [`Token IDs must be integer numbers: ${row.tokenId.toFixed()}`];
-
-const isTokenValueInteger = (row: CollectibleTransfer): string[] =>
-  !row.amount || row.amount.isNaN() || row.amount.isInteger()
-    ? []
-    : [`Value of ERC1155 must be an integer: ${row.amount.toFixed()}`];
+const isTokenIdPositive = (row: CollectibleTransfer): string[] => {
+  const tokenIdAsNumber = new BigNumber(row.tokenId);
+  return tokenIdAsNumber.isPositive() ? [] : [`Only positive Token IDs possible: ${tokenIdAsNumber.toFixed()}`];
+};
+const isTokenIdInteger = (row: CollectibleTransfer): string[] => {
+  const tokenIdAsNumber = new BigNumber(row.tokenId);
+  return tokenIdAsNumber.isInteger() ? [] : [`Token IDs must be integer numbers: ${tokenIdAsNumber.toFixed()}`];
+};
+const isTokenValueInteger = (row: CollectibleTransfer): string[] => {
+  if (row.amount) {
+    const amountAsNumber = new BigNumber(row.amount);
+    if (amountAsNumber.isNaN() || !amountAsNumber.isInteger()) {
+      return [`Value / amount of ERC1155 must be an integer: ${row.amount}`];
+    }
+  }
+  return [];
+};
 
 const isTokenValueValid = (row: CollectibleTransfer): string[] =>
-  row.token_type === "erc721" || (typeof row.amount !== "undefined" && row.amount.isGreaterThan(0))
+  row.token_type === "erc721" || (typeof row.amount !== "undefined" && new BigNumber(row.amount).isGreaterThan(0))
     ? []
-    : [`ERC1155 Tokens need a defined value > 0: ${row.amount?.toFixed()}`];
+    : [`ERC1155 Tokens need a defined value > 0: ${row.amount}`];

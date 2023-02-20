@@ -50,5 +50,7 @@ export function fromWei(amount: BigNumber, decimals: number): BigNumber {
  * @returns URI resolved to the infura ipfs host or uri if it's not an ipfs uri.
  */
 export function resolveIpfsUri(uri: string): string {
-  return uri.startsWith("ipfs://") ? uri.replace("ipfs://", "https://ipfs.infura.io/ipfs/") : uri;
+  return uri.startsWith("ipfs://")
+    ? uri.replace("ipfs://ipfs/", "ipfs://").replace("ipfs://", "https://cloudflare-ipfs.com/ipfs/")
+    : uri;
 }

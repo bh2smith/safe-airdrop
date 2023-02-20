@@ -4,26 +4,28 @@ import { Typography } from "@material-ui/core";
 import BigNumber from "bignumber.js";
 import { utils } from "ethers";
 import { useState } from "react";
-import { AssetBalance, CollectibleBalance } from "src/hooks/balances";
 import { useEnsResolver } from "src/hooks/ens";
 import { networkInfo } from "src/networks";
+import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
+import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
+import { useAppDispatch } from "src/stores/store";
 import { fromWei } from "src/utils";
 
 export const DrainSafeDialog = ({
-  onSubmit,
   isOpen,
   onClose,
   assetBalance,
-  collectibleBalance,
+  nftBalance,
 }: {
-  onSubmit: (csvText: string) => void;
   isOpen: boolean;
   onClose: () => void;
   assetBalance: AssetBalance;
-  collectibleBalance: CollectibleBalance;
+  nftBalance: NFTBalance;
 }) => {
   const [drainAddress, setDrainAddress] = useState("");
   const { safe } = useSafeAppsSDK();
+
+  const dispatch = useAppDispatch();
 
   const selectedNetworkInfo = networkInfo.get(safe.chainId);
 
@@ -54,11 +56,11 @@ export const DrainSafeDialog = ({
         }
       });
 
-      collectibleBalance?.forEach((collectible) => {
+      nftBalance?.results.forEach((collectible) => {
         drainCSV += `\nnft,${collectible.address},${drainAddress},,${collectible.id}`;
       });
     }
-    onSubmit(drainCSV);
+    dispatch(updateCsvContent({ csvContent: drainCSV }));
   };
 
   if (!isOpen) {

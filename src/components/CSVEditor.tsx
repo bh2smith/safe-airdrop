@@ -1,25 +1,27 @@
-import React, { useContext } from "react";
+import React from "react";
 import AceEditor, { IMarker, IAnnotation } from "react-ace";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/mode-text";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "src/stores/store";
 import styled from "styled-components";
 
-import { MessageContext } from "../../src/contexts/MessageContextProvider";
+import { updateCsvContent } from "../stores/slices/csvEditorSlice";
 
 const EditorWrapper = styled.div``;
 
-export type CSVEditorProps = {
-  onChange: (csvContent: string) => void;
-  csvText: string;
-};
+export type CSVEditorProps = {};
 
 export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
-  const { codeWarnings } = useContext(MessageContext);
+  const { codeWarnings } = useSelector((state: RootState) => state.messages);
+  const dispatch = useDispatch();
+  const csvText = useSelector((state: RootState) => state.csvEditor.csvContent);
+
   return (
     <EditorWrapper>
       <AceEditor
-        onChange={(newCode) => props.onChange(newCode)}
-        value={props.csvText}
+        onChange={(newCode) => dispatch(updateCsvContent({ csvContent: newCode }))}
+        value={csvText}
         theme="tomorrow"
         width={"100%"}
         mode={"text"}

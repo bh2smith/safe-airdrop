@@ -2,13 +2,15 @@ import { Button, Text, theme as GnosisTheme } from "@gnosis.pm/safe-react-compon
 import { createStyles } from "@material-ui/core";
 import React, { useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
+import { useDispatch } from "react-redux";
 
-export type CSVUploadProps = {
-  onChange: (string) => void;
-};
+import { updateCsvContent } from "../stores/slices/csvEditorSlice";
+
+export type CSVUploadProps = {};
 
 export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
-  const { onChange } = props;
+  const dispatch = useDispatch();
+
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       acceptedFiles.forEach((file) => {
@@ -17,12 +19,16 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
           if (!evt.target) {
             return;
           }
-          onChange(evt.target.result as string);
+          dispatch(
+            updateCsvContent({
+              csvContent: evt.target.result as string,
+            }),
+          );
         };
         reader.readAsText(file);
       });
     },
-    [onChange],
+    [dispatch],
   );
 
   const { getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject } = useDropzone({

@@ -3,24 +3,26 @@ import { Button, GenericModal, Icon, Select, TextFieldInput } from "@gnosis.pm/s
 import { InputAdornment, Typography } from "@material-ui/core";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { AssetBalance } from "src/hooks/balances";
+import { useCsvContent } from "src/hooks/useCsvContent";
 import { networkInfo } from "src/networks";
+import { AssetBalance } from "src/stores/api/balanceApi";
+import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
+import { useAppDispatch } from "src/stores/store";
 import { DONATION_ADDRESS } from "src/utils";
 
 export const DonateDialog = ({
-  onSubmit,
   isOpen,
   onClose,
   assetBalance,
-  csvText,
 }: {
-  onSubmit: (donationRow: string) => void;
   isOpen: boolean;
   onClose: () => void;
   assetBalance: AssetBalance;
-  csvText: string;
 }) => {
   const { safe } = useSafeAppsSDK();
+  const dispatch = useAppDispatch();
+  const csvContent = useCsvContent();
+
   const nativeSymbol = networkInfo.get(safe.chainId)?.currencySymbol || "ETH";
 
   const items = assetBalance?.map((asset) => ({
@@ -66,7 +68,7 @@ export const DonateDialog = ({
 
   const handleSubmit = () => {
     if (selectedToken && selectedAmount) {
-      const headerRow = csvText.split(/\r\n|\r|\n/)[0];
+      const headerRow = csvContent.split(/\r\n|\r|\n/)[0];
       const donationCSVRow = headerRow
         .replace("token_type", "erc20")
         .replace("token_address", selectedToken === "0x0" ? "" : selectedToken)
@@ -75,7 +77,11 @@ export const DonateDialog = ({
         .replace("value", selectedAmount)
         .replace("id", "");
 
-      onSubmit(`${csvText}\n${donationCSVRow}`);
+      dispatch(
+        updateCsvContent({
+          csvContent: `${csvContent}\n${donationCSVRow}`,
+        }),
+      );
       onClose();
     }
   };

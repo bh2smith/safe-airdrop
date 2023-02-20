@@ -3,7 +3,7 @@ import React, { memo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList as List } from "react-window";
 
-import { CollectibleTransfer } from "../../parser/csvParser";
+import { CollectibleTransfer } from "../../hooks/useCsvParser";
 import { Receiver } from "../Receiver";
 
 import { ERC721Token } from "./ERC721Token";
@@ -69,21 +69,16 @@ export const Row = memo((props: RowProps) => {
           alignItems: "center",
         }}
       >
-        <ERC721Token
-          tokenAddress={row.tokenAddress}
-          id={row.tokenId}
-          token_type={row.token_type}
-          hasMetaData={row.hasMetaData}
-        />
+        <ERC721Token tokenAddress={row.tokenAddress} id={row.tokenId} token_type={row.token_type} />
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
           <Text size="md">{row.token_type.toUpperCase()}</Text>
         </div>
         <Receiver receiverAddress={row.receiver} receiverEnsName={row.receiverEnsName} />
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
-          <Text size="md">{row.amount?.toFixed()}</Text>
+          <Text size="md">{row.amount}</Text>
         </div>
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
-          <Text size="md">{row.tokenId.toFixed()}</Text>
+          <Text size="md">{row.tokenId}</Text>
         </div>
       </div>
     </div>
