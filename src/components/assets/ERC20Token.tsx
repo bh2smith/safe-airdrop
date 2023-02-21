@@ -1,5 +1,6 @@
-import { Icon, Text } from "@gnosis.pm/safe-react-components";
-import styled from "styled-components";
+import styled from "@emotion/styled";
+import { Typography } from "@mui/material";
+import { EthHashInfo } from "@safe-global/safe-react-components";
 
 import { useTokenList } from "../../hooks/token";
 
@@ -16,7 +17,7 @@ const Container = styled.div`
   align-items: center;
   gap: 8px;
   padding: 16px;
-  min-width: 285px;
+  min-width: 144px;
 `;
 
 export const ERC20Token = (props: TokenProps) => {
@@ -35,8 +36,11 @@ export const ERC20Token = (props: TokenProps) => {
           }}
         />
       )}
-      {tokenAddress === null && <Icon size="md" type="eth" />}
-      <Text size="md">{symbol || tokenAddress}</Text>
+      {symbol ? (
+        <Typography noWrap>{symbol}</Typography>
+      ) : tokenAddress ? (
+        <EthHashInfo address={tokenAddress} showAvatar={false} showCopyButton={false} />
+      ) : null}
     </Container>
   );
 };

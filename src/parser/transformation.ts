@@ -2,9 +2,9 @@ import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
 
 import { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
-import { EnsResolver } from "../hooks/ens";
 import { TokenInfoProvider } from "../hooks/token";
 import { AssetTransfer, CollectibleTransfer, CSVRow, Transfer, UnknownTransfer } from "../hooks/useCsvParser";
+import { EnsResolver } from "../hooks/useEnsResolver";
 
 interface PrePayment {
   receiver: string;

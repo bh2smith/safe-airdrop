@@ -1,6 +1,5 @@
-import { GatewayTransactionDetails, TransactionStatus } from "@gnosis.pm/safe-apps-sdk";
-import { Button, Card, Loader } from "@gnosis.pm/safe-react-components";
-import { Grid, Typography } from "@material-ui/core";
+import { Button, Card, CircularProgress, Grid, Typography } from "@mui/material";
+import { GatewayTransactionDetails, TransactionStatus } from "@safe-global/safe-apps-sdk";
 import { useTxPolling } from "src/hooks/useTxPolling";
 
 export const TransactionStatusScreen = ({ tx, reset }: { tx: GatewayTransactionDetails; reset: () => void }) => {
@@ -41,15 +40,15 @@ export const TransactionStatusScreen = ({ tx, reset }: { tx: GatewayTransactionD
     <Card className="cardWithCustomShadow">
       <Grid container spacing={2}>
         <Grid item alignItems="flex-end">
-          {!isTxFinished() && <Loader size="md" />}
+          {!isTxFinished() && <CircularProgress />}
         </Grid>
         <Grid item>
           <Typography variant="overline">Transaction execution</Typography>
-          <Typography style={{ marginBottom: "16px" }} variant="body2">
+          <Typography sx={{ marginBottom: "16px" }} variant="body2">
             {getPendingStateText()}
           </Typography>
 
-          <Button size={"md"} onClick={reset}>
+          <Button variant="outlined" onClick={reset}>
             New transaction
           </Button>
         </Grid>

@@ -1,14 +1,31 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Button, GenericModal, Icon, Select, TextFieldInput } from "@gnosis.pm/safe-react-components";
-import { InputAdornment, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { useCsvContent } from "src/hooks/useCsvContent";
+import { useDarkMode } from "src/hooks/useDarkMode";
 import { networkInfo } from "src/networks";
 import { AssetBalance } from "src/stores/api/balanceApi";
 import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
 import { useAppDispatch } from "src/stores/store";
 import { DONATION_ADDRESS } from "src/utils";
+
+import AssetIconDarkMode from "../static/assets-light.svg";
+import AssetIcon from "../static/assets.svg";
 
 export const DonateDialog = ({
   isOpen,
@@ -22,6 +39,7 @@ export const DonateDialog = ({
   const { safe } = useSafeAppsSDK();
   const dispatch = useAppDispatch();
   const csvContent = useCsvContent();
+  const darkMode = useDarkMode();
 
   const nativeSymbol = networkInfo.get(safe.chainId)?.currencySymbol || "ETH";
 
@@ -90,54 +108,64 @@ export const DonateDialog = ({
     return null;
   }
   return (
-    <GenericModal
-      onClose={onClose}
-      title="Donate to project"
-      body={
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <Dialog open onClose={onClose}>
+      <DialogTitle>Donate</DialogTitle>
+      <DialogContent>
+        <Box display="flex" flexDirection="column" gap={2}>
           <Typography>
             Select an asset and amount. The resulting transaction will be appended to the end of the current CSV.
           </Typography>
-          <Select
-            activeItemId={selectedToken || items[0].id}
-            items={items}
-            name={"Token"}
-            label={"The token you want to donate"}
-            onItemClick={setSelectedToken}
-          />
-          <TextFieldInput
+          <FormControl fullWidth>
+            <InputLabel id="token">Select token</InputLabel>
+            <Select
+              labelId="token"
+              value={selectedToken || items[0].id}
+              name="Token"
+              label="Select token"
+              onChange={(event) => setSelectedToken(event.target.value)}
+            >
+              {items.map((item) => (
+                <MenuItem value={item.id}>
+                  <Box>
+                    <Typography>{item.label}</Typography>
+                    <Typography variant="caption">{item.subLabel}</Typography>
+                  </Box>
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <TextField
             id="amount"
             label="Amount"
             name="amount"
-            error={amountError}
+            error={!!amountError}
+            helperText={amountError}
             disabled={typeof selectedToken === "undefined"}
             value={selectedAmount}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Icon size="md" type="assets" />
+                  <img src={darkMode ? AssetIconDarkMode : AssetIcon} alt="" width="24px" height="24px" />
                 </InputAdornment>
               ),
             }}
             onChange={(e) => setSelectedAmount(e.target.value)}
           />
-        </div>
-      }
-      footer={
+        </Box>
+      </DialogContent>
+      <DialogActions>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Button
-            size="md"
-            color="primary"
             onClick={handleSubmit}
             disabled={Boolean(amountError) || !Boolean(selectedToken) || !Boolean(selectedAmount)}
           >
             Add to CSV
           </Button>
-          <Button size="md" color="secondary" onClick={onClose}>
+          <Button color="secondary" onClick={onClose}>
             Abort
           </Button>
         </div>
-      }
-    />
+      </DialogActions>
+    </Dialog>
   );
 };

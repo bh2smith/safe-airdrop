@@ -1,8 +1,8 @@
-import { Loader, Text } from "@gnosis.pm/safe-react-components";
-import { Popover } from "@material-ui/core";
+import styled from "@emotion/styled";
+import { Box, CircularProgress, Popover, Typography } from "@mui/material";
+import { EthHashInfo } from "@safe-global/safe-react-components";
 import { BigNumber } from "bignumber.js";
 import { useEffect, useState } from "react";
-import styled from "styled-components";
 
 import { CollectibleTokenMetaInfo, useCollectibleTokenInfoProvider } from "../../hooks/collectibleTokenInfoProvider";
 
@@ -20,7 +20,7 @@ const Container = styled.div`
   align-items: center;
   gap: 8px;
   padding: 16px;
-  min-width: 285px;
+  min-width: 144px;
 `;
 
 export const ERC721Token = (props: TokenProps) => {
@@ -53,7 +53,7 @@ export const ERC721Token = (props: TokenProps) => {
   return (
     <Container>
       {isMetaDataLoading ? (
-        <Loader size="sm" />
+        <CircularProgress />
       ) : (
         tokenMetaData?.imageURI && (
           <>
@@ -76,28 +76,34 @@ export const ERC721Token = (props: TokenProps) => {
               open={imageZoomedIn}
               onClose={() => setAnchorEl(null)}
               anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "center",
-              }}
-              transformOrigin={{
                 vertical: "top",
                 horizontal: "center",
               }}
+              transformOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
             >
-              <img
-                alt={""}
-                src={tokenMetaData?.imageURI}
-                style={{
-                  maxWidth: 320,
-                  marginRight: 3,
-                  verticalAlign: "middle",
-                }}
-              />{" "}
+              <Box>
+                <img
+                  alt={""}
+                  src={tokenMetaData?.imageURI}
+                  style={{
+                    maxWidth: 320,
+                    marginRight: 3,
+                    verticalAlign: "middle",
+                  }}
+                />
+              </Box>
             </Popover>
           </>
         )
       )}
-      <Text size="md">{tokenMetaData?.name || tokenAddress}</Text>
+      {tokenMetaData?.name ? (
+        <Typography noWrap>{tokenMetaData.name}</Typography>
+      ) : tokenAddress ? (
+        <EthHashInfo address={tokenAddress} showAvatar={false} showCopyButton={false} />
+      ) : null}
     </Container>
   );
 };

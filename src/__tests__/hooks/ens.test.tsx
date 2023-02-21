@@ -1,12 +1,12 @@
 import { Web3Provider } from "@ethersproject/providers";
-import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
+import SafeProvider from "@safe-global/safe-apps-react-sdk";
 import { render, RenderResult, screen } from "@testing-library/react";
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { unmountComponentAtNode } from "react-dom";
 import { act } from "react-dom/test-utils";
 
-import { useEnsResolver } from "../../hooks/ens";
+import { useEnsResolver } from "../../hooks/useEnsResolver";
 import { sendSafeInfo, setupMocksForSafeProvider } from "../../test/safeUtil";
 import { testData } from "../../test/util";
 

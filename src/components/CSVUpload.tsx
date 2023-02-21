@@ -1,5 +1,5 @@
-import { Button, Text, theme as GnosisTheme } from "@gnosis.pm/safe-react-components";
-import { createStyles } from "@material-ui/core";
+import { Link, Typography, useTheme } from "@mui/material";
+import { createStyles } from "@mui/styles";
 import React, { useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import { useDispatch } from "react-redux";
@@ -9,6 +9,31 @@ import { updateCsvContent } from "../stores/slices/csvEditorSlice";
 export type CSVUploadProps = {};
 
 export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
+  const theme = useTheme();
+  const styles = createStyles({
+    baseStyle: {
+      alignItems: "center",
+      borderRadius: "8px",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      cursor: "pointer",
+      padding: "24px 40px",
+      background: theme.palette.secondary.background,
+      color: theme.palette.primary.light,
+      transition: "border 0.5s, background 0.5s",
+      border: `1px dashed ${theme.palette.secondary.dark}`,
+    },
+    activeStyle: {
+      border: `1px dashed ${theme.palette.primary.main}`,
+    },
+    acceptStyle: {
+      borderColor: `1px dashed ${theme.palette.primary.main}`,
+    },
+    rejectStyle: {
+      borderColor: `1px dashed ${theme.palette.error.dark}`,
+    },
+  });
   const dispatch = useDispatch();
 
   const onDrop = useCallback(
@@ -46,7 +71,7 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
       ...(isDragAccept ? styles.acceptStyle : {}),
       ...(isDragReject ? styles.rejectStyle : {}),
     }),
-    [isDragActive, isDragReject, isDragAccept],
+    [styles, isDragActive, isDragAccept, isDragReject],
   );
 
   return (
@@ -61,41 +86,14 @@ export const CSVUpload = (props: CSVUploadProps): JSX.Element => {
             gap: "8px",
           }}
         >
-          <Button size="md" variant="contained" color="primary" component="span">
-            Upload CSV
-          </Button>
-          <Text center size="lg">
-            or drop file here
-          </Text>
+          <Typography>
+            Drag and drop a CSV file or{" "}
+            <Link href="#" color="secondary">
+              choose a file
+            </Link>{" "}
+          </Typography>
         </div>
       </div>
     </div>
   );
 };
-
-const styles = createStyles({
-  baseStyle: {
-    lex: 1,
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "column",
-    padding: "20px",
-    borderWidth: 2,
-    borderRadius: 2,
-    borderColor: "rgba(0, 0, 0, 0.23)",
-    borderStyle: "dashed",
-    backgroundColor: "#fafafa",
-    color: "#bdbdbd",
-    outline: "none",
-    transition: "border .24s ease-in-out",
-  },
-  activeStyle: {
-    borderColor: "#2196f3",
-  },
-  acceptStyle: {
-    borderColor: GnosisTheme.colors.primary,
-  },
-  rejectStyle: {
-    borderColor: GnosisTheme.colors.error,
-  },
-});

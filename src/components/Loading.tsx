@@ -1,4 +1,4 @@
-import { Loader, Text } from "@gnosis.pm/safe-react-components";
+import { CircularProgress, Typography } from "@mui/material";
 
 export const Loading = () => {
   return (
@@ -11,10 +11,8 @@ export const Loading = () => {
         paddingTop: "36px",
       }}
     >
-      <Text size={"xl"} strong>
-        Loading tokenlist and balances...
-      </Text>
-      <Loader size={"md"} />
+      <Typography>Loading tokenlist and balances...</Typography>
+      <CircularProgress />
     </div>
   );
 };

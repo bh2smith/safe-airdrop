@@ -1,5 +1,5 @@
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { SafeInfo } from "@safe-global/safe-apps-sdk";
 
 export interface SafeInfoState {
   safeInfo: SafeInfo | undefined;

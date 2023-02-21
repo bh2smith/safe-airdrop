@@ -1,6 +1,6 @@
-import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { SafeBalanceResponse } from "@gnosis.pm/safe-react-gateway-sdk";
+import { SafeAppProvider } from "@safe-global/safe-apps-provider";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { ethers, utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
 import { useState, useEffect, useMemo } from "react";

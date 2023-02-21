@@ -2,11 +2,11 @@ import { renderHook } from "@testing-library/react-hooks";
 
 import type { CollectibleTokenInfoProvider } from "../hooks/collectibleTokenInfoProvider";
 import * as useCollectibleTokenInfoProvider from "../hooks/collectibleTokenInfoProvider";
-import * as useEnsResolver from "../hooks/ens";
-import type { EnsResolver } from "../hooks/ens";
 import * as useTokenInfoProvider from "../hooks/token";
 import { TokenMap, MinimalTokenInfo, fetchTokenList, TokenInfoProvider } from "../hooks/token";
 import { AssetTransfer, CollectibleTransfer, useCsvParser } from "../hooks/useCsvParser";
+import type { EnsResolver } from "../hooks/useEnsResolver";
+import * as useEnsResolver from "../hooks/useEnsResolver";
 import { testData } from "../test/util";
 
 const HEADER_ERC20 = "token_type,token_address,receiver,amount";

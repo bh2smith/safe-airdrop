@@ -1,27 +1,12 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Breadcrumb, BreadcrumbElement, ButtonLink, Tooltip } from "@gnosis.pm/safe-react-components";
+import { Box, Button, Tooltip } from "@mui/material";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useState } from "react";
 import { useGetAssetBalanceQuery, useGetAllNFTsQuery } from "src/stores/api/balanceApi";
-import styled from "styled-components";
 
 import { NETWORKS_WITH_DONATIONS_DEPLOYED } from "../networks";
 
 import { DonateDialog } from "./DonateDialog";
 import { DrainSafeDialog } from "./DrainSafeDialog";
-
-const GenerateHeader = styled(Breadcrumb)`
-  padding: 0px 0px 8px 0px;
-`;
-
-const GenerateMenuButton = styled(ButtonLink)`
-  background-color: rgb(246, 247, 248);
-  border-radius: 4px;
-  margin-bottom: 4px;
-  min-width: 100px;
-  &:hover {
-    background-color: rgb(239, 250, 248);
-  }
-`;
 
 export const GenerateTransfersMenu = () => {
   const assetBalanceQuery = useGetAssetBalanceQuery();
@@ -39,36 +24,20 @@ export const GenerateTransfersMenu = () => {
 
   return (
     <>
-      <div style={{ position: "relative", borderLeft: "thin solid #008C73" }}>
-        <GenerateHeader>
-          <BreadcrumbElement text="Generate" iconType="add" />
-          <BreadcrumbElement text="Transfers" color="placeHolder" />
-        </GenerateHeader>
-        <div style={{ marginLeft: "5px" }}>
-          <Tooltip title="Send all assets and collectibles from this safe">
-            <GenerateMenuButton
-              color="primary"
-              iconType="exportImg"
-              iconSize="sm"
-              onClick={() => setIsDrainModalOpen(true)}
-            >
-              Drain safe
-            </GenerateMenuButton>
+      <Box display="flex" gap={3}>
+        {isDonationAvailable && (
+          <Tooltip title="Select a token and amount to donate to this Safe app">
+            <Button size="stretched" variant="outlined" color="primary" onClick={() => setIsDonateModalOpen(true)}>
+              Donate
+            </Button>
           </Tooltip>
-          {isDonationAvailable && (
-            <Tooltip title="Select a token and amount to donate to this Safe app">
-              <GenerateMenuButton
-                color="primary"
-                iconType="gift"
-                iconSize="sm"
-                onClick={() => setIsDonateModalOpen(true)}
-              >
-                Donate
-              </GenerateMenuButton>
-            </Tooltip>
-          )}
-        </div>
-      </div>
+        )}
+        <Tooltip title="Send all assets and collectibles from this safe">
+          <Button size="stretched" variant="contained" color="primary" onClick={() => setIsDrainModalOpen(true)}>
+            Drain safe
+          </Button>
+        </Tooltip>
+      </Box>
       {nftBalance && assetBalance && (
         <DrainSafeDialog
           assetBalance={assetBalance}

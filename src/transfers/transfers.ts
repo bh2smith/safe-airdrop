@@ -1,4 +1,4 @@
-import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
+import { BaseTransaction } from "@safe-global/safe-apps-sdk";
 import { ethers } from "ethers";
 
 import { AssetTransfer, CollectibleTransfer } from "../hooks/useCsvParser";

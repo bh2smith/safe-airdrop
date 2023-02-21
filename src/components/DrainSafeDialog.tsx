@@ -1,10 +1,23 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { GenericModal, AddressInput, Button, Icon } from "@gnosis.pm/safe-react-components";
-import { Typography } from "@material-ui/core";
+import { isAddress } from "@ethersproject/address";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import WarningIcon from "@mui/icons-material/Warning";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import BigNumber from "bignumber.js";
 import { utils } from "ethers";
 import { useState } from "react";
-import { useEnsResolver } from "src/hooks/ens";
+import { useEnsResolver } from "src/hooks/useEnsResolver";
 import { networkInfo } from "src/networks";
 import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
 import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
@@ -23,6 +36,9 @@ export const DrainSafeDialog = ({
   nftBalance: NFTBalance;
 }) => {
   const [drainAddress, setDrainAddress] = useState("");
+  const [resolvedAddress, setResolvedAddress] = useState("");
+
+  const [resolving, setResolving] = useState(false);
   const { safe } = useSafeAppsSDK();
 
   const dispatch = useAppDispatch();
@@ -31,9 +47,12 @@ export const DrainSafeDialog = ({
 
   const ensResolver = useEnsResolver();
 
-  const invalidNetworkError = drainAddress.includes(":") ? "The chain prefix must match the current network" : "";
-  const invalidAddressError = utils.isAddress(drainAddress) ? "" : "The address is invalid";
-  const error = drainAddress ? invalidNetworkError || invalidAddressError : "";
+  const invalidNetworkError = resolvedAddress.includes(":")
+    ? `The chain prefix must match the current network: ${selectedNetworkInfo?.shortName}`
+    : undefined;
+
+  const invalidAddressError = utils.isAddress(resolvedAddress) ? undefined : "The address is invalid";
+  const error = drainAddress ? invalidNetworkError || invalidAddressError : undefined;
 
   const generateDrainTransfers = () => {
     let drainCSV = "token_type,token_address,receiver,amount,id";
@@ -63,43 +82,65 @@ export const DrainSafeDialog = ({
     dispatch(updateCsvContent({ csvContent: drainCSV }));
   };
 
+  const onAddressChanged: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = async (event) => {
+    const newAddress = event.target.value;
+    setDrainAddress(newAddress);
+    const addressWithoutPrefix =
+      selectedNetworkInfo && newAddress.startsWith(`${selectedNetworkInfo.shortName}:`)
+        ? newAddress.slice(selectedNetworkInfo.shortName.length + 1)
+        : newAddress;
+
+    if (isAddress(addressWithoutPrefix)) {
+      setResolvedAddress(addressWithoutPrefix);
+    } else {
+      setResolving(true);
+      const resolvedAddress = await ensResolver.resolveName(addressWithoutPrefix).catch(() => null);
+      setResolvedAddress(resolvedAddress || addressWithoutPrefix);
+      setResolving(false);
+    }
+  };
+
   if (!isOpen) {
     return null;
   }
 
   return (
-    <GenericModal
-      onClose={onClose}
-      title="Transfer all funds"
-      body={
-        <>
+    <Dialog onClose={onClose} open sx={{ padding: 3 }}>
+      <DialogTitle>Transfer all funds</DialogTitle>
+      <DialogContent>
+        <Box sx={{ padding: 3 }}>
           <Typography style={{ marginBottom: "16px" }}>
             Select an address to transfer all funds to. These funds include all ERC20, ERC721 and native tokens.
-            <br />
-            <strong>
-              <Icon size="sm" type="alert" color="warning" />
-              This will replace the entire CSV file.
-            </strong>
+          </Typography>
+          <Typography mb={2} variant="subtitle1" fontWeight={700} display="flex" alignItems="center">
+            <WarningIcon /> This will replace the entire CSV file.
           </Typography>
 
-          <AddressInput
-            address={drainAddress}
-            hiddenLabel
-            label="Address"
-            name="address"
-            error={error}
-            getAddressFromDomain={(name) => ensResolver.resolveName(name).then((address) => address ?? name)}
-            onChangeAddress={setDrainAddress}
-            placeholder="Ethereum address"
-            showNetworkPrefix={true}
-            networkPrefix={selectedNetworkInfo?.shortName}
+          <TextField
+            fullWidth
+            onChange={onAddressChanged}
+            value={drainAddress}
+            variant="outlined"
+            placeholder="Address or ENS"
+            InputProps={{
+              endAdornment: resolving ? (
+                <InputAdornment position="end">
+                  <CircularProgress />
+                </InputAdornment>
+              ) : !error ? (
+                <InputAdornment position="end">
+                  <CheckCircleRoundedIcon color="primary" />
+                </InputAdornment>
+              ) : undefined,
+            }}
+            error={!!error}
+            helperText={error}
           />
-        </>
-      }
-      footer={
+        </Box>
+      </DialogContent>
+      <DialogActions>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Button
-            size="md"
             color="primary"
             onClick={() => {
               generateDrainTransfers();
@@ -108,11 +149,11 @@ export const DrainSafeDialog = ({
           >
             Submit
           </Button>
-          <Button size="md" color="secondary" onClick={onClose}>
+          <Button color="secondary" onClick={onClose}>
             Abort
           </Button>
         </div>
-      }
-    />
+      </DialogActions>
+    </Dialog>
   );
 };
