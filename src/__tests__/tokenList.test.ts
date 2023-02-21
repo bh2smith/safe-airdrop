@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { ethers } from "ethers";
 
 import { fetchTokenList } from "../hooks/token";
@@ -40,10 +39,10 @@ describe("Mainnet tokenlist", () => {
     const resultingTokens = await fetchTokenList(1);
     const gnoAddress = ethers.utils.getAddress("0x6810e776880c02933d47db1b9fc05908e5386b96");
 
-    expect(resultingTokens).to.have.lengthOf(2);
-    expect(resultingTokens.get(gnoAddress)?.symbol).to.equal("GNO");
-    expect(resultingTokens.get(gnoAddress)?.address.toLowerCase()).eq(gnoAddress.toLowerCase());
-    expect(resultingTokens.get(gnoAddress)?.decimals).to.equal(18);
+    expect(resultingTokens.size).toEqual(2);
+    expect(resultingTokens.get(gnoAddress)?.symbol).toEqual("GNO");
+    expect(resultingTokens.get(gnoAddress)?.address.toLowerCase()).toEqual(gnoAddress.toLowerCase());
+    expect(resultingTokens.get(gnoAddress)?.decimals).toEqual(18);
   });
 
   it("Should not crash on errors", async () => {
@@ -52,7 +51,7 @@ describe("Mainnet tokenlist", () => {
     });
 
     const resultingTokens = await fetchTokenList(1);
-    expect(resultingTokens).to.be.empty;
+    expect(resultingTokens.size).toEqual(0);
   });
 
   it("Should not crash on unsuccessful fetches", async () => {
@@ -64,14 +63,14 @@ describe("Mainnet tokenlist", () => {
     });
 
     const resultingTokens = await fetchTokenList(1);
-    expect(resultingTokens).to.be.empty;
+    expect(resultingTokens.size).toEqual(0);
   });
 });
 
 describe("Fetch should resolve for all networks", () => {
   for (const chainId of networkInfo.keys()) {
     it(`fetches tokens for ${networkInfo.get(chainId)?.name} network`, () => {
-      expect(() => fetchTokenList(chainId)).to.not.throw();
+      expect(() => fetchTokenList(chainId)).not.toThrow();
     });
   }
 });

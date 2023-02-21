@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
 
 import { AssetTransfer, CollectibleTransfer } from "../hooks/useCsvParser";
@@ -38,7 +37,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
     const summary = assetTransfersToSummary(transfers);
-    expect(summary.get(null)?.amount.toFixed()).to.equal("6");
+    expect(summary.get(null)?.amount.toFixed()).toEqual("6");
 
     const exactBalance: AssetBalance = [
       {
@@ -65,13 +64,13 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    expect(checkAllBalances(exactBalance, undefined, transfers)).to.be.empty;
-    expect(checkAllBalances(biggerBalance, undefined, transfers)).to.be.empty;
+    expect(checkAllBalances(exactBalance, undefined, transfers)).toHaveLength(0);
+    expect(checkAllBalances(biggerBalance, undefined, transfers)).toHaveLength(0);
     const smallBalanceCheckResult = checkAllBalances(smallerBalance, undefined, transfers);
-    expect(smallBalanceCheckResult).to.have.length(1);
-    expect(smallBalanceCheckResult[0].token).to.equal("ETH");
-    expect(smallBalanceCheckResult[0].token_type).to.equal("native");
-    expect(smallBalanceCheckResult[0].transferAmount).to.equal("6");
+    expect(smallBalanceCheckResult).toHaveLength(1);
+    expect(smallBalanceCheckResult[0].token).toEqual("ETH");
+    expect(smallBalanceCheckResult[0].token_type).toEqual("native");
+    expect(smallBalanceCheckResult[0].transferAmount).toEqual("6");
   });
 
   it("works for decimals in native currency", () => {
@@ -105,7 +104,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
     const summary = assetTransfersToSummary(transfers);
-    expect(summary.get(null)?.amount.toFixed()).to.equal("0.111");
+    expect(summary.get(null)?.amount.toFixed()).toEqual("0.111");
 
     const exactBalance: AssetBalance = [
       {
@@ -132,13 +131,13 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    expect(checkAllBalances(exactBalance, undefined, transfers)).to.be.empty;
-    expect(checkAllBalances(biggerBalance, undefined, transfers)).to.be.empty;
+    expect(checkAllBalances(exactBalance, undefined, transfers)).toHaveLength(0);
+    expect(checkAllBalances(biggerBalance, undefined, transfers)).toHaveLength(0);
     const smallBalanceCheckResult = checkAllBalances(smallerBalance, undefined, transfers);
-    expect(smallBalanceCheckResult).to.have.length(1);
-    expect(smallBalanceCheckResult[0].token).to.equal("ETH");
-    expect(smallBalanceCheckResult[0].token_type).to.equal("native");
-    expect(smallBalanceCheckResult[0].transferAmount).to.equal("0.111");
+    expect(smallBalanceCheckResult).toHaveLength(1);
+    expect(smallBalanceCheckResult[0].token).toEqual("ETH");
+    expect(smallBalanceCheckResult[0].token_type).toEqual("native");
+    expect(smallBalanceCheckResult[0].transferAmount).toEqual("0.111");
   });
 
   it("works for decimals in erc20", () => {
@@ -172,7 +171,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
     const summary = assetTransfersToSummary(transfers);
-    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("0.111");
+    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).toEqual("0.111");
 
     const exactBalance: AssetBalance = [
       {
@@ -211,13 +210,13 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    expect(checkAllBalances(exactBalance, undefined, transfers)).to.be.empty;
-    expect(checkAllBalances(biggerBalance, undefined, transfers)).to.be.empty;
+    expect(checkAllBalances(exactBalance, undefined, transfers)).toHaveLength(0);
+    expect(checkAllBalances(biggerBalance, undefined, transfers)).toHaveLength(0);
     const smallBalanceCheckResult = checkAllBalances(smallerBalance, undefined, transfers);
-    expect(smallBalanceCheckResult).to.have.length(1);
-    expect(smallBalanceCheckResult[0].token).to.equal("ULT");
-    expect(smallBalanceCheckResult[0].token_type).to.equal("erc20");
-    expect(smallBalanceCheckResult[0].transferAmount).to.equal("0.111");
+    expect(smallBalanceCheckResult).toHaveLength(1);
+    expect(smallBalanceCheckResult[0].token).toEqual("ULT");
+    expect(smallBalanceCheckResult[0].token_type).toEqual("erc20");
+    expect(smallBalanceCheckResult[0].transferAmount).toEqual("0.111");
   });
 
   it("works for integer in erc20", () => {
@@ -251,7 +250,7 @@ describe("transferToSummary and check balances", () => {
       },
     ];
     const summary = assetTransfersToSummary(transfers);
-    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("6");
+    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).toEqual("6");
 
     const exactBalance: AssetBalance = [
       {
@@ -290,13 +289,13 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    expect(checkAllBalances(exactBalance, undefined, transfers)).to.be.empty;
-    expect(checkAllBalances(biggerBalance, undefined, transfers)).to.be.empty;
+    expect(checkAllBalances(exactBalance, undefined, transfers)).toHaveLength(0);
+    expect(checkAllBalances(biggerBalance, undefined, transfers)).toHaveLength(0);
     const smallBalanceCheckResult = checkAllBalances(smallerBalance, undefined, transfers);
-    expect(smallBalanceCheckResult).to.have.length(1);
-    expect(smallBalanceCheckResult[0].token).to.equal("ULT");
-    expect(smallBalanceCheckResult[0].token_type).to.equal("erc20");
-    expect(smallBalanceCheckResult[0].transferAmount).to.equal("6");
+    expect(smallBalanceCheckResult).toHaveLength(1);
+    expect(smallBalanceCheckResult[0].token).toEqual("ULT");
+    expect(smallBalanceCheckResult[0].token_type).toEqual("erc20");
+    expect(smallBalanceCheckResult[0].transferAmount).toEqual("6");
   });
 
   it("works for mixed payments", () => {
@@ -348,8 +347,8 @@ describe("transferToSummary and check balances", () => {
       },
     ];
     const summary = assetTransfersToSummary(transfers);
-    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).to.equal("6.4");
-    expect(summary.get(null)?.amount.toFixed()).to.equal("3.33");
+    expect(summary.get(testData.unlistedERC20Token.address)?.amount.toFixed()).toEqual("6.4");
+    expect(summary.get(null)?.amount.toFixed()).toEqual("3.33");
 
     const exactBalance: AssetBalance = [
       {
@@ -425,26 +424,26 @@ describe("transferToSummary and check balances", () => {
       },
     ];
 
-    expect(checkAllBalances(exactBalance, undefined, transfers)).to.be.empty;
-    expect(checkAllBalances(biggerBalance, undefined, transfers)).to.be.empty;
+    expect(checkAllBalances(exactBalance, undefined, transfers)).toHaveLength(0);
+    expect(checkAllBalances(biggerBalance, undefined, transfers)).toHaveLength(0);
     const smallBalanceCheckResult = checkAllBalances(smallerBalance, undefined, transfers);
-    expect(smallBalanceCheckResult).to.have.length(2);
-    expect(smallBalanceCheckResult[0].token).to.equal("ULT");
-    expect(smallBalanceCheckResult[0].token_type).to.equal("erc20");
-    expect(smallBalanceCheckResult[0].transferAmount).to.equal("6.4");
-    expect(smallBalanceCheckResult[0].isDuplicate).to.be.false;
+    expect(smallBalanceCheckResult).toHaveLength(2);
+    expect(smallBalanceCheckResult[0].token).toEqual("ULT");
+    expect(smallBalanceCheckResult[0].token_type).toEqual("erc20");
+    expect(smallBalanceCheckResult[0].transferAmount).toEqual("6.4");
+    expect(smallBalanceCheckResult[0].isDuplicate).toBeFalsy();
 
-    expect(smallBalanceCheckResult[1].token).to.equal("ETH");
-    expect(smallBalanceCheckResult[1].token_type).to.equal("native");
-    expect(smallBalanceCheckResult[1].transferAmount).to.equal("3.33");
-    expect(smallBalanceCheckResult[1].isDuplicate).to.be.false;
+    expect(smallBalanceCheckResult[1].token).toEqual("ETH");
+    expect(smallBalanceCheckResult[1].token_type).toEqual("native");
+    expect(smallBalanceCheckResult[1].transferAmount).toEqual("3.33");
+    expect(smallBalanceCheckResult[1].isDuplicate).toBeFalsy();
 
     const lessNativeMoreErc20CheckResult = checkAllBalances(lessNativeMoreErc20, undefined, transfers);
-    expect(lessNativeMoreErc20CheckResult).to.have.length(1);
-    expect(lessNativeMoreErc20CheckResult[0].token).to.equal("ETH");
-    expect(lessNativeMoreErc20CheckResult[0].token_type).to.equal("native");
-    expect(lessNativeMoreErc20CheckResult[0].transferAmount).to.equal("3.33");
-    expect(lessNativeMoreErc20CheckResult[0].isDuplicate).to.be.false;
+    expect(lessNativeMoreErc20CheckResult).toHaveLength(1);
+    expect(lessNativeMoreErc20CheckResult[0].token).toEqual("ETH");
+    expect(lessNativeMoreErc20CheckResult[0].token_type).toEqual("native");
+    expect(lessNativeMoreErc20CheckResult[0].transferAmount).toEqual("3.33");
+    expect(lessNativeMoreErc20CheckResult[0].isDuplicate).toBeFalsy();
   });
 
   it("balance check works for erc721 tokens", () => {
@@ -533,15 +532,15 @@ describe("transferToSummary and check balances", () => {
       next: null,
     };
 
-    expect(checkAllBalances(undefined, exactBalance, transfers)).to.be.empty;
-    expect(checkAllBalances(undefined, biggerBalance, transfers)).to.be.empty;
+    expect(checkAllBalances(undefined, exactBalance, transfers)).toHaveLength(0);
+    expect(checkAllBalances(undefined, biggerBalance, transfers)).toHaveLength(0);
     const smallBalanceCheckResult = checkAllBalances(undefined, smallerBalance, transfers);
-    expect(smallBalanceCheckResult).to.have.length(1);
-    expect(smallBalanceCheckResult[0].token).to.equal("Test Collectible");
-    expect(smallBalanceCheckResult[0].token_type).to.equal("erc721");
-    expect(smallBalanceCheckResult[0].id).to.equal("420");
-    expect(smallBalanceCheckResult[0].transferAmount).to.be.undefined;
-    expect(smallBalanceCheckResult[0].isDuplicate).to.be.false;
+    expect(smallBalanceCheckResult).toHaveLength(1);
+    expect(smallBalanceCheckResult[0].token).toEqual("Test Collectible");
+    expect(smallBalanceCheckResult[0].token_type).toEqual("erc721");
+    expect(smallBalanceCheckResult[0].id).toEqual("420");
+    expect(smallBalanceCheckResult[0].transferAmount).toBeUndefined();
+    expect(smallBalanceCheckResult[0].isDuplicate).toBeFalsy();
   });
 
   it("detects duplicate transfers for erc721 tokens", () => {
@@ -579,11 +578,11 @@ describe("transferToSummary and check balances", () => {
     };
 
     const balanceCheckResult = checkAllBalances(undefined, exactBalance, transfers);
-    expect(balanceCheckResult).to.have.length(1);
-    expect(balanceCheckResult[0].token).to.equal("Test Collectible");
-    expect(balanceCheckResult[0].token_type).to.equal("erc721");
-    expect(balanceCheckResult[0].id).to.equal("69");
-    expect(balanceCheckResult[0].transferAmount).to.undefined;
-    expect(balanceCheckResult[0].isDuplicate).to.be.true;
+    expect(balanceCheckResult).toHaveLength(1);
+    expect(balanceCheckResult[0].token).toEqual("Test Collectible");
+    expect(balanceCheckResult[0].token_type).toEqual("erc721");
+    expect(balanceCheckResult[0].id).toEqual("69");
+    expect(balanceCheckResult[0].transferAmount).toBeUndefined();
+    expect(balanceCheckResult[0].isDuplicate).toBeTruthy();
   });
 });

@@ -40,7 +40,6 @@ const dynamicBaseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
 ) => {
   const isCollectible = args.toString().startsWith("collectibles");
   const safeInfo = (api.getState() as RootState).safeInfo.safeInfo;
-  console.log("dynamic", args, safeInfo);
   if (!safeInfo) {
     return {
       error: {
@@ -83,10 +82,6 @@ export const balanceApi = createApi({
         let allNFTs: NFTBalance = { results: [], next: "initialPage" };
         let offset = 0;
         while (allNFTs.next !== null) {
-          console.log("Fetching next page of NFTs");
-          const safeInfo = (queryApi.getState() as RootState).safeInfo.safeInfo;
-          console.log("safeInfo state in queryFn", safeInfo);
-
           const { data, error } = await fetchWithBQ(
             `collectibles/?trusted=false&exclude_spam=true&offset=${offset}&limit=10`,
           );
@@ -94,7 +89,6 @@ export const balanceApi = createApi({
             return Promise.resolve({ error });
           }
           const nextBalance = data as NFTBalance;
-          console.log("Result:", nextBalance);
           allNFTs.next = nextBalance?.next ?? null;
           if (offset >= MAX_NFTS) {
             break;

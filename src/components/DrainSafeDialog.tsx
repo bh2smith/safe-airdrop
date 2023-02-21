@@ -36,7 +36,7 @@ export const DrainSafeDialog = ({
   const error = drainAddress ? invalidNetworkError || invalidAddressError : "";
 
   const generateDrainTransfers = () => {
-    let drainCSV = "token_type,token_address,receiver,amount,id,";
+    let drainCSV = "token_type,token_address,receiver,amount,id";
     if (drainAddress) {
       assetBalance?.forEach((asset) => {
         if (asset.token === null && asset.tokenAddress === null) {

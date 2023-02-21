@@ -1,4 +1,3 @@
-import { RowTransformCallback } from "@fast-csv/parse";
 import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
 
@@ -27,48 +26,31 @@ export const transform = (
   tokenInfoProvider: TokenInfoProvider,
   erc721InfoProvider: CollectibleTokenInfoProvider,
   ensResolver: EnsResolver,
-  callback: RowTransformCallback<Transfer | UnknownTransfer>,
-): void => {
+): Promise<Transfer | UnknownTransfer> => {
   const selectedChainShortname = tokenInfoProvider.getSelectedNetworkShortname();
 
   const trimmedReceiver = trimMatchingNetwork(row.receiver, selectedChainShortname);
 
   switch (row.token_type?.toLowerCase()) {
     case "erc20":
-      transformAsset(
-        { ...row, token_type: "erc20", receiver: trimmedReceiver },
-        tokenInfoProvider,
-        ensResolver,
-        callback,
-      );
-      break;
+      return transformAsset({ ...row, token_type: "erc20", receiver: trimmedReceiver }, tokenInfoProvider, ensResolver);
     case "native":
-      transformAsset(
+      return transformAsset(
         { ...row, token_type: "native", receiver: trimmedReceiver },
         tokenInfoProvider,
         ensResolver,
-        callback,
       );
-      break;
     case "nft":
     case "erc721":
     case "erc1155":
-      transformCollectible(
+      return transformCollectible(
         { ...row, token_type: "nft", receiver: trimmedReceiver },
         erc721InfoProvider,
         ensResolver,
-        callback,
       );
-      break;
     default:
       // Fallback so people can still use the old csv file format
-      transformAsset(
-        { ...row, token_type: "erc20", receiver: trimmedReceiver },
-        tokenInfoProvider,
-        ensResolver,
-        callback,
-      );
-      break;
+      return transformAsset({ ...row, token_type: "erc20", receiver: trimmedReceiver }, tokenInfoProvider, ensResolver);
   }
 };
 
@@ -76,8 +58,7 @@ export const transformAsset = (
   row: Omit<CSVRow, "token_type"> & { token_type: "erc20" | "native" },
   tokenInfoProvider: TokenInfoProvider,
   ensResolver: EnsResolver,
-  callback: RowTransformCallback<Transfer>,
-): void => {
+): Promise<Transfer> => {
   const selectedChainShortname = tokenInfoProvider.getSelectedNetworkShortname();
   const prePayment: PrePayment = {
     // avoids errors from getAddress. Invalid addresses are later caught in validateRow
@@ -87,9 +68,7 @@ export const transformAsset = (
     tokenType: row.token_type,
   };
 
-  toPayment(prePayment, tokenInfoProvider, ensResolver)
-    .then((row) => callback(null, row))
-    .catch((reason) => callback(reason));
+  return toPayment(prePayment, tokenInfoProvider, ensResolver);
 };
 
 const toPayment = async (
@@ -101,7 +80,10 @@ const toPayment = async (
   // For performance reasons the lookup will be done after the parsing.
   let [resolvedReceiverAddress, receiverEnsName] = utils.isAddress(row.receiver)
     ? [row.receiver, null]
-    : [(await ensResolver.isEnsEnabled()) ? await ensResolver.resolveName(row.receiver) : null, row.receiver];
+    : [
+        (await ensResolver.isEnsEnabled()) ? await ensResolver.resolveName(row.receiver).catch(() => null) : null,
+        row.receiver,
+      ];
   resolvedReceiverAddress = resolvedReceiverAddress !== null ? resolvedReceiverAddress : row.receiver;
   if (row.tokenAddress === null) {
     // Native asset payment.
@@ -116,7 +98,7 @@ const toPayment = async (
     };
   }
   let resolvedTokenAddress = (await ensResolver.isEnsEnabled())
-    ? await ensResolver.resolveName(row.tokenAddress)
+    ? await ensResolver.resolveName(row.tokenAddress).catch(() => null)
     : row.tokenAddress;
   const tokenInfo =
     resolvedTokenAddress === null ? undefined : await tokenInfoProvider.getTokenInfo(resolvedTokenAddress);
@@ -152,8 +134,7 @@ export const transformCollectible = (
   row: Omit<CSVRow, "token_type"> & { token_type: "nft" },
   erc721InfoProvider: CollectibleTokenInfoProvider,
   ensResolver: EnsResolver,
-  callback: RowTransformCallback<Transfer>,
-): void => {
+): Promise<Transfer> => {
   let amount = row.amount ?? row.value ?? "1";
   amount = amount === "" ? "1" : amount;
   const prePayment: PreCollectibleTransfer = {
@@ -165,9 +146,7 @@ export const transformCollectible = (
     amount,
   };
 
-  toCollectibleTransfer(prePayment, erc721InfoProvider, ensResolver)
-    .then((row) => callback(null, row))
-    .catch((reason) => callback(reason));
+  return toCollectibleTransfer(prePayment, erc721InfoProvider, ensResolver);
 };
 
 const toCollectibleTransfer = async (

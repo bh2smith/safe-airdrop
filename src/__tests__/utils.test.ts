@@ -1,5 +1,4 @@
 import { BigNumber } from "bignumber.js";
-import { expect } from "chai";
 
 import { fromWei, toWei, TEN, ONE, ZERO, resolveIpfsUri } from "../utils";
 
@@ -25,28 +24,28 @@ describe("toWei()", () => {
 describe("fromWei()", () => {
   it("works as expected on legit input", () => {
     const oneETH = TEN.pow(18);
-    expect(fromWei(oneETH, 0).toString()).to.be.equal("1000000000000000000");
-    expect(fromWei(oneETH, 9).toString()).to.be.equal((10 ** 9).toString());
-    expect(fromWei(oneETH, 18).toString()).to.be.equal("1");
-    expect(fromWei(oneETH, 19).toString()).to.be.equal("0.1");
-    expect(fromWei(oneETH, 20).toString()).to.be.equal("0.01");
+    expect(fromWei(oneETH, 0).toString()).toEqual("1000000000000000000");
+    expect(fromWei(oneETH, 9).toString()).toEqual((10 ** 9).toString());
+    expect(fromWei(oneETH, 18).toString()).toEqual("1");
+    expect(fromWei(oneETH, 19).toString()).toEqual("0.1");
+    expect(fromWei(oneETH, 20).toString()).toEqual("0.01");
 
-    expect(fromWei(oneETH, 0).toFixed()).to.be.equal("1000000000000000000");
-    expect(fromWei(oneETH, 9).toFixed()).to.be.equal((10 ** 9).toString());
-    expect(fromWei(oneETH, 18).toFixed()).to.be.equal("1");
-    expect(fromWei(oneETH, 19).toFixed()).to.be.equal("0.1");
-    expect(fromWei(oneETH, 20).toFixed()).to.be.equal("0.01");
+    expect(fromWei(oneETH, 0).toFixed()).toEqual("1000000000000000000");
+    expect(fromWei(oneETH, 9).toFixed()).toEqual((10 ** 9).toString());
+    expect(fromWei(oneETH, 18).toFixed()).toEqual("1");
+    expect(fromWei(oneETH, 19).toFixed()).toEqual("0.1");
+    expect(fromWei(oneETH, 20).toFixed()).toEqual("0.01");
   });
 });
 
 describe("resolveIpfsUri", () => {
   it("returns non ipfs urls unchanged", () => {
     const normalURI = "https://gnosis-safe.io";
-    expect(resolveIpfsUri(normalURI)).to.be.equal(normalURI);
+    expect(resolveIpfsUri(normalURI)).toEqual(normalURI);
   });
 
   it("returns infura url for ipfs urls", () => {
     const ipfsURI = "ipfs://SomeHash";
-    expect(resolveIpfsUri(ipfsURI)).to.be.equal("https://cloudflare-ipfs.com/ipfs/SomeHash");
+    expect(resolveIpfsUri(ipfsURI)).toEqual("https://cloudflare-ipfs.com/ipfs/SomeHash");
   });
 });

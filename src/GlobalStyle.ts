@@ -45,8 +45,13 @@ const GlobalStyle = createGlobalStyle`
         background-image: url(${errorIcon}) !important;
         background-size: 15px;
     }
+
     .ace_tooltip {
         font-family: 'Averta' !important;
+    }
+
+    .ace_tooltip.ace_error {
+        background-image: none !important;
     }
 
     .cardWithCustomShadow {

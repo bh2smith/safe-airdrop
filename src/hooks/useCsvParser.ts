@@ -1,5 +1,5 @@
-import { parseString, RowValidateCallback } from "@fast-csv/parse";
 import { useCallback } from "react";
+import { usePapaParse } from "react-papaparse";
 import { transform } from "src/parser/transformation";
 import { validateRow } from "src/parser/validation";
 import { CodeWarning } from "src/stores/slices/messageSlice";
@@ -48,13 +48,22 @@ export type CSVRow = {
   id?: string;
 };
 
+enum HEADER_FIELDS {
+  TYPE = "token_type",
+  TOKEN_ADDRESS = "token_address",
+  RECEIVER = "receiver",
+  VALUE = "value",
+  AMOUNT = "amount",
+  ID = "id",
+}
+
 const generateWarnings = (
   // We need the row parameter because of the api of fast-csv
-  _row: Transfer,
+  _row: Transfer | UnknownTransfer,
   rowNumber: number,
-  warnings: string,
+  warnings: string[],
 ) => {
-  const messages: CodeWarning[] = warnings.split(";").map((warning: string) => ({
+  const messages: CodeWarning[] = warnings.map((warning: string) => ({
     message: warning,
     severity: "warning",
     lineNo: rowNumber,
@@ -68,34 +77,78 @@ export const useCsvParser = (): { parseCsv: (csvText: string) => Promise<[Transf
   const collectibleTokenInfoProvider = useCollectibleTokenInfoProvider();
   const tokenInfoProvider = useTokenInfoProvider();
   const ensResolver = useEnsResolver();
+  const { readString } = usePapaParse();
 
   const parseCsv = useCallback(
-    (csvText: string) => {
-      const noLines = countLines(csvText);
-      // Hard limit at 500 lines of txs
-      if (noLines > 501) {
-        return new Promise<[Transfer[], CodeWarning[]]>((resolve, reject) => {
-          reject("Max number of lines exceeded. Due to the block gas limit transactions are limited to 500 lines.");
-        });
-      }
-
+    async (csvText: string): Promise<[Transfer[], CodeWarning[]]> => {
       return new Promise<[Transfer[], CodeWarning[]]>((resolve, reject) => {
-        const results: Transfer[] = [];
-        const resultingWarnings: CodeWarning[] = [];
-        parseString<CSVRow, Transfer | UnknownTransfer>(csvText, { headers: true })
-          .transform((row: CSVRow, callback) =>
-            transform(row, tokenInfoProvider, collectibleTokenInfoProvider, ensResolver, callback),
-          )
-          .validate((row: Transfer | UnknownTransfer, callback: RowValidateCallback) => validateRow(row, callback))
-          .on("data", (data: Transfer) => results.push(data))
-          .on("end", () => resolve([results, resultingWarnings]))
-          .on("data-invalid", (row: Transfer, rowNumber: number, warnings: string) =>
-            resultingWarnings.push(...generateWarnings(row, rowNumber, warnings)),
-          )
-          .on("error", (error) => reject(error));
+        const noLines = countLines(csvText);
+        // Hard limit at 500 lines of txs
+        if (noLines > 501) {
+          reject("Max number of lines exceeded. Due to the block gas limit transactions are limited to 500 lines.");
+          return;
+        }
+
+        readString(csvText, {
+          header: true,
+          worker: true,
+          complete: async (results) => {
+            // Check headers
+            const unknownFields = results.meta.fields?.filter(
+              (field) => !Object.values<string>(HEADER_FIELDS).includes(field),
+            );
+
+            if (unknownFields && unknownFields?.length > 0) {
+              resolve([
+                [],
+                [
+                  {
+                    lineNo: 0,
+                    message: `Unknown header field(s): ${unknownFields.join(", ")}`,
+                    severity: "error",
+                  },
+                ],
+              ]);
+              return;
+            }
+            const csvRows = results.data as CSVRow[];
+            const numberedRows = csvRows
+              .map((row, idx) => ({ content: row, lineNo: idx + 1 }))
+              // Empty rows have no receiver
+              .filter((row) => row.content.receiver !== undefined && row.content.receiver !== "");
+            const transformedRows: ((Transfer | UnknownTransfer) & { lineNo: number })[] = await Promise.all(
+              numberedRows.map((row) =>
+                transform(row.content, tokenInfoProvider, collectibleTokenInfoProvider, ensResolver).then(
+                  (transfer) => ({
+                    ...transfer,
+                    lineNo: row.lineNo,
+                  }),
+                ),
+              ),
+            );
+
+            // validation warnings
+            const resultingWarnings = transformedRows.map((row) => {
+              const validationWarnings = validateRow(row);
+              return generateWarnings(row, row.lineNo, validationWarnings);
+            });
+
+            // add syntax errors
+            resultingWarnings.push(
+              results.errors.map((error) => ({
+                lineNo: error.row + 1,
+                message: error.message,
+                severity: "error",
+              })),
+            );
+
+            const validRows = transformedRows.filter((_, idx) => resultingWarnings[idx]?.length === 0) as Transfer[];
+            resolve([validRows, resultingWarnings.flat()]);
+          },
+        });
       });
     },
-    [collectibleTokenInfoProvider, ensResolver, tokenInfoProvider],
+    [collectibleTokenInfoProvider, ensResolver, readString, tokenInfoProvider],
   );
 
   return {
