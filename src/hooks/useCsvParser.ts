@@ -66,7 +66,7 @@ const generateWarnings = (
   const messages: CodeWarning[] = warnings.map((warning: string) => ({
     message: warning,
     severity: "warning",
-    lineNo: rowNumber,
+    lineNum: rowNumber,
   }));
   return messages;
 };
@@ -82,9 +82,9 @@ export const useCsvParser = (): { parseCsv: (csvText: string) => Promise<[Transf
   const parseCsv = useCallback(
     async (csvText: string): Promise<[Transfer[], CodeWarning[]]> => {
       return new Promise<[Transfer[], CodeWarning[]]>((resolve, reject) => {
-        const noLines = countLines(csvText);
+        const numLines = countLines(csvText);
         // Hard limit at 500 lines of txs
-        if (noLines > 501) {
+        if (numLines > 501) {
           reject("Max number of lines exceeded. Due to the block gas limit transactions are limited to 500 lines.");
           return;
         }
@@ -103,7 +103,7 @@ export const useCsvParser = (): { parseCsv: (csvText: string) => Promise<[Transf
                 [],
                 [
                   {
-                    lineNo: 0,
+                    lineNum: 0,
                     message: `Unknown header field(s): ${unknownFields.join(", ")}`,
                     severity: "error",
                   },
@@ -113,15 +113,15 @@ export const useCsvParser = (): { parseCsv: (csvText: string) => Promise<[Transf
             }
             const csvRows = results.data as CSVRow[];
             const numberedRows = csvRows
-              .map((row, idx) => ({ content: row, lineNo: idx + 1 }))
+              .map((row, idx) => ({ content: row, lineNum: idx + 1 }))
               // Empty rows have no receiver
               .filter((row) => row.content.receiver !== undefined && row.content.receiver !== "");
-            const transformedRows: ((Transfer | UnknownTransfer) & { lineNo: number })[] = await Promise.all(
+            const transformedRows: ((Transfer | UnknownTransfer) & { lineNum: number })[] = await Promise.all(
               numberedRows.map((row) =>
                 transform(row.content, tokenInfoProvider, collectibleTokenInfoProvider, ensResolver).then(
                   (transfer) => ({
                     ...transfer,
-                    lineNo: row.lineNo,
+                    lineNum: row.lineNum,
                   }),
                 ),
               ),
@@ -130,13 +130,13 @@ export const useCsvParser = (): { parseCsv: (csvText: string) => Promise<[Transf
             // validation warnings
             const resultingWarnings = transformedRows.map((row) => {
               const validationWarnings = validateRow(row);
-              return generateWarnings(row, row.lineNo, validationWarnings);
+              return generateWarnings(row, row.lineNum, validationWarnings);
             });
 
             // add syntax errors
             resultingWarnings.push(
               results.errors.map((error) => ({
-                lineNo: error.row + 1,
+                lineNum: error.row + 1,
                 message: error.message,
                 severity: "error",
               })),

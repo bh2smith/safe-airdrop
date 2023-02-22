@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export type CodeWarning = {
   message: string;
   severity: string;
-  lineNo: number;
+  lineNum: number;
 };
 
 export type Message = {

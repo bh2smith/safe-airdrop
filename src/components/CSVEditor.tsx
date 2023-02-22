@@ -40,8 +40,8 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
         }}
         markers={codeWarnings.map(
           (warning): IMarker => ({
-            startRow: warning.lineNo,
-            endRow: warning.lineNo,
+            startRow: warning.lineNum,
+            endRow: warning.lineNum,
             className: "error-marker",
             type: "fullLine",
             startCol: 0,
@@ -50,7 +50,7 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
         )}
         annotations={codeWarnings.map(
           (warning): IAnnotation => ({
-            row: warning.lineNo,
+            row: warning.lineNum,
             type: "error",
             column: 0,
             text: warning.message,
