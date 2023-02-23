@@ -1,33 +1,30 @@
-import { RowValidateCallback } from "@fast-csv/parse";
 import { BigNumber } from "bignumber.js";
 import { utils } from "ethers";
 
 import { AssetTransfer, CollectibleTransfer, Transfer, UnknownTransfer } from "../hooks/useCsvParser";
 
-export const validateRow = (row: Transfer | UnknownTransfer, callback: RowValidateCallback) => {
+export const validateRow = (row: Transfer | UnknownTransfer): string[] => {
   switch (row.token_type) {
     case "erc20":
     case "native":
-      validateAssetRow(row, callback);
-      break;
+      return validateAssetRow(row);
     case "erc1155":
     case "erc721":
-      validateCollectibleRow(row, callback);
-      break;
+      return validateCollectibleRow(row);
     default:
-      callback(null, false, "Unknown token_type: Must be one of erc20, native or nft");
+      return ["Unknown token_type: Must be one of erc20, native or nft"];
   }
 };
 
 /**
  * Validates, that addresses are valid, the amount is big enough and a decimal is given or can be found in token lists.
  */
-export const validateAssetRow = (row: AssetTransfer, callback: RowValidateCallback) => {
+export const validateAssetRow = (row: AssetTransfer) => {
   const warnings = [...areAddressesValid(row), ...isAmountPositive(row), ...isAssetTokenValid(row)];
-  callback(null, warnings.length === 0, warnings.join(";"));
+  return warnings;
 };
 
-export const validateCollectibleRow = (row: CollectibleTransfer, callback: RowValidateCallback) => {
+export const validateCollectibleRow = (row: CollectibleTransfer) => {
   const warnings = [
     ...areAddressesValid(row),
     ...isTokenIdPositive(row),
@@ -36,7 +33,7 @@ export const validateCollectibleRow = (row: CollectibleTransfer, callback: RowVa
     ...isTokenValueInteger(row),
     ...isTokenIdInteger(row),
   ];
-  callback(null, warnings.length === 0, warnings.join(";"));
+  return warnings;
 };
 
 const areAddressesValid = (row: Transfer): string[] => {

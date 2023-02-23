@@ -1,5 +1,4 @@
 import { BigNumber } from "bignumber.js";
-import { expect } from "chai";
 import { ethers } from "ethers";
 
 import { fetchTokenList, MinimalTokenInfo } from "../hooks/token";
@@ -61,21 +60,21 @@ describe("Build Transfers:", () => {
       ];
 
       const [listedTransfer, unlistedTransfer, nativeTransfer] = buildAssetTransfers(largePayments);
-      expect(listedTransfer.value).to.be.equal("0");
-      expect(listedTransfer.to).to.be.equal(listedToken.address);
-      expect(listedTransfer.data).to.be.equal(
+      expect(listedTransfer.value).toEqual("0");
+      expect(listedTransfer.to).toEqual(listedToken.address);
+      expect(listedTransfer.data).toEqual(
         erc20Interface.encodeFunctionData("transfer", [receiver, MAX_U256.toFixed()]),
       );
 
-      expect(unlistedTransfer.value).to.be.equal("0");
-      expect(unlistedTransfer.to).to.be.equal(testData.unlistedERC20Token.address);
-      expect(unlistedTransfer.data).to.be.equal(
+      expect(unlistedTransfer.value).toEqual("0");
+      expect(unlistedTransfer.to).toEqual(testData.unlistedERC20Token.address);
+      expect(unlistedTransfer.data).toEqual(
         erc20Interface.encodeFunctionData("transfer", [receiver, MAX_U256.toFixed()]),
       );
 
-      expect(nativeTransfer.value).to.be.equal(MAX_U256.toFixed());
-      expect(nativeTransfer.to).to.be.equal(receiver);
-      expect(nativeTransfer.data).to.be.equal("0x");
+      expect(nativeTransfer.value).toEqual(MAX_U256.toFixed());
+      expect(nativeTransfer.to).toEqual(receiver);
+      expect(nativeTransfer.data).toEqual("0x");
     });
   });
 
@@ -116,24 +115,24 @@ describe("Build Transfers:", () => {
       ];
 
       const [listed, unlisted, native] = buildAssetTransfers(smallPayments);
-      expect(listed.value).to.be.equal("0");
-      expect(listed.to).to.be.equal(listedToken.address);
-      expect(listed.data).to.be.equal(
+      expect(listed.value).toEqual("0");
+      expect(listed.to).toEqual(listedToken.address);
+      expect(listed.data).toEqual(
         erc20Interface.encodeFunctionData("transfer", [receiver, toWei(tinyAmount, listedToken.decimals).toFixed()]),
       );
 
-      expect(unlisted.value).to.be.equal("0");
-      expect(unlisted.to).to.be.equal(testData.unlistedERC20Token.address);
-      expect(unlisted.data).to.be.equal(
+      expect(unlisted.value).toEqual("0");
+      expect(unlisted.to).toEqual(testData.unlistedERC20Token.address);
+      expect(unlisted.data).toEqual(
         erc20Interface.encodeFunctionData("transfer", [
           receiver,
           toWei(tinyAmount, testData.unlistedERC20Token.decimals).toFixed(),
         ]),
       );
 
-      expect(native.value).to.be.equal(toWei(tinyAmount, 18).toString());
-      expect(native.to).to.be.equal(receiver);
-      expect(native.data).to.be.equal("0x");
+      expect(native.value).toEqual(toWei(tinyAmount, 18).toString());
+      expect(native.to).toEqual(receiver);
+      expect(native.data).toEqual("0x");
     });
   });
 
@@ -174,24 +173,24 @@ describe("Build Transfers:", () => {
       ];
 
       const [listed, unlisted, native] = buildAssetTransfers(mixedPayments);
-      expect(listed.value).to.be.equal("0");
-      expect(listed.to).to.be.equal(listedToken.address);
-      expect(listed.data).to.be.equal(
+      expect(listed.value).toEqual("0");
+      expect(listed.to).toEqual(listedToken.address);
+      expect(listed.data).toEqual(
         erc20Interface.encodeFunctionData("transfer", [receiver, toWei(mixedAmount, listedToken.decimals).toFixed()]),
       );
 
-      expect(unlisted.value).to.be.equal("0");
-      expect(unlisted.to).to.be.equal(testData.unlistedERC20Token.address);
-      expect(unlisted.data).to.be.equal(
+      expect(unlisted.value).toEqual("0");
+      expect(unlisted.to).toEqual(testData.unlistedERC20Token.address);
+      expect(unlisted.data).toEqual(
         erc20Interface.encodeFunctionData("transfer", [
           receiver,
           toWei(mixedAmount, testData.unlistedERC20Token.decimals).toFixed(),
         ]),
       );
 
-      expect(native.value).to.be.equal(toWei(mixedAmount, 18).toFixed());
-      expect(native.to).to.be.equal(receiver);
-      expect(native.data).to.be.equal("0x");
+      expect(native.value).toEqual(toWei(mixedAmount, 18).toFixed());
+      expect(native.to).toEqual(receiver);
+      expect(native.data).toEqual("0x");
     });
   });
 
@@ -216,9 +215,9 @@ describe("Build Transfers:", () => {
         receiverEnsName: null,
       };
       const [transfer] = buildAssetTransfers([payment]);
-      expect(transfer.value).to.be.equal("0");
-      expect(transfer.to).to.be.equal(crappyToken.address);
-      expect(transfer.data).to.be.equal(
+      expect(transfer.value).toEqual("0");
+      expect(transfer.to).toEqual(crappyToken.address);
+      expect(transfer.data).toEqual(
         erc20Interface.encodeFunctionData("transfer", [receiver, toWei(amount, crappyToken.decimals).toFixed()]),
       );
     });
@@ -249,15 +248,15 @@ describe("Build Transfers:", () => {
 
     const [firstTransfer, secondTransfer] = buildCollectibleTransfers(transfers);
 
-    expect(firstTransfer.value).to.be.equal("0");
-    expect(firstTransfer.to).to.be.equal(testData.addresses.dummyErc721Address);
-    expect(firstTransfer.data).to.be.equal(
+    expect(firstTransfer.value).toEqual("0");
+    expect(firstTransfer.to).toEqual(testData.addresses.dummyErc721Address);
+    expect(firstTransfer.data).toEqual(
       erc721Interface.encodeFunctionData("safeTransferFrom", [testData.dummySafeInfo.safeAddress, receiver, 69]),
     );
 
-    expect(secondTransfer.value).to.be.equal("0");
-    expect(secondTransfer.to).to.be.equal(testData.addresses.dummyErc1155Address);
-    expect(secondTransfer.data).to.be.equal(
+    expect(secondTransfer.value).toEqual("0");
+    expect(secondTransfer.to).toEqual(testData.addresses.dummyErc1155Address);
+    expect(secondTransfer.data).toEqual(
       erc1155Interface.encodeFunctionData("safeTransferFrom", [
         testData.dummySafeInfo.safeAddress,
         receiver,
