@@ -141,6 +141,7 @@ export const DrainSafeDialog = ({
       <DialogActions>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Button
+            disabled={!!error || drainAddress === ""}
             color="primary"
             onClick={() => {
               generateDrainTransfers();

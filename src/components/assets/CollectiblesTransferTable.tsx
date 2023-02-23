@@ -26,13 +26,13 @@ export const ListHeader = (props: ListHeaderProps) => {
   const { width } = props;
   return (
     <>
-      <div
-        style={{
+      <Box
+        sx={{
           width,
           height: 60,
           display: "flex",
           flexDirection: "row",
-          borderBottom: "1px solid rgba(224, 224, 224, 1)",
+          borderBottom: ({ palette }) => `1px solid ${palette.border.main}`,
           overflow: "hidden",
         }}
       >
@@ -51,7 +51,7 @@ export const ListHeader = (props: ListHeaderProps) => {
         <div style={{ flex: 1, padding: 16, minWidth: 80 }}>
           <Typography>Id</Typography>
         </div>
-      </div>
+      </Box>
     </>
   );
 };
@@ -61,11 +61,11 @@ export const Row = memo((props: RowProps) => {
   const row = data[index];
   return (
     <div style={style}>
-      <div
-        style={{
+      <Box
+        sx={{
           display: "flex",
           flexDirection: "row",
-          borderBottom: "1px solid rgba(224, 224, 224, 1)",
+          borderBottom: ({ palette }) => `1px solid ${palette.border.light}`,
           alignItems: "center",
         }}
       >
@@ -80,7 +80,7 @@ export const Row = memo((props: RowProps) => {
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
           <Typography>{row.tokenId}</Typography>
         </div>
-      </div>
+      </Box>
     </div>
   );
 }, areEqual);
@@ -90,7 +90,7 @@ export const CollectiblesTransferTable = (props: TransferTableProps) => {
   return (
     <Box
       sx={{
-        border: ({ palette }) => `1px solid ${palette.border.main}`,
+        borderTop: ({ palette }) => `1px solid ${palette.border.main}`,
       }}
     >
       <AutoSizer disableHeight>
