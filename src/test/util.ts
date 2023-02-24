@@ -1,4 +1,4 @@
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
+import { SafeInfo } from "@safe-global/safe-apps-sdk";
 
 import { CollectibleTokenInfo } from "../hooks/collectibleTokenInfoProvider";
 import { TokenInfo } from "../utils";

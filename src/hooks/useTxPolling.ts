@@ -1,5 +1,5 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { GatewayTransactionDetails } from "@gnosis.pm/safe-apps-sdk";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { GatewayTransactionDetails } from "@safe-global/safe-apps-sdk";
 import { useCallback, useEffect, useState } from "react";
 
 export const useTxPolling = (initialTx: GatewayTransactionDetails) => {

@@ -5,8 +5,8 @@ import { validateRow } from "src/parser/validation";
 import { CodeWarning } from "src/stores/slices/messageSlice";
 
 import { useCollectibleTokenInfoProvider } from "./collectibleTokenInfoProvider";
-import { useEnsResolver } from "./ens";
 import { useTokenInfoProvider } from "./token";
+import { useEnsResolver } from "./useEnsResolver";
 
 export type Transfer = AssetTransfer | CollectibleTransfer;
 

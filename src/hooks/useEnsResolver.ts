@@ -1,5 +1,5 @@
-import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { SafeAppProvider } from "@safe-global/safe-apps-provider";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { ethers } from "ethers";
 import { useCallback, useMemo } from "react";
 

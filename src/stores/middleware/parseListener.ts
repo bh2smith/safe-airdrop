@@ -1,5 +1,5 @@
-import { EnsResolver } from "src/hooks/ens";
 import { Transfer } from "src/hooks/useCsvParser";
+import { EnsResolver } from "src/hooks/useEnsResolver";
 import { checkAllBalances } from "src/parser/balanceCheck";
 
 import { balanceApi } from "../api/balanceApi";

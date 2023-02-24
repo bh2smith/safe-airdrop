@@ -1,14 +1,12 @@
+import { Box } from "@mui/material";
 import React from "react";
 import AceEditor, { IMarker, IAnnotation } from "react-ace";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/mode-text";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "src/stores/store";
-import styled from "styled-components";
 
 import { updateCsvContent } from "../stores/slices/csvEditorSlice";
-
-const EditorWrapper = styled.div``;
 
 export type CSVEditorProps = {};
 
@@ -18,7 +16,7 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
   const csvText = useSelector((state: RootState) => state.csvEditor.csvContent);
 
   return (
-    <EditorWrapper>
+    <Box>
       <AceEditor
         onChange={(newCode) => dispatch(updateCsvContent({ csvContent: newCode }))}
         value={csvText}
@@ -57,6 +55,6 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
           }),
         )}
       />
-    </EditorWrapper>
+    </Box>
   );
 };

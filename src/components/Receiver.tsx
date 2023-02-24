@@ -1,7 +1,7 @@
-import { Icon, Text, Tooltip } from "@gnosis.pm/safe-react-components";
+import styled from "@emotion/styled";
+import { EthHashInfo } from "@safe-global/safe-react-components";
 import React from "react";
 import { DONATION_ADDRESS } from "src/utils";
-import styled from "styled-components";
 
 type ReceiverProps = {
   receiverEnsName: string | null;
@@ -16,30 +16,16 @@ const Container = styled.div`
   align-items: center;
   gap: 8px;
   padding: 16px;
-  min-width: 285px;
+  min-width: 144px;
 `;
 
 export const Receiver = (props: ReceiverProps) => {
   const { receiverEnsName, receiverAddress } = props;
   const isDonation = receiverAddress.toLowerCase() === DONATION_ADDRESS.toLowerCase();
-  return receiverEnsName !== null ? (
+  const displayName = isDonation ? "Donation Safe ❤️" : receiverEnsName;
+  return (
     <Container>
-      <Text size="md">
-        {isDonation && "❤️ "}
-        {receiverEnsName}
-      </Text>
-      <Tooltip title={receiverAddress}>
-        <span>
-          <Icon type="info" size="sm" />
-        </span>
-      </Tooltip>
-    </Container>
-  ) : (
-    <Container>
-      <Text size="md">
-        {isDonation && "❤️ "}
-        {receiverAddress}
-      </Text>
+      <EthHashInfo address={receiverAddress} name={displayName} showAvatar={false} showCopyButton={false} />
     </Container>
   );
 };

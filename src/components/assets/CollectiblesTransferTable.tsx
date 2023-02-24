@@ -1,4 +1,4 @@
-import { Text } from "@gnosis.pm/safe-react-components";
+import { Box, Typography } from "@mui/material";
 import React, { memo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList as List } from "react-window";
@@ -26,32 +26,32 @@ export const ListHeader = (props: ListHeaderProps) => {
   const { width } = props;
   return (
     <>
-      <div
-        style={{
+      <Box
+        sx={{
           width,
           height: 60,
           display: "flex",
           flexDirection: "row",
-          borderBottom: "1px solid rgba(224, 224, 224, 1)",
+          borderBottom: ({ palette }) => `1px solid ${palette.border.main}`,
           overflow: "hidden",
         }}
       >
-        <div style={{ flex: 1, padding: 16, minWidth: 285 }}>
-          <Text size="lg">Token</Text>
+        <div style={{ flex: 1, padding: 16, minWidth: 144 }}>
+          <Typography>Token</Typography>
         </div>
         <div style={{ flex: 1, padding: 16, minWidth: 80 }}>
-          <Text size="lg">Type</Text>
+          <Typography>Type</Typography>
         </div>
-        <div style={{ flex: 1, padding: 16, minWidth: 285 }}>
-          <Text size="lg">Receiver</Text>
-        </div>
-        <div style={{ flex: 1, padding: 16, minWidth: 80 }}>
-          <Text size="lg">Value</Text>
+        <div style={{ flex: 1, padding: 16, minWidth: 144 }}>
+          <Typography>Receiver</Typography>
         </div>
         <div style={{ flex: 1, padding: 16, minWidth: 80 }}>
-          <Text size="lg">Id</Text>
+          <Typography>Value</Typography>
         </div>
-      </div>
+        <div style={{ flex: 1, padding: 16, minWidth: 80 }}>
+          <Typography>Id</Typography>
+        </div>
+      </Box>
     </>
   );
 };
@@ -61,26 +61,26 @@ export const Row = memo((props: RowProps) => {
   const row = data[index];
   return (
     <div style={style}>
-      <div
-        style={{
+      <Box
+        sx={{
           display: "flex",
           flexDirection: "row",
-          borderBottom: "1px solid rgba(224, 224, 224, 1)",
+          borderBottom: ({ palette }) => `1px solid ${palette.border.light}`,
           alignItems: "center",
         }}
       >
         <ERC721Token tokenAddress={row.tokenAddress} id={row.tokenId} token_type={row.token_type} />
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
-          <Text size="md">{row.token_type.toUpperCase()}</Text>
+          <Typography>{row.token_type.toUpperCase()}</Typography>
         </div>
         <Receiver receiverAddress={row.receiver} receiverEnsName={row.receiverEnsName} />
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
-          <Text size="md">{row.amount}</Text>
+          <Typography>{row.amount}</Typography>
         </div>
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
-          <Text size="md">{row.tokenId}</Text>
+          <Typography>{row.tokenId}</Typography>
         </div>
-      </div>
+      </Box>
     </div>
   );
 }, areEqual);
@@ -88,11 +88,9 @@ export const Row = memo((props: RowProps) => {
 export const CollectiblesTransferTable = (props: TransferTableProps) => {
   const { transferContent } = props;
   return (
-    <div
-      style={{
-        flex: 1,
-        boxShadow:
-          "rgb(247, 245, 245) 0px 3px 3px -2px, rgb(247, 245, 245) 0px 3px 4px 0px, rgb(247, 245, 245) 0px 1px 8px 0px",
+    <Box
+      sx={{
+        borderTop: ({ palette }) => `1px solid ${palette.border.main}`,
       }}
     >
       <AutoSizer disableHeight>
@@ -100,9 +98,9 @@ export const CollectiblesTransferTable = (props: TransferTableProps) => {
           <>
             <ListHeader width={width} />
             <List
-              height={Math.min(460, transferContent.length * 55)}
+              height={Math.min(460, transferContent.length * 64)}
               itemCount={transferContent.length}
-              itemSize={55}
+              itemSize={64}
               width={width}
               itemData={transferContent}
             >
@@ -111,6 +109,6 @@ export const CollectiblesTransferTable = (props: TransferTableProps) => {
           </>
         )}
       </AutoSizer>
-    </div>
+    </Box>
   );
 };

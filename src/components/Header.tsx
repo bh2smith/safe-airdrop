@@ -1,17 +1,12 @@
-import { Icon, Text } from "@gnosis.pm/safe-react-components";
-import { Fab, Snackbar } from "@material-ui/core";
-import MuiAlert from "@material-ui/lab/Alert";
+import styled from "@emotion/styled";
+import { Alert, Fab, Snackbar, Typography } from "@mui/material";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { hideMessages, Message, removeMessage, toggleMessages } from "src/stores/slices/messageSlice";
 import { RootState } from "src/stores/store";
-import styled from "styled-components";
 
 import { FAQModal } from "./FAQModal";
 
-export function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 const HeaderContainer = styled.div`
   flex: 1;
   width: 100%;
@@ -51,13 +46,7 @@ export const Header = (): JSX.Element => {
         style={{ textTransform: "none", width: "34px", height: "34px" }}
         onClick={() => dispatch(toggleMessages())}
       >
-        {messages.length === 0 ? (
-          <Icon color="white" type="check" size="sm" />
-        ) : (
-          <Text size="xl" color="white">
-            {messages.length}
-          </Text>
-        )}
+        {messages.length === 0 ? <span>CHECK ICON</span> : <Typography>{messages.length}</Typography>}
       </Fab>
       <FAQModal />
       <Snackbar
@@ -69,7 +58,7 @@ export const Header = (): JSX.Element => {
       >
         <AlertWrapper>
           {messages.length === 0 && (
-            <Alert secerity="success" key="successMessage">
+            <Alert severity="success" key="successMessage">
               No warnings or errors.
             </Alert>
           )}

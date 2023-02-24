@@ -1,5 +1,5 @@
-import { SafeAppProvider } from "@gnosis.pm/safe-apps-provider";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { SafeAppProvider } from "@safe-global/safe-apps-provider";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import { useCallback, useMemo } from "react";
@@ -111,7 +111,9 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
     async (tokenAddress: string, id: BigNumber, token_type: "erc1155" | "erc721") => {
       if (token_type === "erc721") {
         if (currentNftBalance) {
-          const tokenInfo = currentNftBalance.results.find((nftEntry) => nftEntry.address === tokenAddress);
+          const tokenInfo = currentNftBalance.results.find(
+            (nftEntry) => nftEntry.address === tokenAddress && nftEntry.id === id.toFixed(),
+          );
           if (tokenInfo && tokenInfo.imageUri && tokenInfo.name) {
             return {
               imageURI: tokenInfo.imageUri,

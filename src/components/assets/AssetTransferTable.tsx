@@ -1,4 +1,4 @@
-import { Text } from "@gnosis.pm/safe-react-components";
+import { Box, Typography } from "@mui/material";
 import React, { memo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { areEqual, FixedSizeList as List } from "react-window";
@@ -25,26 +25,26 @@ type ListHeaderProps = {
 const ListHeader = (props: ListHeaderProps) => {
   const { width } = props;
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         width,
         height: 60,
         display: "flex",
         flexDirection: "row",
-        borderBottom: "1px solid rgba(224, 224, 224, 1)",
+        borderBottom: ({ palette }) => `1px solid ${palette.border.main}`,
         overflow: "hidden",
       }}
     >
-      <div style={{ flex: 1, padding: 16, minWidth: 285 }}>
-        <Text size="lg">Token</Text>
+      <div style={{ flex: 1, padding: 16, minWidth: 144 }}>
+        <Typography>Token</Typography>
       </div>
-      <div style={{ flex: 1, padding: 16, minWidth: 285 }}>
-        <Text size="lg">Receiver</Text>
+      <div style={{ flex: 1, padding: 16, minWidth: 144 }}>
+        <Typography>Receiver</Typography>
       </div>
       <div style={{ flex: 1, padding: 16, minWidth: 80 }}>
-        <Text size="lg">Amount</Text>
+        <Typography>Amount</Typography>
       </div>
-    </div>
+    </Box>
   );
 };
 
@@ -53,20 +53,20 @@ const Row = memo((props: RowProps) => {
   const row = data[index];
   return (
     <div style={style}>
-      <div
-        style={{
+      <Box
+        sx={{
           display: "flex",
           flexDirection: "row",
-          borderBottom: "1px solid rgba(224, 224, 224, 1)",
+          borderBottom: ({ palette }) => `1px solid ${palette.border.light}`,
           alignItems: "center",
         }}
       >
         <ERC20Token tokenAddress={row.tokenAddress} symbol={row.symbol} />
         <Receiver receiverAddress={row.receiver} receiverEnsName={row.receiverEnsName} />
         <div style={{ flex: "1", padding: 16, minWidth: 80 }}>
-          <Text size="md">{row.amount}</Text>
+          <Typography>{row.amount}</Typography>
         </div>
-      </div>
+      </Box>
     </div>
   );
 }, areEqual);
@@ -74,23 +74,19 @@ const Row = memo((props: RowProps) => {
 export const AssetTransferTable = (props: TransferTableProps) => {
   const { transferContent } = props;
   return (
-    <div
-      style={{
-        flex: 1,
-        boxShadow:
-          "rgb(247, 245, 245) 0px 3px 3px -2px, rgb(247, 245, 245) 0px 3px 4px 0px, rgb(247, 245, 245) 0px 1px 8px 0px",
-        borderRadius: 8,
+    <Box
+      sx={{
+        borderTop: ({ palette }) => `1px solid ${palette.border.main}`,
       }}
     >
       <AutoSizer disableHeight>
         {({ width }) => (
-          // List Header?
           <>
             <ListHeader width={width} />
             <List
-              height={Math.min(460, transferContent.length * 55)}
+              height={Math.min(460, transferContent.length * 64)}
               itemCount={transferContent.length}
-              itemSize={55}
+              itemSize={64}
               width={width}
               itemData={transferContent}
             >
@@ -99,6 +95,6 @@ export const AssetTransferTable = (props: TransferTableProps) => {
           </>
         )}
       </AutoSizer>
-    </div>
+    </Box>
   );
 };

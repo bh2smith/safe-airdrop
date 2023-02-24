@@ -1,0 +1,31 @@
+@import url(../../node_modules/@safe-global/safe-react-components/dist/fonts.css);
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: DM Sans, sans-serif;
+  background-color: var(--color-background-paper);
+}
+
+.error-marker {
+  position: absolute;
+  background-color: lightpink;
+  display: block;
+}
+
+.error-marker:hover::after {
+  content: "DescriptionTest";
+}
+.ace_error {
+  background-image: url(../static/error-icon.svg) !important;
+  background-size: 15px;
+}
+
+.ace_tooltip {
+  font-family: DM Sans !important;
+}
+
+.ace_tooltip.ace_error {
+  background-image: none !important;
+}
