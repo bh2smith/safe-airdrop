@@ -1,4 +1,4 @@
-import { Box, Button, Card, CircularProgress, Grid, Snackbar, Typography, useTheme } from "@mui/material";
+import { Box, Button, Card, CircularProgress, Grid, Typography, useTheme } from "@mui/material";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { BaseTransaction, GatewayTransactionDetails } from "@safe-global/safe-apps-sdk";
 import React, { useCallback, useEffect, useState } from "react";
@@ -107,7 +107,7 @@ const App: React.FC = () => {
                 </Grid>
 
                 {!pendingTx && (
-                  <Card sx={{ padding: 2, mt: 3 }}>
+                  <Card sx={{ padding: 2 }}>
                     <CSVForm />
                   </Card>
                 )}
