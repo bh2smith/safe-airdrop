@@ -1,4 +1,4 @@
-import { Box, Button, Card, CircularProgress, Grid, Typography, useTheme } from "@mui/material";
+import { Box, Button, Card, CircularProgress, Grid, Snackbar, Typography, useTheme } from "@mui/material";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { BaseTransaction, GatewayTransactionDetails } from "@safe-global/safe-apps-sdk";
 import React, { useCallback, useEffect, useState } from "react";
@@ -8,6 +8,7 @@ import { Unsubscribe } from "redux";
 import { CSVForm } from "./components/CSVForm";
 import { FAQModal } from "./components/FAQModal";
 import { Loading } from "./components/Loading";
+import { MessageSnackbar } from "./components/MessageSnackbar";
 import { Summary } from "./components/Summary";
 import { TransactionStatusScreen } from "./components/TransactionStatusScreen";
 import { useTokenList } from "./hooks/token";
@@ -115,24 +116,27 @@ const App: React.FC = () => {
                   {pendingTx ? (
                     <TransactionStatusScreen tx={pendingTx} reset={() => setPendingTx(undefined)} />
                   ) : (
-                    <Button
-                      variant="contained"
-                      style={{ alignSelf: "flex-start", marginTop: 16, marginBottom: 16 }}
-                      size="stretched"
-                      color={messages.length === 0 ? "primary" : "error"}
-                      onClick={submitTx}
-                      disabled={parsing || transfers.length + collectibleTransfers.length === 0}
-                    >
-                      {parsing ? (
-                        <>
-                          <CircularProgress size="small" color="secondary" /> Parsing
-                        </>
-                      ) : messages.length === 0 ? (
-                        "Submit"
-                      ) : (
-                        "Submit with errors"
-                      )}
-                    </Button>
+                    <Box>
+                      <Button
+                        variant="contained"
+                        style={{ alignSelf: "flex-start", marginTop: 16, marginBottom: 16 }}
+                        size="stretched"
+                        color={messages.length === 0 ? "primary" : "error"}
+                        onClick={submitTx}
+                        disabled={parsing || transfers.length + collectibleTransfers.length === 0}
+                      >
+                        {parsing ? (
+                          <>
+                            <CircularProgress size="small" color="secondary" /> Parsing
+                          </>
+                        ) : messages.length === 0 ? (
+                          "Submit"
+                        ) : (
+                          "Submit with errors"
+                        )}
+                      </Button>
+                      <MessageSnackbar />
+                    </Box>
                   )}
                 </Card>
               </Box>

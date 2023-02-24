@@ -1,6 +1,8 @@
 import { AlertColor } from "@mui/material";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+import { RootState } from "../store";
+
 export type CodeWarning = {
   message: string;
   severity: string;
@@ -37,15 +39,11 @@ export const messageSlice = createSlice({
     removeMessage: (state, action: PayloadAction<Message>) => {
       state.messages = state.messages.filter((message) => message.message !== action.payload.message);
     },
-    hideMessages: (state) => {
-      state.showMessages = false;
-    },
-    toggleMessages: (state) => {
-      state.showMessages = !state.showMessages;
-    },
   },
 });
 
-export const { setMessages, setCodeWarnings, removeMessage, hideMessages, toggleMessages } = messageSlice.actions;
+export const { setMessages, setCodeWarnings, removeMessage } = messageSlice.actions;
+
+export const selectMessages = ({ messages }: RootState) => messages;
 
 export default messageSlice.reducer;
