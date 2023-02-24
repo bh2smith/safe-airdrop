@@ -116,24 +116,21 @@ const App: React.FC = () => {
                   {pendingTx ? (
                     <TransactionStatusScreen tx={pendingTx} reset={() => setPendingTx(undefined)} />
                   ) : (
-                    <Box>
+                    <Box display="flex" alignItems="center" gap={1}>
                       <Button
                         variant="contained"
-                        style={{ alignSelf: "flex-start", marginTop: 16, marginBottom: 16 }}
+                        sx={{ alignSelf: "flex-start", display: "flex", marginTop: 2, marginBottom: 2, gap: 1 }}
                         size="stretched"
                         color={messages.length === 0 ? "primary" : "error"}
                         onClick={submitTx}
                         disabled={parsing || transfers.length + collectibleTransfers.length === 0}
                       >
-                        {parsing ? (
+                        {parsing && (
                           <>
-                            <CircularProgress size="small" color="secondary" /> Parsing
+                            <CircularProgress size={24} color="primary" /> Parsing
                           </>
-                        ) : messages.length === 0 ? (
-                          "Submit"
-                        ) : (
-                          "Submit with errors"
                         )}
+                        {messages.length === 0 ? "Submit" : "Submit with errors"}
                       </Button>
                       <MessageSnackbar />
                     </Box>

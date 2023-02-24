@@ -42,9 +42,11 @@ export const MessageSnackbar = () => {
   return (
     <>
       {messages.messages.length > 0 ? (
-        <IconButton size="medium" aria-label="close" color="error" disabled={open} onClick={onOpen}>
-          <ErrorIcon fontSize="medium" />
-        </IconButton>
+        <div>
+          <IconButton size="small" aria-label="close" color="error" disabled={open} onClick={onOpen}>
+            <ErrorIcon fontSize="medium" />
+          </IconButton>
+        </div>
       ) : null}
       <Snackbar
         open={open}
