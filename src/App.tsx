@@ -8,6 +8,7 @@ import { Unsubscribe } from "redux";
 import { CSVForm } from "./components/CSVForm";
 import { FAQModal } from "./components/FAQModal";
 import { Loading } from "./components/Loading";
+import { MessageSnackbar } from "./components/MessageSnackbar";
 import { Summary } from "./components/Summary";
 import { TransactionStatusScreen } from "./components/TransactionStatusScreen";
 import { useTokenList } from "./hooks/token";
@@ -106,7 +107,7 @@ const App: React.FC = () => {
                 </Grid>
 
                 {!pendingTx && (
-                  <Card sx={{ padding: 2, mt: 3 }}>
+                  <Card sx={{ padding: 2 }}>
                     <CSVForm />
                   </Card>
                 )}
@@ -115,24 +116,24 @@ const App: React.FC = () => {
                   {pendingTx ? (
                     <TransactionStatusScreen tx={pendingTx} reset={() => setPendingTx(undefined)} />
                   ) : (
-                    <Button
-                      variant="contained"
-                      style={{ alignSelf: "flex-start", marginTop: 16, marginBottom: 16 }}
-                      size="stretched"
-                      color={messages.length === 0 ? "primary" : "error"}
-                      onClick={submitTx}
-                      disabled={parsing || transfers.length + collectibleTransfers.length === 0}
-                    >
-                      {parsing ? (
-                        <>
-                          <CircularProgress size="small" color="secondary" /> Parsing
-                        </>
-                      ) : messages.length === 0 ? (
-                        "Submit"
-                      ) : (
-                        "Submit with errors"
-                      )}
-                    </Button>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Button
+                        variant="contained"
+                        sx={{ alignSelf: "flex-start", display: "flex", marginTop: 2, marginBottom: 2, gap: 1 }}
+                        size="stretched"
+                        color={messages.length === 0 ? "primary" : "error"}
+                        onClick={submitTx}
+                        disabled={parsing || transfers.length + collectibleTransfers.length === 0}
+                      >
+                        {parsing && (
+                          <>
+                            <CircularProgress size={24} color="primary" /> Parsing
+                          </>
+                        )}
+                        {messages.length === 0 ? "Submit" : "Submit with errors"}
+                      </Button>
+                      <MessageSnackbar />
+                    </Box>
                   )}
                 </Card>
               </Box>
