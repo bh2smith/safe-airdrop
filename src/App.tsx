@@ -127,7 +127,7 @@ const App: React.FC = () => {
                       >
                         {parsing && (
                           <>
-                            <CircularProgress size={24} color="primary" /> Parsing
+                            <CircularProgress size={24} color="primary" />
                           </>
                         )}
                         {messages.length === 0 ? "Submit" : "Submit with errors"}
