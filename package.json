@@ -32,7 +32,7 @@
     "@safe-global/safe-apps-sdk": "^7.10.0",
     "@safe-global/safe-react-components": "2.0.3",
     "ace-builds": "^1.15.0",
-    "bignumber.js": "^9.0.2",
+    "bignumber.js": "^9.1.1",
     "ethers": "^5.7.2",
     "honeyswap-default-token-list": "^3.1.1",
     "lodash.debounce": "^4.0.8",
