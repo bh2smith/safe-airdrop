@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@emotion/cache": "^11.10.1",
-    "@emotion/react": "^11.10.0",
+    "@emotion/react": "^11.10.8",
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.8",
     "@gnosis.pm/safe-react-gateway-sdk": "^3.5.2",
