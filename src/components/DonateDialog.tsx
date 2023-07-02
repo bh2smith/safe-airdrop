@@ -153,16 +153,17 @@ export const DonateDialog = ({
           />
         </Box>
       </DialogContent>
-      <DialogActions>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <DialogActions sx={{ padding: "0 24px 24px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: "8px" }}>
+          <Button color="primary" onClick={onClose}>
+            Abort
+          </Button>
           <Button
+            variant="contained"
             onClick={handleSubmit}
-            disabled={Boolean(amountError) || !Boolean(selectedToken) || !Boolean(selectedAmount)}
+            disabled={Boolean(amountError) || !Boolean(selectedToken) || !Boolean(Number(selectedAmount))}
           >
             Add to CSV
-          </Button>
-          <Button color="secondary" onClick={onClose}>
-            Abort
           </Button>
         </div>
       </DialogActions>

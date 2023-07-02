@@ -106,8 +106,8 @@ export const FAQModal: () => JSX.Element = () => {
             </Typography>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button color="secondary" onClick={() => setShowHelp(false)}>
+        <DialogActions sx={{ padding: "24px" }}>
+          <Button variant="contained" color="primary" onClick={() => setShowHelp(false)}>
             Close
           </Button>
         </DialogActions>

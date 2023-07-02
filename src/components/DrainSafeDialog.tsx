@@ -108,7 +108,7 @@ export const DrainSafeDialog = ({
     <Dialog onClose={onClose} open sx={{ padding: 3 }}>
       <DialogTitle>Transfer all funds</DialogTitle>
       <DialogContent>
-        <Box sx={{ padding: 3 }}>
+        <Box>
           <Typography style={{ marginBottom: "16px" }}>
             Select an address to transfer all funds to. These funds include all ERC20, ERC721 and native tokens.
           </Typography>
@@ -138,10 +138,14 @@ export const DrainSafeDialog = ({
           />
         </Box>
       </DialogContent>
-      <DialogActions>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <DialogActions sx={{ padding: "0 24px 24px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", gap: "8px" }}>
+          <Button color="primary" onClick={onClose}>
+            Abort
+          </Button>
           <Button
             disabled={!!error || drainAddress === ""}
+            variant="contained"
             color="primary"
             onClick={() => {
               generateDrainTransfers();
@@ -149,9 +153,6 @@ export const DrainSafeDialog = ({
             }}
           >
             Submit
-          </Button>
-          <Button color="secondary" onClick={onClose}>
-            Abort
           </Button>
         </div>
       </DialogActions>
