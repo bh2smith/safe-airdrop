@@ -23,7 +23,7 @@
     "@emotion/styled": "^11.11.0",
     "@gnosis.pm/safe-react-gateway-sdk": "^3.5.2",
     "@mui/icons-material": "^5.11.16",
-    "@mui/material": "^5.13.3",
+    "@mui/material": "^5.14.2",
     "@mui/styles": "^5.13.2",
     "@openzeppelin/contracts": "^4.9.2",
     "@reduxjs/toolkit": "^1.8.1",
