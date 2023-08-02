@@ -26,7 +26,7 @@
     "@mui/material": "^5.14.2",
     "@mui/styles": "^5.13.2",
     "@openzeppelin/contracts": "^4.9.2",
-    "@reduxjs/toolkit": "^1.8.1",
+    "@reduxjs/toolkit": "^1.9.5",
     "@safe-global/safe-apps-provider": "^0.16.0",
     "@safe-global/safe-apps-react-sdk": "^4.6.4",
     "@safe-global/safe-apps-sdk": "^7.10.1",
