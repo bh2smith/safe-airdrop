@@ -6,7 +6,7 @@ type NetworkInfo = {
   baseAPI?: string;
 };
 
-export const NETWORKS_WITH_DONATIONS_DEPLOYED = [1, 4, 5, 56, 100, 137];
+export const NETWORKS_WITH_DONATIONS_DEPLOYED = [1, 5, 56, 100, 137];
 
 export const networkInfo = new Map<number, NetworkInfo>([
   [
@@ -53,7 +53,7 @@ export const networkInfo = new Map<number, NetworkInfo>([
     100,
     {
       chainID: 100,
-      name: "Gnosis Chain (formerly xDai)",
+      name: "Gnosis Chain",
       shortName: "gno",
       currencySymbol: "xDAI",
       baseAPI: "https://safe-transaction-gnosis-chain.safe.global/api/v1",
@@ -86,6 +86,16 @@ export const networkInfo = new Map<number, NetworkInfo>([
       shortName: "arb1",
       currencySymbol: "AETH",
       baseAPI: "https://safe-transaction-arbitrum.safe.global/api/v1",
+    },
+  ],
+  [
+    42220,
+    {
+      chainID: 42220,
+      name: "Celo",
+      shortName: "celo",
+      currencySymbol: "Celo",
+      baseAPI: "https://safe-transaction-celo.safe.global/api/v1",
     },
   ],
   [
