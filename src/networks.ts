@@ -79,6 +79,16 @@ export const networkInfo = new Map<number, NetworkInfo>([
     },
   ],
   [
+    8453,
+    {
+      chainID: 8453,
+      name: "Base",
+      shortName: "base",
+      currencySymbol: "ETH",
+      baseAPI: "https://safe-transaction-base.safe.global/api/v1",
+    },
+  ],
+  [
     42161,
     {
       chainID: 42161,
