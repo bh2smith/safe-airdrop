@@ -58,7 +58,7 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@typechain/ethers-v5": "^7.1.2",
     "@types/lodash.debounce": "^4.0.7",
-    "@types/node": "^20.4.9",
+    "@types/node": "^20.5.7",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^18.0.3",
     "@types/react-virtualized-auto-sizer": "^1.0.1",
