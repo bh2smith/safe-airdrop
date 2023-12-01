@@ -70,12 +70,23 @@ export const networkInfo = new Map<number, NetworkInfo>([
     },
   ],
   [
-    246,
+    324,
     {
-      chainID: 246,
-      name: "Energy Web Chain",
-      shortName: "ewt",
-      currencySymbol: "EWT",
+      chainID: 324,
+      name: "Zk Sync Era",
+      shortName: "zksync",
+      currencySymbol: "ETH",
+      baseAPI: "https://safe-transaction-zksync.safe.global/api/v1",
+    },
+  ],
+  [
+    1101,
+    {
+      chainID: 1101,
+      name: "Polygon zkEVM",
+      shortName: "zkevm",
+      currencySymbol: "ETH",
+      baseAPI: "https://safe-transaction-zkevm.safe.global/api/v1",
     },
   ],
   [
