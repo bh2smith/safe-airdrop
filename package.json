@@ -51,6 +51,7 @@
     "typescript": "~5.0.4"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@simbathesailor/use-what-changed": "^2.0.0",
     "@svgr/webpack": "^8.0.1",
     "@testing-library/react": "^12.1.3",
