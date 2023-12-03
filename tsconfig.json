@@ -22,7 +22,6 @@
     "noUnusedLocals": false,
     "skipLibCheck": true,
     "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
     "types": ["jest", "node"],
     "baseUrl": ".",
     "strict": true,
