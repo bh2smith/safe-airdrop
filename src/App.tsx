@@ -125,11 +125,7 @@ const App: React.FC = () => {
                         onClick={submitTx}
                         disabled={parsing || transfers.length + collectibleTransfers.length === 0}
                       >
-                        {parsing && (
-                          <>
-                            <CircularProgress size={24} color="primary" />
-                          </>
-                        )}
+                        {parsing && <CircularProgress size={24} color="primary" />}
                         {messages.length === 0 ? "Submit" : "Submit with errors"}
                       </Button>
                       <MessageSnackbar />
