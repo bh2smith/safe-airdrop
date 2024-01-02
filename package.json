@@ -34,7 +34,7 @@
     "@safe-global/safe-gateway-typescript-sdk": "^3.13.2",
     "@safe-global/safe-react-components": "2.0.5",
     "ace-builds": "^1.15.0",
-    "bignumber.js": "^9.1.1",
+    "bignumber.js": "^9.1.2",
     "ethers": "^5.7.2",
     "honeyswap-default-token-list": "^3.1.1",
     "lodash.debounce": "^4.0.8",
