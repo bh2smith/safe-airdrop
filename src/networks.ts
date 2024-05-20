@@ -139,4 +139,14 @@ export const networkInfo = new Map<number, NetworkInfo>([
       baseAPI: "https://safe-transaction-volta.safe.global/api/v1",
     },
   ],
+  [
+    11155111,
+    {
+      chainID: 11155111,
+      name: "Sepolia",
+      shortName: "sep",
+      currencySymbol: "ETH",
+      baseAPI: "https://safe-transaction-sepolia.safe.global/api/v1",
+    },
+  ],
 ]);
