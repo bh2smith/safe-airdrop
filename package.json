@@ -45,7 +45,7 @@
     "react-dropzone": "^14.2.3",
     "react-papaparse": "^4.4.0",
     "react-redux": "^8.0.1",
-    "react-svg": "^16.1.31",
+    "react-svg": "^16.1.34",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.9",
     "tslib": "^2.6.1",
