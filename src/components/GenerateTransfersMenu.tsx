@@ -1,7 +1,9 @@
 import { Box, Button, Tooltip } from "@mui/material";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useState } from "react";
-import { useGetAssetBalanceQuery, useGetAllNFTsQuery } from "src/stores/api/balanceApi";
+import { selectAssetBalances } from "src/stores/slices/assetBalanceSlice";
+import { selectCollectibles } from "src/stores/slices/collectiblesSlice";
+import { useAppSelector } from "src/stores/store";
 
 import { NETWORKS_WITH_DONATIONS_DEPLOYED } from "../networks";
 
@@ -9,11 +11,8 @@ import { DonateDialog } from "./DonateDialog";
 import { DrainSafeDialog } from "./DrainSafeDialog";
 
 export const GenerateTransfersMenu = () => {
-  const assetBalanceQuery = useGetAssetBalanceQuery();
-  const nftBalanceQuery = useGetAllNFTsQuery();
-
-  const assetBalance = assetBalanceQuery.currentData;
-  const nftBalance = nftBalanceQuery.currentData;
+  const assetBalance = useAppSelector(selectAssetBalances);
+  const nftBalance = useAppSelector(selectCollectibles);
 
   const [isDrainModalOpen, setIsDrainModalOpen] = useState(false);
   const [isDonateModalOpen, setIsDonateModalOpen] = useState(false);

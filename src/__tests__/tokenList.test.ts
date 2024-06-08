@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 
 import { fetchTokenList } from "../hooks/token";
-import { networkInfo } from "../networks";
+import { staticNetworkInfo } from "../networks";
 
 beforeEach(() => {
   jest.spyOn(window, "fetch").mockImplementation(() => {
@@ -68,8 +68,8 @@ describe("Mainnet tokenlist", () => {
 });
 
 describe("Fetch should resolve for all networks", () => {
-  for (const chainId of networkInfo.keys()) {
-    it(`fetches tokens for ${networkInfo.get(chainId)?.name} network`, () => {
+  for (const chainId of staticNetworkInfo.keys()) {
+    it(`fetches tokens for ${staticNetworkInfo.get(chainId)?.name} network`, () => {
       expect(() => fetchTokenList(chainId)).not.toThrow();
     });
   }

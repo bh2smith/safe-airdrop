@@ -3,7 +3,8 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import { useCallback, useMemo } from "react";
-import { useGetAllNFTsQuery } from "src/stores/api/balanceApi";
+import { selectCollectibles } from "src/stores/slices/collectiblesSlice";
+import { useAppSelector } from "src/stores/store";
 import { resolveIpfsUri } from "src/utils";
 
 import { erc1155Instance } from "../transfers/erc1155";
@@ -35,9 +36,9 @@ export interface CollectibleTokenInfoProvider {
 
 export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider = () => {
   const { safe, sdk } = useSafeAppsSDK();
+  const currentNftBalance = useAppSelector(selectCollectibles);
+
   const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
-  const nftBalanceQuery = useGetAllNFTsQuery();
-  const currentNftBalance = nftBalanceQuery.currentData;
 
   const collectibleContractCache = useMemo(() => new Map<string, CollectibleTokenInfo | undefined>(), []);
 
@@ -49,7 +50,7 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
         return contractInterfaceCache.get(tokenAddress) ?? [undefined];
       }
       if (currentNftBalance) {
-        const tokenInfo = currentNftBalance.results.find((nftEntry) => nftEntry.address === tokenAddress);
+        const tokenInfo = currentNftBalance.find((nftEntry) => nftEntry.address === tokenAddress);
         if (tokenInfo) {
           return Promise.resolve(["erc721"]);
         }
@@ -111,7 +112,7 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
     async (tokenAddress: string, id: BigNumber, token_type: "erc1155" | "erc721") => {
       if (token_type === "erc721") {
         if (currentNftBalance) {
-          const tokenInfo = currentNftBalance.results.find(
+          const tokenInfo = currentNftBalance.find(
             (nftEntry) => nftEntry.address === tokenAddress && nftEntry.id === id.toFixed(),
           );
           if (tokenInfo && tokenInfo.imageUri && tokenInfo.name) {
