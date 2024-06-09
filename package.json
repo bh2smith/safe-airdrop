@@ -33,6 +33,7 @@
     "@safe-global/safe-apps-sdk": "^8.1.0",
     "@safe-global/safe-gateway-typescript-sdk": "^3.13.2",
     "@safe-global/safe-react-components": "2.0.5",
+    "@types/jest": "^29.5.12",
     "ace-builds": "^1.15.0",
     "bignumber.js": "^9.1.2",
     "ethers": "^5.7.2",
@@ -48,6 +49,7 @@
     "react-svg": "^16.1.34",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.9",
+    "swr": "^2.2.5",
     "tslib": "^2.6.1",
     "typescript": "~5.0.4"
   },

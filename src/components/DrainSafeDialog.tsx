@@ -13,13 +13,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import BigNumber from "bignumber.js";
 import { utils } from "ethers";
 import { useState } from "react";
+import { useCurrentChain } from "src/hooks/useCurrentChain";
 import { useEnsResolver } from "src/hooks/useEnsResolver";
-import { networkInfo } from "src/networks";
-import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
+import { AssetBalance } from "src/stores/slices/assetBalanceSlice";
+import { NFTBalance } from "src/stores/slices/collectiblesSlice";
 import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
 import { useAppDispatch } from "src/stores/store";
 import { fromWei } from "src/utils";
@@ -33,18 +33,16 @@ export const DrainSafeDialog = ({
   isOpen: boolean;
   onClose: () => void;
   assetBalance: AssetBalance;
-  nftBalance: NFTBalance;
+  nftBalance: NFTBalance["results"];
 }) => {
   const [drainAddress, setDrainAddress] = useState("");
   const [resolvedAddress, setResolvedAddress] = useState("");
 
   const [resolving, setResolving] = useState(false);
-  const { safe } = useSafeAppsSDK();
 
   const dispatch = useAppDispatch();
 
-  const selectedNetworkInfo = networkInfo.get(safe.chainId);
-
+  const selectedNetworkInfo = useCurrentChain();
   const ensResolver = useEnsResolver();
 
   const invalidNetworkError = resolvedAddress.includes(":")
@@ -75,7 +73,7 @@ export const DrainSafeDialog = ({
         }
       });
 
-      nftBalance?.results.forEach((collectible) => {
+      nftBalance.forEach((collectible) => {
         drainCSV += `\nnft,${collectible.address},${drainAddress},,${collectible.id}`;
       });
     }

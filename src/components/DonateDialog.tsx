@@ -13,13 +13,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { useCsvContent } from "src/hooks/useCsvContent";
+import { useCurrentChain } from "src/hooks/useCurrentChain";
 import { useDarkMode } from "src/hooks/useDarkMode";
-import { networkInfo } from "src/networks";
-import { AssetBalance } from "src/stores/api/balanceApi";
+import { AssetBalance } from "src/stores/slices/assetBalanceSlice";
 import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
 import { useAppDispatch } from "src/stores/store";
 import { DONATION_ADDRESS } from "src/utils";
@@ -36,12 +35,11 @@ export const DonateDialog = ({
   onClose: () => void;
   assetBalance: AssetBalance;
 }) => {
-  const { safe } = useSafeAppsSDK();
   const dispatch = useAppDispatch();
   const csvContent = useCsvContent();
   const darkMode = useDarkMode();
-
-  const nativeSymbol = networkInfo.get(safe.chainId)?.currencySymbol || "ETH";
+  const chainConfig = useCurrentChain();
+  const nativeSymbol = chainConfig?.currencySymbol || "ETH";
 
   const items = assetBalance?.map((asset) => ({
     id: asset.tokenAddress || "0x0",

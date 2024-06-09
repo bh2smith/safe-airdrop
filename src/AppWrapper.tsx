@@ -4,6 +4,7 @@ import { SafeThemeProvider } from "@safe-global/safe-react-components";
 import { Provider as ReduxProvider } from "react-redux";
 
 import App from "./App";
+import { AppInitializer } from "./AppInitializer";
 import { useDarkMode } from "./hooks/useDarkMode";
 import errorIcon from "./static/error-icon.svg";
 import { store } from "./stores/store";
@@ -42,6 +43,7 @@ export const AppWrapper = () => {
             }
           >
             <ReduxProvider store={store}>
+              <AppInitializer />
               <App />
             </ReduxProvider>
           </SafeProvider>

@@ -5,10 +5,11 @@ import { ethers, utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
 import { useState, useEffect, useMemo } from "react";
 
-import { networkInfo } from "../networks";
 import rinkeby from "../static/rinkebyTokens.json";
 import { erc20Instance } from "../transfers/erc20";
 import { TokenInfo } from "../utils";
+
+import { useCurrentChain } from "./useCurrentChain";
 
 export type TokenMap = Map<string | null, MinimalTokenInfo>;
 
@@ -33,16 +34,14 @@ export const fetchTokenList = async (chainId: number): Promise<TokenMap> => {
         .catch(() => []);
       break;
     case 4:
-      // Hardcoded this because the list provided at
-      // https://github.com/Uniswap/default-token-list/blob/master/src/tokens/rinkeby.json
-      // Doesn't have GNO or OWL and/or many others.
+      // We leave this to generate data for the unit tests.
       tokens = rinkeby;
       break;
     case 100:
       tokens = xdaiTokens.tokens;
       break;
     default:
-      console.warn(`Unimplemented token list for ${networkInfo.get(chainId)?.name} network`);
+      console.warn(`Unimplemented token list for chainId ${chainId}`);
       tokens = [];
   }
   return tokenMap(tokens);
@@ -59,6 +58,7 @@ export function useTokenList(): {
   const { safe } = useSafeAppsSDK();
   const [tokenList, setTokenList] = useState<TokenMap>(new Map());
   const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     let isMounted = true;
     setIsLoading(true);
@@ -109,6 +109,8 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
   }, [sdk.safe]);
   const { tokenList } = useTokenList();
 
+  const chainConfig = useCurrentChain();
+
   return useMemo(
     () => ({
       getTokenInfo: async (tokenAddress: string) => {
@@ -141,9 +143,9 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
           return undefined;
         }
       },
-      getNativeTokenSymbol: () => networkInfo.get(safe.chainId)?.currencySymbol ?? "ETH",
-      getSelectedNetworkShortname: () => networkInfo.get(safe.chainId)?.shortName,
+      getNativeTokenSymbol: () => chainConfig?.currencySymbol ?? "ETH",
+      getSelectedNetworkShortname: () => chainConfig?.shortName,
     }),
-    [balances.items, safe.chainId, tokenList, web3Provider],
+    [balances.items, tokenList, web3Provider, chainConfig],
   );
 };

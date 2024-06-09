@@ -1,4 +1,5 @@
-import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
+import { AssetBalance } from "src/stores/slices/assetBalanceSlice";
+import { NFTBalance } from "src/stores/slices/collectiblesSlice";
 
 import { AssetTransfer, CollectibleTransfer } from "../hooks/useCsvParser";
 import { assetTransfersToSummary, checkAllBalances } from "../parser/balanceCheck";
@@ -488,6 +489,8 @@ describe("transferToSummary and check balances", () => {
         },
       ],
       next: null,
+      count: 2,
+      previous: null,
     };
     const biggerBalance: NFTBalance = {
       results: [
@@ -517,6 +520,8 @@ describe("transferToSummary and check balances", () => {
         },
       ],
       next: null,
+      count: 3,
+      previous: null,
     };
     const smallerBalance: NFTBalance = {
       results: [
@@ -530,11 +535,13 @@ describe("transferToSummary and check balances", () => {
         },
       ],
       next: null,
+      count: 1,
+      previous: null,
     };
 
-    expect(checkAllBalances(undefined, exactBalance, transfers)).toHaveLength(0);
-    expect(checkAllBalances(undefined, biggerBalance, transfers)).toHaveLength(0);
-    const smallBalanceCheckResult = checkAllBalances(undefined, smallerBalance, transfers);
+    expect(checkAllBalances(undefined, exactBalance.results, transfers)).toHaveLength(0);
+    expect(checkAllBalances(undefined, biggerBalance.results, transfers)).toHaveLength(0);
+    const smallBalanceCheckResult = checkAllBalances(undefined, smallerBalance.results, transfers);
     expect(smallBalanceCheckResult).toHaveLength(1);
     expect(smallBalanceCheckResult[0].token).toEqual("Test Collectible");
     expect(smallBalanceCheckResult[0].token_type).toEqual("erc721");
@@ -575,9 +582,11 @@ describe("transferToSummary and check balances", () => {
         },
       ],
       next: null,
+      count: 1,
+      previous: null,
     };
 
-    const balanceCheckResult = checkAllBalances(undefined, exactBalance, transfers);
+    const balanceCheckResult = checkAllBalances(undefined, exactBalance.results, transfers);
     expect(balanceCheckResult).toHaveLength(1);
     expect(balanceCheckResult[0].token).toEqual("Test Collectible");
     expect(balanceCheckResult[0].token_type).toEqual("erc721");

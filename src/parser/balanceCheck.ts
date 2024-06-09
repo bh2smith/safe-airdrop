@@ -1,5 +1,6 @@
 import { BigNumber } from "bignumber.js";
-import { AssetBalance, NFTBalance } from "src/stores/api/balanceApi";
+import { AssetBalance } from "src/stores/slices/assetBalanceSlice";
+import { NFTBalance } from "src/stores/slices/collectiblesSlice";
 
 import { AssetTransfer, CollectibleTransfer, Transfer } from "../hooks/useCsvParser";
 import { toWei } from "../utils";
@@ -65,7 +66,7 @@ export type InsufficientBalanceInfo = {
 
 export const checkAllBalances = (
   assetBalance: AssetBalance | undefined,
-  collectibleBalance: NFTBalance | undefined,
+  collectibleBalance: NFTBalance["results"] | undefined,
   transfers: Transfer[],
 ): InsufficientBalanceInfo[] => {
   const insufficientTokens: InsufficientBalanceInfo[] = [];
@@ -116,16 +117,15 @@ export const checkAllBalances = (
   }
 
   for (const { tokenAddress, count, name, id } of collectibleSummary.values()) {
-    const tokenBalance = collectibleBalance?.results.find(
+    const tokenBalance = collectibleBalance?.find(
       (balanceEntry) => balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase() && balanceEntry.id === id,
     );
     if (typeof tokenBalance === "undefined" || count > 1) {
       const tokenName =
         name ??
         tokenBalance?.tokenName ??
-        collectibleBalance?.results.find(
-          (balanceEntry) => balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase(),
-        )?.tokenName;
+        collectibleBalance?.find((balanceEntry) => balanceEntry.address?.toLowerCase() === tokenAddress.toLowerCase())
+          ?.tokenName;
       insufficientTokens.push({
         token: tokenName ?? tokenAddress,
         token_type: "erc721",

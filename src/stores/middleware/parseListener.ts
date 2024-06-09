@@ -2,7 +2,6 @@ import { Transfer } from "src/hooks/useCsvParser";
 import { EnsResolver } from "src/hooks/useEnsResolver";
 import { checkAllBalances } from "src/parser/balanceCheck";
 
-import { balanceApi } from "../api/balanceApi";
 import { setTransfers, startParsing, stopParsing, updateCsvContent } from "../slices/csvEditorSlice";
 import { CodeWarning, setCodeWarnings, setMessages } from "../slices/messageSlice";
 import { AppStartListening } from "../store";
@@ -46,9 +45,13 @@ export const setupParserListener = (
         listenerApi.dispatch(setCodeWarnings(codeWarnings));
 
         const currentState = listenerApi.getState();
-        const assetBalanceResult = balanceApi.endpoints.getAssetBalance.select()(currentState);
-        const nftBalanceResult = balanceApi.endpoints.getAllNFTs.select()(currentState);
-        const insufficientBalances = checkAllBalances(assetBalanceResult.data, nftBalanceResult.data, transfers);
+        const assetBalanceResult = currentState.assetBalance;
+        const nftBalanceResult = currentState.collectibles;
+        const insufficientBalances = checkAllBalances(
+          assetBalanceResult.balances,
+          nftBalanceResult.collectibles,
+          transfers,
+        );
 
         listenerApi.dispatch(stopParsing());
 

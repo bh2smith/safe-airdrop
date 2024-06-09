@@ -8,9 +8,11 @@ import {
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
-import { balanceApi } from "./api/balanceApi";
+import assetBalanceReducer from "./slices/assetBalanceSlice";
+import collectiblesReducer from "./slices/collectiblesSlice";
 import csvReducer from "./slices/csvEditorSlice";
 import messageReducer from "./slices/messageSlice";
+import networksReducer from "./slices/networksSlice";
 import safeInfoReducer from "./slices/safeInfoSlice";
 
 const listenerMiddlewareInstance = createListenerMiddleware({
@@ -22,10 +24,11 @@ export const store = configureStore({
     csvEditor: csvReducer,
     messages: messageReducer,
     safeInfo: safeInfoReducer,
-    [balanceApi.reducerPath]: balanceApi.reducer,
+    networks: networksReducer,
+    collectibles: collectiblesReducer,
+    assetBalance: assetBalanceReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().prepend(listenerMiddlewareInstance.middleware).concat(balanceApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(listenerMiddlewareInstance.middleware),
 });
 
 setupListeners(store.dispatch);
@@ -44,3 +47,5 @@ export const startAppListening = listenerMiddlewareInstance.startListening as Ap
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+export const selectIsLoading = (state: RootState) => state.assetBalance.isLoading || state.collectibles.isLoading;
