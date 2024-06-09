@@ -5,6 +5,7 @@ import { ethers, utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
 import { useState, useEffect, useMemo } from "react";
 
+import rinkeby from "../static/rinkebyTokens.json";
 import { erc20Instance } from "../transfers/erc20";
 import { TokenInfo } from "../utils";
 
@@ -31,6 +32,10 @@ export const fetchTokenList = async (chainId: number): Promise<TokenMap> => {
         .then((response) => response.json())
         .then((response) => response.tokens)
         .catch(() => []);
+      break;
+    case 4:
+      // We leave this to generate data for the unit tests.
+      tokens = rinkeby;
       break;
     case 100:
       tokens = xdaiTokens.tokens;
