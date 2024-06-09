@@ -8,6 +8,7 @@ import {
 import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
+import addressBookReducer from "./slices/addressbookSlice";
 import assetBalanceReducer from "./slices/assetBalanceSlice";
 import collectiblesReducer from "./slices/collectiblesSlice";
 import csvReducer from "./slices/csvEditorSlice";
@@ -27,6 +28,7 @@ export const store = configureStore({
     networks: networksReducer,
     collectibles: collectiblesReducer,
     assetBalance: assetBalanceReducer,
+    addressbook: addressBookReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(listenerMiddlewareInstance.middleware),
 });
