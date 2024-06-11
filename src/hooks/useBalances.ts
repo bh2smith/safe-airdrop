@@ -74,12 +74,14 @@ const useCollectibleBalances = (safeAddress?: string, chainId?: number) => {
   });
 
   // We load up to 10 pages of NFTs for performance reasons
-  if (data && data.length > 0) {
-    const totalPages = Math.max(COLLECTIBLE_MAX_PAGES, Math.ceil(data[0].count / COLLECTIBLE_LIMIT));
-    if (totalPages > size) {
-      setSize(Math.ceil(data[0].count / COLLECTIBLE_LIMIT));
+  useEffect(() => {
+    if (data && data.length > 0) {
+      const totalPages = Math.max(COLLECTIBLE_MAX_PAGES, Math.ceil(data[0].count / COLLECTIBLE_LIMIT));
+      if (totalPages > size && size !== COLLECTIBLE_LIMIT) {
+        setSize(Math.ceil(data[0].count / COLLECTIBLE_LIMIT));
+      }
     }
-  }
+  }, [data, setSize, size]);
 
   const flatData = useMemo(() => {
     if (data === undefined) {

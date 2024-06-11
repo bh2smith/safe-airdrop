@@ -1,4 +1,4 @@
-import { SafeInfo } from "@safe-global/safe-apps-sdk";
+import { PostMessageOptions, SafeInfo } from "@safe-global/safe-apps-sdk";
 import React from "react";
 import { act } from "react-dom/test-utils";
 
