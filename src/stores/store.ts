@@ -5,7 +5,6 @@ import {
   TypedAddListener,
   TypedStartListening,
 } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/dist/query";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import addressBookReducer from "./slices/addressbookSlice";
@@ -20,24 +19,24 @@ const listenerMiddlewareInstance = createListenerMiddleware({
   onError: () => console.error,
 });
 
-export const store = configureStore({
-  reducer: {
-    csvEditor: csvReducer,
-    messages: messageReducer,
-    safeInfo: safeInfoReducer,
-    networks: networksReducer,
-    collectibles: collectiblesReducer,
-    assetBalance: assetBalanceReducer,
-    addressbook: addressBookReducer,
-  },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(listenerMiddlewareInstance.middleware),
-});
+export const makeStore = (initialState?: Record<string, any>) =>
+  configureStore({
+    reducer: {
+      csvEditor: csvReducer,
+      messages: messageReducer,
+      safeInfo: safeInfoReducer,
+      networks: networksReducer,
+      collectibles: collectiblesReducer,
+      assetBalance: assetBalanceReducer,
+      addressbook: addressBookReducer,
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(listenerMiddlewareInstance.middleware),
+    preloadedState: initialState,
+  });
 
-setupListeners(store.dispatch);
+export type RootState = ReturnType<ReturnType<typeof makeStore>["getState"]>;
 
-export type RootState = ReturnType<typeof store.getState>;
-
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = ReturnType<typeof makeStore>["dispatch"];
 
 export type AppListenerEffectAPI = ListenerEffectAPI<RootState, AppDispatch>;
 

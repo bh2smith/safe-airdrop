@@ -7,11 +7,13 @@ import App from "./App";
 import { AppInitializer } from "./AppInitializer";
 import { useDarkMode } from "./hooks/useDarkMode";
 import errorIcon from "./static/error-icon.svg";
-import { store } from "./stores/store";
+import { makeStore } from "./stores/store";
 
 export const AppWrapper = () => {
   const isDarkMode = useDarkMode();
   const themeMode = isDarkMode ? "dark" : "light";
+
+  const store = makeStore();
 
   return (
     <SafeThemeProvider mode={themeMode}>

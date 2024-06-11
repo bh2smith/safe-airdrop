@@ -5,12 +5,18 @@ import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { unmountComponentAtNode } from "react-dom";
 import { act } from "react-dom/test-utils";
+import { Provider as ReduxProvider } from "react-redux";
+import { makeStore, RootState } from "src/stores/store";
 
 import { useEnsResolver } from "../../hooks/useEnsResolver";
 import { sendSafeInfo, setupMocksForSafeProvider } from "../../test/safeUtil";
 import { testData } from "../../test/util";
 
-type TestENSComponentProps = { ensNamesToResolve?: string[]; addressesToLookup?: string[] };
+type TestENSComponentProps = {
+  ensNamesToResolve?: string[];
+  addressesToLookup?: string[];
+  initialReduxState?: Partial<RootState>;
+};
 /**
  * Small component which executes some hook functions and puts the results in the dom.
  */
@@ -71,13 +77,18 @@ const TestENSComponent = (props: TestENSComponentProps): JSX.Element => {
   );
 };
 
-const renderTestComponent = (container: HTMLElement, props: TestENSComponentProps = {}) =>
-  render(
+const renderTestComponent = (container: HTMLElement, props: TestENSComponentProps = {}) => {
+  const store = makeStore(props.initialReduxState);
+
+  return render(
     <SafeProvider loader={<div>loading...</div>}>
-      <TestENSComponent addressesToLookup={props.addressesToLookup} ensNamesToResolve={props.ensNamesToResolve} />
+      <ReduxProvider store={store}>
+        <TestENSComponent addressesToLookup={props.addressesToLookup} ensNamesToResolve={props.ensNamesToResolve} />
+      </ReduxProvider>
     </SafeProvider>,
     { container },
   );
+};
 
 let container: HTMLDivElement | null = null;
 

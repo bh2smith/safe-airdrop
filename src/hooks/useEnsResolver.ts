@@ -42,7 +42,7 @@ export const useEnsResolver: () => EnsResolver = () => {
   const lookupAddress = useCallback(
     async (address: string) => {
       const nameFromAb = addressbook.find((abItem) => {
-        return abItem.address.toLowerCase() === address.toLowerCase() && abItem.chainId === safe.chainId.toString();
+        return abItem.address.toLowerCase() === address.toLowerCase() && abItem.chainId === safe?.chainId.toString();
       })?.name;
 
       if (nameFromAb) {
@@ -51,7 +51,7 @@ export const useEnsResolver: () => EnsResolver = () => {
 
       return await web3Provider.lookupAddress(address);
     },
-    [addressbook, safe.chainId, web3Provider],
+    [addressbook, safe?.chainId, web3Provider],
   );
 
   const cachedResolveName = useCallback(

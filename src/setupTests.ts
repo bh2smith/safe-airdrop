@@ -25,3 +25,7 @@ function getRandomValues(buf: Uint8Array) {
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 window.crypto = { getRandomValues };
+
+const { TextEncoder, TextDecoder } = require("util");
+window.TextEncoder = TextEncoder;
+window.TextDecoder = TextDecoder;
