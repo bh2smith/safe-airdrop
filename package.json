@@ -78,7 +78,7 @@
     "husky": "^8.0.3",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "postcss-normalize": "^10.0.1",
-    "prettier": "^2.8.4",
+    "prettier": "^2.8.8",
     "pretty-quick": "^3.3.1",
     "react-scripts": "^5.0.1",
     "typechain": "^5.2.0"
