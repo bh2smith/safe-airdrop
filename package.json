@@ -52,7 +52,7 @@
     "react-window": "^1.8.9",
     "swr": "^2.2.5",
     "tslib": "^2.6.1",
-    "typescript": "~5.0.4"
+    "typescript": "~5.5.2"
   },
   "devDependencies": {
     "@craco/craco": "^7.0.0",
