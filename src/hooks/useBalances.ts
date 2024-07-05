@@ -19,21 +19,25 @@ const getBaseURL = (chainConfig: NetworkInfo, safeAddress: string, version: "v1"
 const useErc20Balances = (safeAddress?: string, chainId?: number) => {
   const chainConfig = useCurrentChain();
 
-  const { data, isLoading } = useSwr(!safeAddress || !chainConfig ? null : "erc20-balances", async () => {
-    if (!chainConfig || !safeAddress) {
-      return undefined;
-    }
-    const endpointUrl = `${getBaseURL(chainConfig, safeAddress, "v1")}/balances?trusted=false&exclude_spam=true`;
-
-    const result = await fetch(endpointUrl).then((resp) => {
-      if (resp.ok) {
-        return resp.json() as Promise<AssetBalance>;
+  const { data, isLoading } = useSwr(
+    !safeAddress || !chainConfig ? null : "erc20-balances",
+    async () => {
+      if (!chainConfig || !safeAddress) {
+        return undefined;
       }
-      throw new Error("Error fetching collectibles");
-    });
+      const endpointUrl = `${getBaseURL(chainConfig, safeAddress, "v1")}/balances?trusted=false&exclude_spam=true`;
 
-    return result;
-  });
+      const result = await fetch(endpointUrl).then((resp) => {
+        if (resp.ok) {
+          return resp.json() as Promise<AssetBalance>;
+        }
+        throw new Error("Error fetching collectibles");
+      });
+
+      return result;
+    },
+    { errorRetryCount: 1, revalidateOnFocus: false },
+  );
 
   return {
     balances: data,
@@ -62,16 +66,20 @@ const useCollectibleBalances = (safeAddress?: string, chainId?: number) => {
     [safeAddress, chainConfig],
   );
 
-  const { data, setSize, size, isLoading } = useSWRInfinite(getKey, async (url: string) => {
-    const result = await fetch(url).then((resp) => {
-      if (resp.ok) {
-        return resp.json() as Promise<NFTBalance>;
-      }
-      throw new Error("Error fetching collectibles");
-    });
+  const { data, setSize, size, isLoading } = useSWRInfinite(
+    getKey,
+    async (url: string) => {
+      const result = await fetch(url).then((resp) => {
+        if (resp.ok) {
+          return resp.json() as Promise<NFTBalance>;
+        }
+        throw new Error("Error fetching collectibles");
+      });
 
-    return result;
-  });
+      return result;
+    },
+    { errorRetryCount: 1, revalidateOnFocus: false },
+  );
 
   // We load up to 10 pages of NFTs for performance reasons
   useEffect(() => {

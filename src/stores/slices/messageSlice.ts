@@ -39,10 +39,14 @@ export const messageSlice = createSlice({
     removeMessage: (state, action: PayloadAction<Message>) => {
       state.messages = state.messages.filter((message) => message.message !== action.payload.message);
     },
+    addMessage: (state, action: PayloadAction<Message>) => {
+      state.messages ??= [];
+      state.messages.push(action.payload);
+    },
   },
 });
 
-export const { setMessages, setCodeWarnings, removeMessage } = messageSlice.actions;
+export const { setMessages, setCodeWarnings, removeMessage, addMessage } = messageSlice.actions;
 
 export const selectMessages = ({ messages }: RootState) => messages;
 

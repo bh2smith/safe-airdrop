@@ -1,4 +1,5 @@
 import {
+  combineReducers,
   configureStore,
   createListenerMiddleware,
   ListenerEffectAPI,
@@ -7,8 +8,10 @@ import {
 } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
+import { persistBookmarkState } from "./middleware/persistState";
 import addressBookReducer from "./slices/addressbookSlice";
 import assetBalanceReducer from "./slices/assetBalanceSlice";
+import bookmarkReducer from "./slices/bookmarkSlice";
 import collectiblesReducer from "./slices/collectiblesSlice";
 import csvReducer from "./slices/csvEditorSlice";
 import messageReducer from "./slices/messageSlice";
@@ -19,22 +22,28 @@ const listenerMiddlewareInstance = createListenerMiddleware({
   onError: () => console.error,
 });
 
+const middleware = [persistBookmarkState];
+
+const rootReducer = combineReducers({
+  csvEditor: csvReducer,
+  messages: messageReducer,
+  safeInfo: safeInfoReducer,
+  networks: networksReducer,
+  collectibles: collectiblesReducer,
+  assetBalance: assetBalanceReducer,
+  addressbook: addressBookReducer,
+  bookmarks: bookmarkReducer,
+});
+
 export const makeStore = (initialState?: Record<string, any>) =>
   configureStore({
-    reducer: {
-      csvEditor: csvReducer,
-      messages: messageReducer,
-      safeInfo: safeInfoReducer,
-      networks: networksReducer,
-      collectibles: collectiblesReducer,
-      assetBalance: assetBalanceReducer,
-      addressbook: addressBookReducer,
-    },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(listenerMiddlewareInstance.middleware),
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().prepend(listenerMiddlewareInstance.middleware).concat(middleware),
     preloadedState: initialState,
   });
 
-export type RootState = ReturnType<ReturnType<typeof makeStore>["getState"]>;
+export type RootState = ReturnType<typeof rootReducer>;
 
 export type AppDispatch = ReturnType<typeof makeStore>["dispatch"];
 

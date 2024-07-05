@@ -23,7 +23,7 @@ export const CSVEditor = (props: CSVEditorProps): JSX.Element => {
         theme="tomorrow"
         width={"100%"}
         mode={"text"}
-        minLines={6}
+        minLines={8}
         maxLines={20}
         setOptions={{
           firstLineNumber: 0,
