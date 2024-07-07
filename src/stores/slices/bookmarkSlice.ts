@@ -25,13 +25,16 @@ export const bookmarksSlice = createSlice({
       state.bookmarksPerChain[action.payload.chainId] ??= [];
       state.bookmarksPerChain[action.payload.chainId].push(action.payload);
     },
+    setBookmarksByChain: (state, action: PayloadAction<{ bookmarks: Bookmark[]; chainId: string }>) => {
+      state.bookmarksPerChain[action.payload.chainId] = action.payload.bookmarks;
+    },
     rehydrateBookmarks: (state, action: PayloadAction<BookmarkState>) => {
       state.bookmarksPerChain = action.payload.bookmarksPerChain;
     },
   },
 });
 
-export const { addBookmark, rehydrateBookmarks } = bookmarksSlice.actions;
+export const { addBookmark, rehydrateBookmarks, setBookmarksByChain } = bookmarksSlice.actions;
 
 export default bookmarksSlice.reducer;
 
