@@ -1,7 +1,7 @@
 import { Box, Button, Card, CircularProgress, Grid, Typography, useTheme } from "@mui/material";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { BaseTransaction, GatewayTransactionDetails } from "@safe-global/safe-apps-sdk";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Unsubscribe } from "redux";
 
@@ -29,6 +29,10 @@ const App: React.FC = () => {
   const { sdk, safe } = useSafeAppsSDK();
 
   const { messages } = useSelector((state: RootState) => state.messages);
+  const errorMessages = useMemo(
+    () => messages.filter((msg) => msg.severity !== "success" && msg.severity !== "info"),
+    [messages],
+  );
   const { transfers, parsing } = useSelector((state: RootState) => state.csvEditor);
 
   const [pendingTx, setPendingTx] = useState<GatewayTransactionDetails>();
@@ -125,7 +129,7 @@ const App: React.FC = () => {
                         disabled={parsing || transfers.length + collectibleTransfers.length === 0}
                       >
                         {parsing && <CircularProgress size={24} color="primary" />}
-                        {messages.length === 0 ? "Submit" : "Submit with errors"}
+                        {errorMessages.length === 0 ? "Submit" : "Submit with errors"}
                       </Button>
                       <MessageSnackbar />
                     </Box>
