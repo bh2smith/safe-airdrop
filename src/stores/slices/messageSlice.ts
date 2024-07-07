@@ -1,4 +1,3 @@
-import { AlertColor } from "@mui/material";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from "../store";
@@ -11,7 +10,7 @@ export type CodeWarning = {
 
 export type Message = {
   message: string;
-  severity: AlertColor;
+  severity: "success" | "error" | "warning";
 };
 
 interface MessageState {

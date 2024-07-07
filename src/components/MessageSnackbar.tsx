@@ -1,17 +1,36 @@
 import CloseIcon from "@mui/icons-material/Close";
 import ErrorIcon from "@mui/icons-material/Error";
 import { Alert, Box, IconButton, LinearProgress, Snackbar } from "@mui/material";
-import { useEffect, useState } from "react";
-import { selectMessages } from "src/stores/slices/messageSlice";
+import { useEffect, useMemo, useState } from "react";
+import { Message, selectMessages } from "src/stores/slices/messageSlice";
 import { useAppSelector } from "src/stores/store";
 
 const HIDE_TIME = 7_000;
+
+const higherSeverity = (a: Message["severity"], b: Message["severity"]) => {
+  if (a === b) {
+    return a;
+  }
+  if (a === "error" || b === "error") {
+    return "error";
+  }
+  if (a === "warning" || b === "warning") {
+    return "warning";
+  }
+  return "success";
+};
 
 export const MessageSnackbar = () => {
   const messages = useAppSelector(selectMessages);
 
   const [open, setOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+
+  const maxSeverity = useMemo(
+    () =>
+      messages.messages.reduce((prev, curr) => higherSeverity(prev, curr.severity), "success" as Message["severity"]),
+    [messages],
+  );
 
   useEffect(() => {
     let timer: NodeJS.Timer | undefined = undefined;
@@ -43,7 +62,7 @@ export const MessageSnackbar = () => {
     <>
       {messages.messages.length > 0 ? (
         <div>
-          <IconButton size="small" aria-label="close" color="error" disabled={open} onClick={onOpen}>
+          <IconButton size="small" aria-label="close" color={maxSeverity} disabled={open} onClick={onOpen}>
             <ErrorIcon fontSize="medium" />
           </IconButton>
         </div>

@@ -29,10 +29,7 @@ const App: React.FC = () => {
   const { sdk, safe } = useSafeAppsSDK();
 
   const { messages } = useSelector((state: RootState) => state.messages);
-  const errorMessages = useMemo(
-    () => messages.filter((msg) => msg.severity !== "success" && msg.severity !== "info"),
-    [messages],
-  );
+  const errorMessages = useMemo(() => messages.filter((msg) => msg.severity !== "success"), [messages]);
   const { transfers, parsing } = useSelector((state: RootState) => state.csvEditor);
 
   const [pendingTx, setPendingTx] = useState<GatewayTransactionDetails>();
