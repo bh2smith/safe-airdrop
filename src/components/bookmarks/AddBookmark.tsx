@@ -84,8 +84,6 @@ const AddBookmarkModal = ({ open, onClose }: { open: boolean; onClose: () => voi
 export const AddBookmark = () => {
   const [open, setOpen] = useState(false);
 
-  console.log("Is open?", open);
-
   return (
     <>
       <SquareButton icon={<BookmarkAdd />} title="Save to bookmark library" onClick={() => setOpen(true)} />

@@ -9,7 +9,6 @@ export const persistBookmarkState: Middleware<{}, RootState> = (store) => (next)
 
   const sliceType = action.type.split("/")[0];
   if (sliceType === "bookmarks") {
-    console.log("Bookmark change detected");
     const state = store.getState();
     const sliceState = state["bookmarks"];
     localStorage.setItem(`${LS_KEY}/bookmarks`, JSON.stringify(sliceState));
