@@ -8,6 +8,8 @@ export const useHydrateBookmarks = () => {
   useEffect(() => {
     const bookmarksStringified = localStorage.getItem(`${LS_KEY}/bookmarks`);
     const bookmarks = bookmarksStringified ? JSON.parse(bookmarksStringified) : undefined;
-    dispatch(rehydrateBookmarks(bookmarks));
+    if (bookmarks) {
+      dispatch(rehydrateBookmarks(bookmarks));
+    }
   }, [dispatch]);
 };
