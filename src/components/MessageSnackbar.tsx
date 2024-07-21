@@ -33,11 +33,11 @@ export const MessageSnackbar = () => {
   );
 
   useEffect(() => {
-    let timer: NodeJS.Timer | undefined = undefined;
+    let timer: number | undefined = undefined;
     if (messages.messages.length > 0) {
       setOpen(true);
       setTimeLeft(HIDE_TIME);
-      timer = setInterval(() => {
+      timer = window.setInterval(() => {
         setTimeLeft((previousTime) => {
           if (previousTime === 100) {
             return 0;
@@ -46,7 +46,11 @@ export const MessageSnackbar = () => {
         });
       }, 100);
     }
-    return () => clearInterval(timer);
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
   }, [messages.messages]);
 
   const onClose = () => {
