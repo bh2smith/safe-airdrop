@@ -26,7 +26,7 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.14.11",
     "@mui/material": "^5.14.11",
-    "@mui/styles": "^5.14.4",
+    "@mui/styles": "^6.1.1",
     "@openzeppelin/contracts": "^5.0.2",
     "@reduxjs/toolkit": "^2.2.5",
     "@safe-global/safe-apps-provider": "^0.18.3",
