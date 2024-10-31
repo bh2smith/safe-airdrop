@@ -37,9 +37,21 @@ export const useLoadChains = () => {
   }, [chains, dispatch]);
 };
 
+const useConfigService = () => {
+  const configUrl = useMemo(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const configParam = urlParams.get("configUrl");
+    return configParam || CONFIG_SERVICE_URL;
+  }, []);
+
+  return configUrl;
+};
+
 const useChains = () => {
+  const configUrl = useConfigService();
+
   const { data: chainConfigs, isLoading } = useSwr("chains", async (): Promise<NetworkInfo[]> => {
-    const result = await fetch(CONFIG_SERVICE_URL).then((resp) => {
+    const result = await fetch(configUrl).then((resp) => {
       if (resp.ok) {
         return resp.json() as Promise<ChainEndpointResponse>;
       }
