@@ -38,11 +38,6 @@ export function toWei(amount: string | number | BigNumber, decimals: number): Bi
   return res;
 }
 
-export function fromWei(amount: BigNumber, decimals: number): BigNumber {
-  // # TODO - replace all this logic with ethers.utils.parseUnits
-  return amount.dividedBy(TEN.pow(decimals));
-}
-
 /**
  * Replaces ipfs:// part of the uri with the infura.io ipfs endpoint.
  *

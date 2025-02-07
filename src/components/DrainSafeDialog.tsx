@@ -13,8 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import BigNumber from "bignumber.js";
-import { utils } from "ethers";
+import { ethers, utils } from "ethers";
 import { useState } from "react";
 import { useCurrentChain } from "src/hooks/useCurrentChain";
 import { useEnsResolver } from "src/hooks/useEnsResolver";
@@ -22,7 +21,6 @@ import { AssetBalance } from "src/stores/slices/assetBalanceSlice";
 import { NFTBalance } from "src/stores/slices/collectiblesSlice";
 import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
 import { useAppDispatch } from "src/stores/store";
-import { fromWei } from "src/utils";
 
 export const DrainSafeDialog = ({
   isOpen,
@@ -57,7 +55,7 @@ export const DrainSafeDialog = ({
     if (drainAddress) {
       assetBalance?.forEach((asset) => {
         if (asset.token === null && asset.tokenAddress === null) {
-          const decimalBalance = fromWei(new BigNumber(asset.balance), 18);
+          const decimalBalance = ethers.utils.parseUnits(asset.balance, 18);
           // The API returns zero balances for the native token.
           if (!decimalBalance.isZero()) {
             drainCSV += `\nnative,,${drainAddress},${decimalBalance},`;
@@ -65,8 +63,8 @@ export const DrainSafeDialog = ({
         } else {
           const tokenDecimals = asset.token?.decimals;
           if (tokenDecimals) {
-            drainCSV += `\nerc20,${asset.tokenAddress},${drainAddress},${fromWei(
-              new BigNumber(asset.balance),
+            drainCSV += `\nerc20,${asset.tokenAddress},${drainAddress},${ethers.utils.parseUnits(
+              asset.balance,
               tokenDecimals,
             )},`;
           }

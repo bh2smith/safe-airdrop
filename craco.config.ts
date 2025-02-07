@@ -16,6 +16,12 @@ const config = {
       webpackConfig.resolve.plugins = webpackConfig.resolve.plugins.filter(
         ({ constructor }: InstanceType<typeof ModuleScopePlugin>) => constructor?.name !== "ModuleScopePlugin",
       );
+      webpackConfig.module!.rules!.push({
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
+      });
       return webpackConfig;
     },
   },

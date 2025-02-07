@@ -38,7 +38,7 @@ export const ERC721Token = (props: TokenProps) => {
   useEffect(() => {
     let isMounted = true;
     setIsMetaDataLoading(true);
-    collectibleTokenInfoProvider.fetchMetaInfo(tokenAddress, new BigNumber(id), token_type).then((result) => {
+    collectibleTokenInfoProvider.fetchMetaInfo(tokenAddress, id, token_type).then((result) => {
       if (isMounted) {
         setTokenMetaData(result);
         setIsMetaDataLoading(false);

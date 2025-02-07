@@ -2,7 +2,6 @@ import { BaseTransaction } from "@safe-global/safe-apps-sdk";
 import { ethers } from "ethers";
 
 import { AssetTransfer, CollectibleTransfer } from "../hooks/useCsvParser";
-import { toWei } from "../utils";
 
 import { erc1155Interface } from "./erc1155";
 import { erc20Interface } from "./erc20";
@@ -14,17 +13,17 @@ export function buildAssetTransfers(transferData: AssetTransfer[]): BaseTransact
       // Native asset transfer
       return {
         to: transfer.receiver,
-        value: toWei(transfer.amount, 18).toFixed(),
+        value: ethers.utils.parseUnits(transfer.amount, 18).toString(),
         data: "0x",
       };
     } else {
       // ERC20 transfer
       const decimals = transfer.decimals;
-      const valueData = toWei(transfer.amount, decimals);
+      const valueData = ethers.utils.parseUnits(transfer.amount, decimals);
       return {
         to: transfer.tokenAddress,
         value: "0",
-        data: erc20Interface.encodeFunctionData("transfer", [transfer.receiver, valueData.toFixed()]),
+        data: erc20Interface.encodeFunctionData("transfer", [transfer.receiver, valueData.toString()]),
       };
     }
   });
