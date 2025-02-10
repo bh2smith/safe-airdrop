@@ -1,11 +1,3 @@
-import { BigNumber } from "ethers";
-
-export const ZERO = BigNumber.from(0);
-export const ONE = BigNumber.from(1);
-export const TWO = BigNumber.from(2);
-export const TEN = BigNumber.from(10);
-export const MAX_U256 = TWO.pow(255).sub(1).toString();
-
 export const DONATION_ADDRESS = "0xD011a7e124181336ED417B737A495745F150d248";
 
 export interface TokenInfo {

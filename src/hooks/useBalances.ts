@@ -31,7 +31,7 @@ const useErc20Balances = (safeAddress?: string, chainId?: number) => {
         if (resp.ok) {
           return resp.json() as Promise<AssetBalance>;
         }
-        throw new Error("Error fetching collectibles");
+        throw new Error("Error fetching fungible balances");
       });
 
       return result;
