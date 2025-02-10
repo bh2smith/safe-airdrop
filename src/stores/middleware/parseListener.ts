@@ -1,6 +1,6 @@
+import { checkAllBalances } from "multi-asset-transfer";
 import { Transfer } from "src/hooks/useCsvParser";
 import { EnsResolver } from "src/hooks/useEnsResolver";
-import { checkAllBalances } from "src/parser/balanceCheck";
 
 import { setTransfers, startParsing, stopParsing, updateCsvContent } from "../slices/csvEditorSlice";
 import { CodeWarning, setCodeWarnings, setMessages } from "../slices/messageSlice";

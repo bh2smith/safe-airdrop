@@ -40,6 +40,7 @@
     "ethers": "^5.7.2",
     "honeyswap-default-token-list": "^3.1.1",
     "lodash.debounce": "^4.0.8",
+    "multi-asset-transfer": "^0.1.0",
     "react": "^17.0.2",
     "react-ace": "^10.1.0",
     "react-csv-reader": "^4.0.0",

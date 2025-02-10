@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 
 import { fetchTokenList } from "../hooks/token";
 import { staticNetworkInfo } from "../networks";
-
+console.warn = () => {};
 beforeEach(() => {
   jest.spyOn(window, "fetch").mockImplementation(() => {
     return Promise.resolve({

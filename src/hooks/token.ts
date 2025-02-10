@@ -85,7 +85,7 @@ export type MinimalTokenInfo = {
 export interface TokenInfoProvider {
   getTokenInfo: (tokenAddress: string) => Promise<MinimalTokenInfo | undefined>;
   getNativeTokenSymbol: () => string;
-  getSelectedNetworkShortname: () => string | undefined;
+  getSelectedNetworkShortname: () => Promise<string | undefined>;
 }
 
 export const useTokenInfoProvider: () => TokenInfoProvider = () => {
@@ -144,7 +144,7 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
         }
       },
       getNativeTokenSymbol: () => chainConfig?.currencySymbol ?? "ETH",
-      getSelectedNetworkShortname: () => chainConfig?.shortName,
+      getSelectedNetworkShortname: () => new Promise((resolve) => resolve(chainConfig?.shortName)),
     }),
     [balances.items, tokenList, web3Provider, chainConfig],
   );

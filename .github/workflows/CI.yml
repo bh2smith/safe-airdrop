@@ -7,18 +7,12 @@ on:
 
 jobs:
   test:
-    strategy:
-      matrix:
-        node: [16.x, 20.x]
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
-        with:
-          node-version: "20"
 
       - name: Cache node modules
         uses: actions/cache@v4
