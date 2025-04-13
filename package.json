@@ -30,7 +30,7 @@
     "@openzeppelin/contracts": "^5.0.2",
     "@reduxjs/toolkit": "^2.2.5",
     "@safe-global/safe-apps-provider": "^0.18.3",
-    "@safe-global/safe-apps-react-sdk": "^4.7.1",
+    "@safe-global/safe-apps-react-sdk": "^4.7.2",
     "@safe-global/safe-apps-sdk": "^9.0.0",
     "@safe-global/safe-gateway-typescript-sdk": "^3.13.2",
     "@safe-global/safe-react-components": "2.0.5",
