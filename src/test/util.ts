@@ -35,7 +35,7 @@ const addresses = {
   receiver3: "0x3000000000000000000000000000000000000000",
   dummyErc721Address: "0x5500000000000000000000000000000000000000",
   dummyErc1155Address: "0x88b48f654c30e99bc2e4a1559b4dcf1ad93fa656",
-};
+} as const;
 
 export const testData = {
   dummySafeInfo,

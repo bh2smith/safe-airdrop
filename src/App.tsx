@@ -1,6 +1,7 @@
 import { Box, Button, Card, CircularProgress, Grid, Typography, useTheme } from "@mui/material";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { BaseTransaction, GatewayTransactionDetails } from "@safe-global/safe-apps-sdk";
+import { buildAssetTransfer, buildCollectibleTransfer } from "multi-asset-transfer";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Unsubscribe } from "redux";
@@ -19,7 +20,6 @@ import AppIcon from "./static/logo.svg";
 import { setupParserListener } from "./stores/middleware/parseListener";
 import { setSafeInfo } from "./stores/slices/safeInfoSlice";
 import { RootState, selectIsLoading, startAppListening, useAppSelector } from "./stores/store";
-import { buildAssetTransfers, buildCollectibleTransfers } from "./transfers/transfers";
 
 import "./styles/globals.css";
 
@@ -55,8 +55,8 @@ const App: React.FC = () => {
   const submitTx = useCallback(async () => {
     try {
       const txs: BaseTransaction[] = [];
-      txs.push(...buildAssetTransfers(assetTransfers));
-      txs.push(...buildCollectibleTransfers(collectibleTransfers));
+      txs.push(...assetTransfers.map(buildAssetTransfer));
+      txs.push(...collectibleTransfers.map(buildCollectibleTransfer));
 
       const sendTxResponse = await sdk.txs.send({ txs });
       const safeTx = await sdk.txs.getBySafeTxHash(sendTxResponse.safeTxHash);

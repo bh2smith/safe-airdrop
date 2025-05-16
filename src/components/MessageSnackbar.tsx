@@ -33,7 +33,7 @@ export const MessageSnackbar = () => {
   );
 
   useEffect(() => {
-    let timer: NodeJS.Timer | undefined = undefined;
+    let timer: NodeJS.Timeout | undefined = undefined;
     if (messages.messages.length > 0) {
       setOpen(true);
       setTimeLeft(HIDE_TIME);

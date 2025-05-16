@@ -1,9 +1,11 @@
-import { ethers } from "ethers";
+import { getContract, parseAbi, PublicClient } from "viem";
 
-import { ERC165, ERC165__factory } from "../contracts";
+export const abi = parseAbi(["function supportsInterface(bytes4 interfaceId) public view returns (bool)"]);
 
-export const erc165Interface = ERC165__factory.createInterface();
-
-export function erc165Instance(address: string, provider: ethers.providers.Provider): ERC165 {
-  return ERC165__factory.connect(address, provider);
+export function erc165Instance(address: `0x${string}`, provider: PublicClient) {
+  return getContract({
+    address,
+    abi,
+    client: provider,
+  });
 }

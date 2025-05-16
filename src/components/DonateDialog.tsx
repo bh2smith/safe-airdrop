@@ -13,7 +13,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { useCsvContent } from "src/hooks/useCsvContent";
 import { useCurrentChain } from "src/hooks/useCurrentChain";
@@ -22,6 +21,7 @@ import { AssetBalance } from "src/stores/slices/assetBalanceSlice";
 import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
 import { useAppDispatch } from "src/stores/store";
 import { DONATION_ADDRESS } from "src/utils";
+import { formatUnits, parseUnits } from "viem";
 
 import AssetIconDarkMode from "../static/assets-light.svg";
 import AssetIcon from "../static/assets.svg";
@@ -44,7 +44,7 @@ export const DonateDialog = ({
   const items = assetBalance?.map((asset) => ({
     id: asset.tokenAddress || "0x0",
     label: asset.token?.name || nativeSymbol,
-    subLabel: `${ethers.utils.formatUnits(asset.balance, asset.decimals)} ${asset.token?.symbol || nativeSymbol}`,
+    subLabel: `${formatUnits(BigInt(asset.balance), asset.decimals)} ${asset.token?.symbol || nativeSymbol}`,
   }));
   const [selectedToken, setSelectedToken] = useState<string | undefined>(
     items && items.length > 0 ? items[0].id : undefined,
@@ -66,11 +66,7 @@ export const DonateDialog = ({
         return;
       }
 
-      if (
-        BigNumber.from(selectedBalance.balance).lt(
-          ethers.utils.parseUnits(Number(selectedAmount).toString(), selectedBalance.decimals),
-        )
-      ) {
+      if (BigInt(selectedBalance.balance) < parseUnits(Number(selectedAmount).toString(), selectedBalance.decimals)) {
         setAmountError("Balance of selected asset too low");
         return;
       } else {

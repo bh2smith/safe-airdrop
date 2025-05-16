@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { checksumAddress } from "viem";
 
 import { fetchTokenList } from "../hooks/token";
 import { staticNetworkInfo } from "../networks";
@@ -37,7 +37,7 @@ beforeEach(() => {
 describe("Mainnet tokenlist", () => {
   it("Should parse its response correctly", async () => {
     const resultingTokens = await fetchTokenList(1);
-    const gnoAddress = ethers.utils.getAddress("0x6810e776880c02933d47db1b9fc05908e5386b96");
+    const gnoAddress = checksumAddress("0x6810e776880c02933d47db1b9fc05908e5386b96");
 
     expect(resultingTokens.size).toEqual(2);
     expect(resultingTokens.get(gnoAddress)?.symbol).toEqual("GNO");

@@ -1,15 +1,14 @@
-import { SafeAppProvider } from "@safe-global/safe-apps-provider";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import BigNumber from "bignumber.js";
-import { ethers } from "ethers";
 import { useCallback, useMemo } from "react";
 import { selectCollectibles } from "src/stores/slices/collectiblesSlice";
 import { useAppSelector } from "src/stores/store";
-import { resolveIpfsUri } from "src/utils";
+import { fetchJson, resolveIpfsUri } from "src/utils";
 
 import { erc1155Instance } from "../transfers/erc1155";
 import { erc165Instance } from "../transfers/erc165";
 import { erc721Instance } from "../transfers/erc721";
+
+import { useWeb3Provider } from "./useWeb3Provider";
 
 const ERC721_INTERFACE_ID = "0x80ac58cd";
 const ERC1155_INTERFACE_ID = "0xd9b67a26";
@@ -25,27 +24,25 @@ export type CollectibleTokenMetaInfo = {
 };
 
 export interface CollectibleTokenInfoProvider {
-  getTokenInfo: (tokenAddress: string, id: BigNumber) => Promise<CollectibleTokenInfo | undefined>;
-  getFromAddress: () => string;
+  getTokenInfo: (tokenAddress: `0x${string}`, id: string) => Promise<CollectibleTokenInfo | undefined>;
+  getFromAddress: () => `0x${string}`;
   fetchMetaInfo: (
-    tokenAddress: string,
-    id: BigNumber,
+    tokenAddress: `0x${string}`,
+    id: string,
     token_type: "erc1155" | "erc721",
   ) => Promise<CollectibleTokenMetaInfo>;
 }
 
 export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider = () => {
-  const { safe, sdk } = useSafeAppsSDK();
+  const { safe } = useSafeAppsSDK();
+  const web3Provider = useWeb3Provider();
   const currentNftBalance = useAppSelector(selectCollectibles);
-
-  const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
-
   const collectibleContractCache = useMemo(() => new Map<string, CollectibleTokenInfo | undefined>(), []);
 
   const contractInterfaceCache = useMemo(() => new Map<string, ["erc721" | "erc1155" | undefined]>(), []);
 
-  const determineInterface: (tokenAddress: string) => Promise<["erc721" | "erc1155" | undefined]> = useCallback(
-    async (tokenAddress: string) => {
+  const determineInterface: (tokenAddress: `0x${string}`) => Promise<["erc721" | "erc1155" | undefined]> = useCallback(
+    async (tokenAddress: `0x${string}`) => {
       if (contractInterfaceCache.has(tokenAddress)) {
         return contractInterfaceCache.get(tokenAddress) ?? [undefined];
       }
@@ -57,11 +54,11 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
       }
       let determinedInterface: ["erc721" | "erc1155" | undefined] = [undefined];
       const erc165Contract = erc165Instance(tokenAddress, web3Provider);
-      const isErc1155 = await erc165Contract.supportsInterface(ERC1155_INTERFACE_ID).catch(() => false);
+      const isErc1155 = await erc165Contract.read.supportsInterface([ERC1155_INTERFACE_ID]).catch(() => false);
       if (isErc1155) {
         return ["erc1155"];
       } else {
-        const isErc721 = await erc165Contract.supportsInterface(ERC721_INTERFACE_ID).catch(() => false);
+        const isErc721 = await erc165Contract.read.supportsInterface([ERC721_INTERFACE_ID]).catch(() => false);
         if (isErc721) {
           return ["erc721"];
         }
@@ -74,10 +71,10 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
     [contractInterfaceCache, currentNftBalance, web3Provider],
   );
   const getTokenInfo = useCallback(
-    async (tokenAddress: string, id: BigNumber) => {
+    async (tokenAddress: `0x${string}`, id: string) => {
       let tokenId: string = "-1";
-      if (!id.isNaN() && id.isInteger() && id.isPositive()) {
-        tokenId = id.toFixed();
+      if (isNonNegativeInteger(id)) {
+        tokenId = BigInt(id).toString();
       }
       if (collectibleContractCache.has(toKey(tokenAddress, tokenId))) {
         return collectibleContractCache.get(toKey(tokenAddress, tokenId));
@@ -105,15 +102,15 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
   );
 
   const fetchMetaInfo: (
-    tokenAddress: string,
-    id: BigNumber,
+    tokenAddress: `0x${string}`,
+    id: string,
     token_type: "erc1155" | "erc721",
   ) => Promise<CollectibleTokenMetaInfo> = useCallback(
-    async (tokenAddress: string, id: BigNumber, token_type: "erc1155" | "erc721") => {
+    async (tokenAddress: `0x${string}`, id: string, token_type: "erc1155" | "erc721") => {
       if (token_type === "erc721") {
         if (currentNftBalance) {
           const tokenInfo = currentNftBalance.find(
-            (nftEntry) => nftEntry.address === tokenAddress && nftEntry.id === id.toFixed(),
+            (nftEntry) => nftEntry.address === tokenAddress && nftEntry.id === id,
           );
           if (tokenInfo && tokenInfo.imageUri && tokenInfo.name) {
             return {
@@ -124,22 +121,22 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
         }
         const erc721Contract = erc721Instance(tokenAddress, web3Provider);
         const metaInfo: CollectibleTokenMetaInfo = {
-          name: await erc721Contract.name().catch(() => undefined),
+          name: await erc721Contract.read.name().catch(() => undefined),
         };
-        let tokenURI = await erc721Contract.tokenURI(id.toFixed()).catch(() => undefined);
+        let tokenURI = await erc721Contract.read.tokenURI([BigInt(id)]).catch(() => undefined);
         if (tokenURI) {
           tokenURI = resolveIpfsUri(tokenURI);
-          const metaDataJSON = await ethers.utils.fetchJson(tokenURI).catch(() => undefined);
+          const metaDataJSON = await fetchJson(tokenURI).catch(() => undefined);
           metaInfo.imageURI = metaDataJSON?.image ? resolveIpfsUri(metaDataJSON?.image) : undefined;
         }
         return metaInfo;
       } else {
         const erc1155Contract = erc1155Instance(tokenAddress, web3Provider);
         const metaInfo: CollectibleTokenMetaInfo = {};
-        let tokenURI = await erc1155Contract.uri(id.toFixed()).catch(() => undefined);
+        let tokenURI = await erc1155Contract.read.tokenURI([BigInt(id)]).catch(() => undefined);
         if (tokenURI) {
           tokenURI = resolveIpfsUri(tokenURI);
-          const metaDataJSON = await ethers.utils.fetchJson(tokenURI).catch(() => undefined);
+          const metaDataJSON = await fetchJson(tokenURI).catch(() => undefined);
           metaInfo.imageURI = metaDataJSON?.image ? resolveIpfsUri(metaDataJSON?.image) : undefined;
           metaInfo.name = metaDataJSON?.name;
         }
@@ -150,14 +147,14 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
   );
 
   const getFromAddress = useCallback(() => {
-    return safe.safeAddress;
+    return safe.safeAddress as `0x${string}`;
   }, [safe]);
 
   return useMemo(
     () => ({
-      getTokenInfo: (tokenAddress: string, id: BigNumber) => getTokenInfo(tokenAddress, id),
+      getTokenInfo: (tokenAddress: `0x${string}`, id: string) => getTokenInfo(tokenAddress, id),
       getFromAddress: () => getFromAddress(),
-      fetchMetaInfo: (tokenAddress: string, id: BigNumber, token_type: "erc1155" | "erc721") =>
+      fetchMetaInfo: (tokenAddress: `0x${string}`, id: string, token_type: "erc1155" | "erc721") =>
         fetchMetaInfo(tokenAddress, id, token_type),
     }),
     [getTokenInfo, getFromAddress, fetchMetaInfo],
@@ -168,3 +165,7 @@ export const useCollectibleTokenInfoProvider: () => CollectibleTokenInfoProvider
  * Maps cannot hash custom objects. So we convert token address and id to a unique key.
  */
 const toKey = (tokenAddr: string, id: string) => `addr: ${tokenAddr}, id: ${id}`;
+
+const isNonNegativeInteger = (str: string): boolean => {
+  return /^\d+$/.test(str);
+};

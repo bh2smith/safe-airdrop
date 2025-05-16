@@ -1,4 +1,3 @@
-import { isAddress } from "@ethersproject/address";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import WarningIcon from "@mui/icons-material/Warning";
 import {
@@ -13,8 +12,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import BigNumber from "bignumber.js";
-import { utils } from "ethers";
 import { useState } from "react";
 import { useCurrentChain } from "src/hooks/useCurrentChain";
 import { useEnsResolver } from "src/hooks/useEnsResolver";
@@ -22,7 +19,7 @@ import { AssetBalance } from "src/stores/slices/assetBalanceSlice";
 import { NFTBalance } from "src/stores/slices/collectiblesSlice";
 import { updateCsvContent } from "src/stores/slices/csvEditorSlice";
 import { useAppDispatch } from "src/stores/store";
-import { fromWei } from "src/utils";
+import { formatUnits, isAddress } from "viem";
 
 export const DrainSafeDialog = ({
   isOpen,
@@ -49,7 +46,7 @@ export const DrainSafeDialog = ({
     ? `The chain prefix must match the current network: ${selectedNetworkInfo?.shortName}`
     : undefined;
 
-  const invalidAddressError = utils.isAddress(resolvedAddress) ? undefined : "The address is invalid";
+  const invalidAddressError = isAddress(resolvedAddress) ? undefined : "The address is invalid";
   const error = drainAddress ? invalidNetworkError || invalidAddressError : undefined;
 
   const generateDrainTransfers = () => {
@@ -57,16 +54,17 @@ export const DrainSafeDialog = ({
     if (drainAddress) {
       assetBalance?.forEach((asset) => {
         if (asset.token === null && asset.tokenAddress === null) {
-          const decimalBalance = fromWei(new BigNumber(asset.balance), 18);
-          // The API returns zero balances for the native token.
-          if (!decimalBalance.isZero()) {
-            drainCSV += `\nnative,,${drainAddress},${decimalBalance},`;
+          if (BigInt(asset.balance) === BigInt(0)) {
+            return;
           }
+          const decimalBalance = formatUnits(BigInt(asset.balance), 18);
+          // The API returns zero balances for the native token.
+          drainCSV += `\nnative,,${drainAddress},${decimalBalance},`;
         } else {
           const tokenDecimals = asset.token?.decimals;
           if (tokenDecimals) {
-            drainCSV += `\nerc20,${asset.tokenAddress},${drainAddress},${fromWei(
-              new BigNumber(asset.balance),
+            drainCSV += `\nerc20,${asset.tokenAddress},${drainAddress},${formatUnits(
+              BigInt(asset.balance),
               tokenDecimals,
             )},`;
           }

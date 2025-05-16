@@ -1,15 +1,14 @@
-import { SafeAppProvider } from "@safe-global/safe-apps-provider";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { SafeBalanceResponse } from "@safe-global/safe-gateway-typescript-sdk";
-import { ethers, utils } from "ethers";
 import xdaiTokens from "honeyswap-default-token-list";
 import { useState, useEffect, useMemo } from "react";
+import { getAddress } from "viem";
 
-import rinkeby from "../static/rinkebyTokens.json";
 import { erc20Instance } from "../transfers/erc20";
 import { TokenInfo } from "../utils";
 
 import { useCurrentChain } from "./useCurrentChain";
+import { useWeb3Provider } from "./useWeb3Provider";
 
 export type TokenMap = Map<string | null, MinimalTokenInfo>;
 
@@ -17,7 +16,7 @@ function tokenMap(tokenList: TokenInfo[]): TokenMap {
   const res: TokenMap = new Map<string, MinimalTokenInfo>();
   for (const token of tokenList) {
     if (token.address) {
-      res.set(utils.getAddress(token.address), token);
+      res.set(getAddress(token.address), token);
     }
   }
   return res;
@@ -33,12 +32,8 @@ export const fetchTokenList = async (chainId: number): Promise<TokenMap> => {
         .then((response) => response.tokens)
         .catch(() => []);
       break;
-    case 4:
-      // We leave this to generate data for the unit tests.
-      tokens = rinkeby;
-      break;
     case 100:
-      tokens = xdaiTokens.tokens;
+      tokens = xdaiTokens.tokens as TokenInfo[];
       break;
     default:
       console.warn(`Unimplemented token list for chainId ${chainId}`);
@@ -77,20 +72,20 @@ export function useTokenList(): {
 
 export type MinimalTokenInfo = {
   decimals: number;
-  address: string;
+  address: `0x${string}`;
   symbol?: string;
   logoURI?: string;
 };
 
 export interface TokenInfoProvider {
-  getTokenInfo: (tokenAddress: string) => Promise<MinimalTokenInfo | undefined>;
+  getTokenInfo: (tokenAddress: `0x${string}`) => Promise<MinimalTokenInfo | undefined>;
   getNativeTokenSymbol: () => string;
-  getSelectedNetworkShortname: () => string | undefined;
+  getSelectedNetworkShortname: () => Promise<string | undefined>;
 }
 
 export const useTokenInfoProvider: () => TokenInfoProvider = () => {
-  const { safe, sdk } = useSafeAppsSDK();
-  const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
+  const { sdk } = useSafeAppsSDK();
+  const web3Provider = useWeb3Provider();
   const [balances, setBalances] = useState<SafeBalanceResponse>({
     fiatTotal: "0",
     items: [],
@@ -113,7 +108,8 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
 
   return useMemo(
     () => ({
-      getTokenInfo: async (tokenAddress: string) => {
+      getTokenInfo: async (tokenAddress: `0x${string}`) => {
+        debugger;
         if (tokenList?.has(tokenAddress)) {
           return tokenList.get(tokenAddress);
         }
@@ -129,8 +125,8 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
         }
 
         const tokenContract = erc20Instance(tokenAddress, web3Provider);
-        const decimals = await tokenContract.decimals().catch((reason) => undefined);
-        const symbol = await tokenContract.symbol().catch((reason) => undefined);
+        const decimals = await tokenContract.read.decimals().catch((reason) => undefined);
+        const symbol = await tokenContract.read.symbol().catch((reason) => undefined);
 
         if (typeof decimals !== "undefined") {
           tokenList?.set(tokenAddress, {
@@ -144,7 +140,7 @@ export const useTokenInfoProvider: () => TokenInfoProvider = () => {
         }
       },
       getNativeTokenSymbol: () => chainConfig?.currencySymbol ?? "ETH",
-      getSelectedNetworkShortname: () => chainConfig?.shortName,
+      getSelectedNetworkShortname: () => new Promise((resolve) => resolve(chainConfig?.shortName)),
     }),
     [balances.items, tokenList, web3Provider, chainConfig],
   );
