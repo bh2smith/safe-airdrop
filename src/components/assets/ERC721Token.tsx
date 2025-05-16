@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import { Box, CircularProgress, Popover, Typography } from "@mui/material";
 import { EthHashInfo } from "@safe-global/safe-react-components";
 import { useEffect, useState } from "react";
+import { isAddress } from "viem";
 
 import { CollectibleTokenMetaInfo, useCollectibleTokenInfoProvider } from "../../hooks/collectibleTokenInfoProvider";
 
@@ -37,12 +38,14 @@ export const ERC721Token = (props: TokenProps) => {
   useEffect(() => {
     let isMounted = true;
     setIsMetaDataLoading(true);
-    collectibleTokenInfoProvider.fetchMetaInfo(tokenAddress, id, token_type).then((result) => {
-      if (isMounted) {
-        setTokenMetaData(result);
-        setIsMetaDataLoading(false);
-      }
-    });
+    if (isAddress(tokenAddress)) {
+      collectibleTokenInfoProvider.fetchMetaInfo(tokenAddress, id, token_type).then((result) => {
+        if (isMounted) {
+          setTokenMetaData(result);
+          setIsMetaDataLoading(false);
+        }
+      });
+    }
 
     return function callback() {
       isMounted = false;

@@ -2,7 +2,7 @@ export const DONATION_ADDRESS = "0xD011a7e124181336ED417B737A495745F150d248";
 
 export interface TokenInfo {
   readonly chainId: number;
-  readonly address: string;
+  readonly address: `0x${string}`;
   readonly name: string;
   readonly decimals: number;
   readonly symbol: string;
@@ -23,4 +23,13 @@ export function resolveIpfsUri(uri: string): string {
   return uri.startsWith("ipfs://")
     ? uri.replace("ipfs://ipfs/", "ipfs://").replace("ipfs://", "https://cloudflare-ipfs.com/ipfs/")
     : uri;
+}
+
+export function fetchJson(uri: string): Promise<any> {
+  return fetch(uri).then((res) => {
+    if (!res.ok) {
+      throw new Error(`Failed to fetch ${uri}`);
+    }
+    return res.json();
+  });
 }

@@ -1,9 +1,10 @@
-import { SafeAppProvider } from "@safe-global/safe-apps-provider";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { ethers } from "ethers";
 import { useCallback, useMemo } from "react";
 import { selectAddressbook } from "src/stores/slices/addressbookSlice";
 import { useAppSelector } from "src/stores/store";
+import { isAddress } from "viem";
+
+import { useWeb3Provider } from "./useWeb3Provider";
 
 export interface EnsResolver {
   /**
@@ -31,16 +32,16 @@ export interface EnsResolver {
 }
 
 export const useEnsResolver: () => EnsResolver = () => {
-  const { safe, sdk } = useSafeAppsSDK();
-  const web3Provider = useMemo(() => new ethers.providers.Web3Provider(new SafeAppProvider(safe, sdk)), [sdk, safe]);
-  const resolveCache = useMemo(() => new Map<string, string | null>(), []);
+  const { safe } = useSafeAppsSDK();
+  const web3Provider = useWeb3Provider();
+  const resolveCache = useMemo(() => new Map<string, `0x${string}` | null>(), []);
 
   const lookupCache = useMemo(() => new Map<string, string | null>(), []);
 
   const addressbook = useAppSelector(selectAddressbook);
 
   const lookupAddress = useCallback(
-    async (address: string) => {
+    async (address: `0x${string}`) => {
       const nameFromAb = addressbook.find((abItem) => {
         return abItem.address.toLowerCase() === address.toLowerCase() && abItem.chainId === safe?.chainId.toString();
       })?.name;
@@ -49,15 +50,18 @@ export const useEnsResolver: () => EnsResolver = () => {
         return Promise.resolve(nameFromAb);
       }
 
-      return await web3Provider.lookupAddress(address);
+      return await web3Provider.getEnsName({ address: address });
     },
     [addressbook, safe?.chainId, web3Provider],
   );
 
   const cachedResolveName = useCallback(
     async (ensName: string) => {
+      if (isAddress(ensName)) {
+        return ensName;
+      }
       const cachedAddress = resolveCache.get(ensName);
-      const resolvedAddress = cachedAddress ?? (await web3Provider.resolveName(ensName).catch(() => null));
+      const resolvedAddress = cachedAddress ?? (await web3Provider.getEnsAddress({ name: ensName }).catch(() => null));
       if (!resolveCache.has(ensName)) {
         resolveCache.set(ensName, resolvedAddress);
       }
@@ -67,7 +71,7 @@ export const useEnsResolver: () => EnsResolver = () => {
   );
 
   const cachedLookupAddress = useCallback(
-    async (address: string) => {
+    async (address: `0x${string}`) => {
       const cachedAddress = lookupCache.get(address);
       const resolvedEnsName = typeof cachedAddress !== "undefined" ? cachedAddress : await lookupAddress(address);
       if (!lookupCache.has(address)) {
@@ -79,14 +83,14 @@ export const useEnsResolver: () => EnsResolver = () => {
   );
 
   const isEnsEnabled = useCallback(async () => {
-    const network = await web3Provider.getNetwork();
-    return typeof network.ensAddress !== "undefined" && network.ensAddress !== null;
+    const chainId = await web3Provider.getChainId();
+    return chainId === 1 || chainId === 11155111;
   }, [web3Provider]);
 
   return useMemo(
     () => ({
       resolveName: (ensName: string) => cachedResolveName(ensName),
-      lookupAddress: (address: string) => cachedLookupAddress(address),
+      lookupAddress: (address: `0x${string}`) => cachedLookupAddress(address),
       isEnsEnabled: () => isEnsEnabled(),
     }),
     [cachedResolveName, cachedLookupAddress, isEnsEnabled],

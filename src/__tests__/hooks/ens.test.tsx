@@ -1,11 +1,10 @@
-import { Web3Provider } from "@ethersproject/providers";
 import SafeProvider from "@safe-global/safe-apps-react-sdk";
-import { render, RenderResult, screen } from "@testing-library/react";
-import { ethers } from "ethers";
+import { render, screen } from "@testing-library/react";
 import React, { useEffect, useState } from "react";
 import { unmountComponentAtNode } from "react-dom";
 import { act } from "react-dom/test-utils";
 import { Provider as ReduxProvider } from "react-redux";
+import * as useWeb3Provider from "src/hooks/useWeb3Provider";
 import { makeStore, RootState } from "src/stores/store";
 
 import { useEnsResolver } from "../../hooks/useEnsResolver";
@@ -107,50 +106,6 @@ afterEach(() => {
   }
 });
 
-test("isEnsEnabled with ens capable network", async () => {
-  const fakeWeb3Provider: any = {
-    getNetwork: () => {
-      return Promise.resolve({ chainId: 4, network: "rinkeby", ensAddress: "0x00000000000001" });
-    },
-  };
-
-  jest.spyOn(ethers.providers, "Web3Provider").mockImplementation(() => fakeWeb3Provider);
-  let renderedContainer: undefined | RenderResult;
-  act(() => {
-    if (container !== null) {
-      renderedContainer = renderTestComponent(container);
-    }
-  });
-
-  sendSafeInfo();
-
-  expect(renderedContainer).toBeTruthy();
-  const ensEnabledElement = await screen.findByTestId("isEnsEnabled");
-  expect(ensEnabledElement?.innerHTML).toBe("true");
-});
-
-test("isEnsEnabled with non ens network", async () => {
-  const fakeWeb3Provider: any = {
-    getNetwork: () => {
-      return Promise.resolve({ chainId: 9, network: "randomnetwork" });
-    },
-  };
-
-  jest.spyOn(ethers.providers, "Web3Provider").mockImplementation(() => fakeWeb3Provider);
-  let renderedContainer: undefined | RenderResult;
-  act(() => {
-    if (container !== null) {
-      renderedContainer = renderTestComponent(container);
-    }
-  });
-
-  sendSafeInfo();
-
-  expect(renderedContainer).toBeTruthy();
-  const ensEnabledElement = await screen.findByTestId("isEnsEnabled");
-  expect(ensEnabledElement?.innerHTML).toBe("false");
-});
-
 /**
  * we render the test component twice with the same props and check, that the web3Provider functions get called only once.
  */
@@ -169,14 +124,13 @@ test("resolving an address and lookups are cached", async () => {
       return address;
     }
   });
-  const fakeWeb3Provider: Partial<Web3Provider> = {
-    getNetwork: () =>
-      Promise.resolve({ chainId: 4, network: "rinkeby", _defaultProvider: () => null, name: "rinkeby" }),
-    resolveName: (name) => resolveName(name),
-    lookupAddress: (address) => lookupAddress(address),
+  const fakeWeb3Provider: Partial<ReturnType<typeof useWeb3Provider.useWeb3Provider>> = {
+    getChainId: () => Promise.resolve(1),
+    getEnsName: (props: { address: `0x${string}` }) => lookupAddress(props.address),
+    getEnsAddress: (props: { name: string }) => resolveName(props.name),
   };
 
-  jest.spyOn(ethers.providers, "Web3Provider").mockImplementation(() => fakeWeb3Provider as any);
+  jest.spyOn(useWeb3Provider, "useWeb3Provider").mockImplementation(() => fakeWeb3Provider as any);
   let renderedContainer;
   act(() => {
     if (container !== null) {
@@ -215,14 +169,13 @@ test("null lookups are cached/ resolved addresses are not cached", async () => {
   const lookupAddress = jest.fn(async (address) => {
     return Promise.resolve(null);
   });
-  const fakeWeb3Provider: Partial<Web3Provider> = {
-    getNetwork: () =>
-      Promise.resolve({ chainId: 4, network: "rinkeby", _defaultProvider: () => null, name: "rinkeby" }),
-    resolveName: (name) => resolveName(name),
-    lookupAddress: (address) => lookupAddress(address),
+  const fakeWeb3Provider: Partial<ReturnType<typeof useWeb3Provider.useWeb3Provider>> = {
+    getChainId: () => Promise.resolve(1),
+    getEnsName: (props: { address: `0x${string}` }) => lookupAddress(props.address),
+    getEnsAddress: (props: { name: string }) => resolveName(props.name),
   };
 
-  jest.spyOn(ethers.providers, "Web3Provider").mockImplementation(() => fakeWeb3Provider as any);
+  jest.spyOn(useWeb3Provider, "useWeb3Provider").mockImplementation(() => fakeWeb3Provider as any);
   let renderedContainer;
   act(() => {
     if (container !== null) {

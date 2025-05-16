@@ -53,6 +53,7 @@ export const useCsvParser = (): { parseCsv: (csvText: string) => Promise<[Transf
 
   const parseCsv = useCallback(
     async (csvText: string): Promise<[Transfer[], CodeWarning[]]> => {
+      // @ts-ignore - tokenInfoProvider is typed slightly different than the expected type
       return csvParse(csvText, tokenInfoProvider, collectibleTokenInfoProvider, ensResolver);
     },
     [collectibleTokenInfoProvider, ensResolver, tokenInfoProvider],

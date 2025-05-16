@@ -1,9 +1,11 @@
-import { ethers } from "ethers";
+import { getContract, parseAbi, PublicClient } from "viem";
 
-import { ERC1155, ERC1155__factory } from "../contracts";
+export const erc1155Interface = parseAbi(["function tokenURI(uint256 id) view returns (string)"]);
 
-export const erc1155Interface = ERC1155__factory.createInterface();
-
-export function erc1155Instance(address: string, provider: ethers.providers.Provider): ERC1155 {
-  return ERC1155__factory.connect(address, provider);
+export function erc1155Instance(address: `0x${string}`, provider: PublicClient) {
+  return getContract({
+    address,
+    abi: erc1155Interface,
+    client: provider,
+  });
 }

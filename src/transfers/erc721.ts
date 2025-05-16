@@ -1,9 +1,16 @@
-import { ethers } from "ethers";
+import { getContract, parseAbi, PublicClient } from "viem";
 
-import { ERC721, ERC721__factory } from "../contracts";
+export const abi = parseAbi([
+  "function balanceOf(address owner) view returns (uint256)",
+  "function ownerOf(uint256 tokenId) view returns (address)",
+  "function tokenURI(uint256 tokenId) view returns (string)",
+  "function name() view returns (string)",
+]);
 
-export const erc721Interface = ERC721__factory.createInterface();
-
-export function erc721Instance(address: string, provider: ethers.providers.Provider): ERC721 {
-  return ERC721__factory.connect(address, provider);
+export function erc721Instance(address: `0x${string}`, provider: PublicClient) {
+  return getContract({
+    address,
+    abi,
+    client: provider,
+  });
 }
