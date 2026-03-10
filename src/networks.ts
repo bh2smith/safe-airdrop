@@ -149,4 +149,24 @@ export const staticNetworkInfo = new Map<number, NetworkInfo>([
       baseAPI: "https://safe-transaction-sepolia.safe.global",
     },
   ],
+  [
+    10218,
+    {
+      chainID: 10218,
+      name: "Tea Sepolia Testnet",
+      shortName: "tea sepolia",
+      currencySymbol: "TEA",
+      baseAPI: "https://safe-transaction-tea-sepolia.safe.onchainden.com",
+    },
+  ],
+  [
+    6122,
+    {
+      chainID: 6122,
+      name: "Tea Mainnet",
+      shortName: "tea",
+      currencySymbol: "TEA",
+      baseAPI: "TBD",
+    },
+  ],
 ]);
